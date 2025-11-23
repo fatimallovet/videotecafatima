@@ -34,7 +34,7 @@ body {
 .card-buttons {
   display: flex;
   gap: 30px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;      /* centrar los elementos */
   align-items: center;          /* alineación vertical */
 }
