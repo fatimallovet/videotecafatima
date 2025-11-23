@@ -165,3 +165,32 @@ h2 {
   transform: translateY(0);
   box-shadow: 0 6px 16px rgba(120,84,197,0.18);
 }
+
+
+/* BOTÓN BMC ESTILO PERSONALIZADO */
+.bmc-btn {
+  background: #FFDD00 !important;
+  font-family: "Cookie", cursive !important;
+  color: #000 !important;
+  box-shadow: 0 10px 25px rgba(255, 221, 0, 0.35);
+}
+
+.bmc-btn h3 {
+  font-family: "Cookie", cursive !important;
+  font-size: 2rem; /* más estilo */
+  color: #000 !important;
+}
+
+.bmc-btn:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 32px rgba(255, 221, 0, 0.55);
+  background: #ffe95e !important;
+}
+
+.tabs-nav .bmc-btn {
+  background: #FFDD00 !important;
+  font-family: "Cookie", cursive !important;
+  color: #000 !important;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 20px rgba(255,221,0,0.50);
+}
