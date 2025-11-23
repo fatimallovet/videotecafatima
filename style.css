@@ -32,11 +32,10 @@ body {
 
 /* BOTONES EN TARJETAS */
 .card-buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 30px;
-  flex-wrap: nowrap;
-  justify-content: center;      /* centrar los elementos */
-  align-items: center;          /* alineación vertical */
+  justify-items: center;
 }
 
 .card-btn {
