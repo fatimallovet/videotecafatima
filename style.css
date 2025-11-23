@@ -36,6 +36,9 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 30px;
   justify-items: center;
+  width: 100%;
+  max-width: 650px; /* evita desparramarse en pantallas grandes */
+  margin: 0 auto; /* centra el grid */
 }
 
 .card-btn {
@@ -193,4 +196,22 @@ h2 {
   color: #000 !important;
   font-size: 1.5rem;
   box-shadow: 0 8px 20px rgba(255,221,0,0.50);
+}
+
+
+@media (max-width: 480px) {
+
+  .card-buttons {
+    grid-template-columns: 1fr; /* uno por fila */
+    gap: 20px;
+  }
+
+  .card-btn {
+    width: 200px; /* más cómodo en móvil */
+    height: 190px;
+  }
+
+  .bmc-btn h3 {
+    font-size: 1.8rem; /* evita que se “salga” o se corte */
+  }
 }
