@@ -45,13 +45,29 @@ function llenarTabla(data, tablaId, tipo) {
   });
 }
 
-/* MODAL */
 function mostrarModal(d) {
-  document.getElementById("modal-titulo").textContent = d["Título"];
-  document.getElementById("modal-anio").textContent = d["Año"];
-  document.getElementById("modal-calificacion").textContent = d["Calificación"];
-  document.getElementById("modal-genero").textContent = d["Género"];
-  document.getElementById("modal-tipo").textContent = d["Tipo"];
+  document.getElementById("modal-titulo").textContent = d["Título"] || "";
+  document.getElementById("modal-calificacion").textContent = d["Calificación"] || "";
+  document.getElementById("modal-origen").textContent = d["Origen"] || "";
+  document.getElementById("modal-anio").textContent = d["Año"] || "";
+  document.getElementById("modal-capitulos").textContent = d["Capítulos"] || d["Capitulos"] || "";
+  document.getElementById("modal-genero").textContent = d["Género"] || "";
+  document.getElementById("modal-tono").textContent = d["Tono"] || "";
+  document.getElementById("modal-ritmo").textContent = d["Ritmo"] || "";
+  document.getElementById("modal-publico").textContent = d["Público"] || d["Publico"] || "";
+  document.getElementById("modal-etiquetas").textContent = d["Etiquetas"] || "";
+  document.getElementById("modal-flags").textContent = d["Flags"] || "";
+  document.getElementById("modal-resena").textContent = d["Reseña"] || d["Resena"] || "";
+
+  // IMDB – si existe link
+  const imdb = document.getElementById("modal-imdb");
+  if (d["IMDB"]) {
+    imdb.href = d["IMDB"];
+    imdb.style.display = "inline";
+  } else {
+    imdb.href = "#";
+    imdb.style.display = "none";
+  }
 
   document.getElementById("modal").style.display = "flex";
 }
