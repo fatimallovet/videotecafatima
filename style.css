@@ -241,7 +241,7 @@ h2 {
 
 .footer-link a {
   text-decoration: none;
-  color: #1e7654;
+  color: #37a7ad;
   font-weight: 600;
   transition: 0.3s ease;
   padding: 6px 14px;
@@ -252,7 +252,7 @@ h2 {
 .footer-link a:hover {
   opacity: 1;
   color: #ffffff;
-  background: #1e7654;
+  background: #147d82;
   box-shadow: 0 4px 14px rgba(13, 80, 62, 0.25);
   transform: translateY(-2px);
 }
