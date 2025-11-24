@@ -113,25 +113,34 @@ h2 {
 
 /* MODAL */
 .modal {
-  display: none;   /* está bien */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  max-height: 90vh; /* Para que nunca crezca más que la pantalla */
-  overflow-y: auto; /* Activa scroll interno */
-  justify-content: center;
-  align-items: center;
+  height: 100vh;              /* Ocupa siempre la pantalla completa */
+  overflow-y: auto;           /* Si crece, hace scroll */
   background: rgba(0,0,0,0.6);
   z-index: 999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;              /* Evita que pegue a las orillas */
 }
 
+/* TARJETA / CONTENIDO */
 .modal-content {
   background: white;
   padding: 20px;
-  width: 320px;
+  width: 100%;
+  max-width: 360px;           /* Tamaño ideal en compu y cel */
+  max-height: 85vh;           /* JAMÁS más grande que la pantalla */
+  overflow-y: auto;           /* Scroll interno si el texto es largo */
   border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
+
 
 .close-btn {
   float: right;

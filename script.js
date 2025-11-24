@@ -1,3 +1,4 @@
+/* script.js */
 function openTab(tabId, event) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('visible'));
   document.getElementById(tabId).classList.add('visible');
