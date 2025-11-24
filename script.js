@@ -31,6 +31,10 @@ function llenarTabla(data, tablaId, tipo) {
   tbody.innerHTML = "";
 
   data.forEach(item => {
+    // ❗ SI LA FILA ESTÁ VACÍA → LA SALTAMOS
+    const valores = Object.values(item).join("").trim();
+    if (valores === "") return;
+
     const row = document.createElement("tr");
 
     row.innerHTML = `

@@ -122,7 +122,6 @@ h2 {
   overflow-y: auto;           /* Si crece, hace scroll */
   background: rgba(0,0,0,0.6);
   z-index: 999;
-
   display: none;
   justify-content: center;
   align-items: center;
