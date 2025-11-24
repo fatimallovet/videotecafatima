@@ -55,7 +55,17 @@ function mostrarModal(d) {
   document.getElementById("modal-calificacion").textContent = d["Calificación"] || "";
   document.getElementById("modal-origen").textContent = d["Origen"] || "";
   document.getElementById("modal-anio").textContent = d["Año"] || "";
-  document.getElementById("modal-capitulos").textContent = d["Capítulos"] || d["Capitulos"] || "";
+
+  // Label dinámico
+  document.getElementById("modal-label-minutos-o-caps").textContent =
+    d["Tipo"] === "Película" ? "Minutos: " : "Capítulos: ";
+
+  // Valor dinámico
+  document.getElementById("modal-minutos-o-caps").textContent =
+    d["Tipo"] === "Película"
+      ? (d["Minutos"] || "")
+      : (d["Capítulos"] || d["Capitulos"] || "");
+
   document.getElementById("modal-genero").textContent = d["Género"] || "";
   document.getElementById("modal-tono").textContent = d["Tono"] || "";
   document.getElementById("modal-ritmo").textContent = d["Ritmo"] || "";
@@ -64,7 +74,7 @@ function mostrarModal(d) {
   document.getElementById("modal-flags").textContent = d["Flags"] || "";
   document.getElementById("modal-resena").textContent = d["Reseña"] || d["Resena"] || "";
 
-  // IMDB – si existe link
+  // IMDB
   const imdb = document.getElementById("modal-imdb");
   if (d["IMDB"]) {
     imdb.href = d["IMDB"];
