@@ -231,21 +231,28 @@ h2 {
 
 .footer-link {
   margin-top: 60px;
-  padding: 20px 0;
+  padding: 25px 0;
   text-align: center;
   font-size: 1rem;
-  opacity: 0.75;
+  opacity: 0.85;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.4px;
 }
 
 .footer-link a {
   text-decoration: none;
-  color: #6a4fbf;
+  color: #1e7654;
   font-weight: 600;
-  transition: 0.25s ease;
+  transition: 0.3s ease;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: rgba(30, 118, 84, 0.06);
 }
 
 .footer-link a:hover {
   opacity: 1;
-  color: #512fa3;
-  text-shadow: 0 3px 10px rgba(120, 84, 197, 0.3);
+  color: #ffffff;
+  background: #1e7654;
+  box-shadow: 0 4px 14px rgba(13, 80, 62, 0.25);
+  transform: translateY(-2px);
 }
