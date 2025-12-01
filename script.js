@@ -16,6 +16,7 @@ fetch(URL_PELIS)
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     llenarTabla(res.data, "tablaPeliculas", "Película");
     hacerTablaOrdenable("tablaPeliculas");
+    activarBusqueda(res.data, "tablaPeliculas", "busquedaPeliculas");
   });
 
 /* CARGAR SERIES */
@@ -25,6 +26,7 @@ fetch(URL_SERIES)
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     llenarTabla(res.data, "tablaSeries", "Serie");
     hacerTablaOrdenable("tablaSeries");
+    activarBusqueda(res.data, "tablaSeries", "busquedaSeries");
   });
 
 /* LLENAR TABLAS */
@@ -128,3 +130,32 @@ function hacerTablaOrdenable(tablaId) {
     });
   });
 }
+
+
+/* BUSCAR EN TABLAS */
+function activarBusqueda(data, tablaId, inputId) {
+  const input = document.getElementById(inputId);
+  input.addEventListener("input", () => {
+    const texto = input.value.toLowerCase();
+
+    const filtrados = data.filter(item => {
+      const campos = [
+        item["Título"],
+        item["Género"],
+        item["Tono"],
+        item["Ritmo"],
+        item["Etiquetas"],
+        item["Reseña"]
+      ];
+
+      return campos.some(campo =>
+        (campo || "").toString().toLowerCase().includes(texto)
+      );
+    });
+
+    // vuelve a llenar la tabla con los resultados filtrados
+    llenarTabla(filtrados, tablaId, tablaId === "tablaPeliculas" ? "Película" : "Serie");
+    hacerTablaOrdenable(tablaId);
+  });
+}
+
