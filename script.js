@@ -15,6 +15,7 @@ fetch(URL_PELIS)
   .then(txt => {
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     llenarTabla(res.data, "tablaPeliculas", "Película");
+    hacerTablaOrdenable("tablaPeliculas");
   });
 
 /* CARGAR SERIES */
@@ -23,6 +24,7 @@ fetch(URL_SERIES)
   .then(txt => {
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     llenarTabla(res.data, "tablaSeries", "Serie");
+    hacerTablaOrdenable("tablaSeries");
   });
 
 /* LLENAR TABLAS */
@@ -89,4 +91,40 @@ function mostrarModal(d) {
 
 function cerrarModal() {
   document.getElementById("modal").style.display = "none";
+}
+
+
+
+/* ORDENAR TABLAS */
+function hacerTablaOrdenable(tablaId) {
+  const tabla = document.getElementById(tablaId);
+  const headers = tabla.querySelectorAll("th");
+  const tbody = tabla.querySelector("tbody");
+
+  headers.forEach((th, colIndex) => {
+    th.style.cursor = "pointer";
+
+    let asc = true; // alterna asc/desc
+
+    th.addEventListener("click", () => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+
+      rows.sort((a, b) => {
+        let A = a.children[colIndex].innerText.trim();
+        let B = b.children[colIndex].innerText.trim();
+
+        // Si es número, convertir
+        if (!isNaN(A) && A !== "") A = Number(A);
+        if (!isNaN(B) && B !== "") B = Number(B);
+
+        if (A < B) return asc ? -1 : 1;
+        if (A > B) return asc ? 1 : -1;
+        return 0;
+      });
+
+      asc = !asc;
+
+      rows.forEach(r => tbody.appendChild(r)); // reinsertar
+    });
+  });
 }

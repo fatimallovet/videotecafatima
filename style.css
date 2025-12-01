@@ -256,3 +256,12 @@ h2 {
   box-shadow: 0 4px 14px rgba(13, 80, 62, 0.25);
   transform: translateY(-2px);
 }
+
+
+.tabla-lista th {
+  position: relative;
+}
+
+.tabla-lista th:hover {
+  background: #e1ceff;
+}
