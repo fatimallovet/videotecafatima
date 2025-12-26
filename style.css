@@ -268,10 +268,47 @@ h2 {
 
 
 .buscador {
-  width: 100%;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
+  max-width: 420px;
+  margin: 0 auto 14px auto;
+  display: block;
+  padding: 12px 16px;
   font-size: 1rem;
+  border-radius: 16px;
+  border: 1px solid #d2c7ec;
+  box-shadow: 0 4px 10px rgba(120,84,197,0.12);
+}
+
+
+.tabla-wrapper {
+  max-width: 900px;          /* límite cómodo en desktop */
+  margin: 0 auto;            /* centrada */
+  overflow-x: auto;          /* scroll solo si hace falta */
+  border-radius: 14px;
+}
+
+.tabla-lista {
+  min-width: 680px;          /* evita que se aplaste */
+}
+
+.tabla-lista th:first-child,
+.tabla-lista td:first-child {
+  width: 60px;
+  text-align: center;
+  color: #7a66b3;
+  font-weight: 600;
+}
+
+
+@media (max-width: 600px) {
+  .tabla-wrapper {
+    max-width: 100%;
+  }
+
+  .tabla-lista {
+    min-width: 600px;
+  }
+
+  .buscador {
+    max-width: 100%;
+  }
 }
