@@ -42,6 +42,7 @@ function llenarTabla(data, tablaId, tipo) {
     const row = document.createElement("tr");
 
     row.innerHTML = `
+      <td>${item["No."] || item["No"] || ""}</td>
       <td>${item["Título"] || ""}</td>
       <td>${item["Año"] || ""}</td>
       <td>${item["Calificación"] || ""}</td>
