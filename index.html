@@ -50,14 +50,18 @@
   <h2>Películas</h2>
 
 
+<div class="tabs-nav">
+  <button onclick="openTab('inicio', event)">🏠 Inicio</button>
+  <button onclick="openTab('peliculas', event)">🎬 Películas</button>
 
+  <button onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
+    📚 Ir a la Biblioteca
+  </button>
 
-
-  <div class="tabs-nav">
-    <button onclick="openTab('inicio', event)">🏠 Inicio</button>
-    <button onclick="openTab('series', event)">📺 Series</button>
-    <button class="bmc-btn" onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">🍿 Buy me some popcorn</button>
-  </div>
+  <button class="bmc-btn" onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
+    🍿 Buy me some popcorn
+  </button>
+</div>
  
   
  <div class="buscador-wrapper">
@@ -87,11 +91,18 @@
 
 
 
-  <div class="tabs-nav">
-    <button onclick="openTab('inicio', event)">🏠 Inicio</button>
-    <button onclick="openTab('peliculas', event)">🎬 Películas</button>
-    <button class="bmc-btn" onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">🍿 Buy me some popcorn</button>
-  </div>
+<div class="tabs-nav">
+  <button onclick="openTab('inicio', event)">🏠 Inicio</button>
+  <button onclick="openTab('series', event)">📺 Series</button>
+
+  <button onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
+    📚 Ir a Biblioteca
+  </button>
+
+  <button class="bmc-btn" onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
+    🍿 Buy me some popcorn
+  </button>
+</div>
   
   <div class="buscador-wrapper">
   <input type="text" id="busquedaSeries" class="buscador" placeholder="Buscar en series...">
@@ -147,11 +158,7 @@
 <script src="script.js"></script>
 
 
-<footer class="footer-link">
-  <a href="https://fatimallovet.github.io/bibliotecafa2/" target="_blank">
-    📚 Ir a la Biblioteca 📖
-  </a>
-</footer>
+
 
 </body>
 </html>
