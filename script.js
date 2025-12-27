@@ -163,7 +163,9 @@ function activarBusqueda(data, tablaId, inputId) {
 
 document.querySelectorAll(".clear-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    const input = btn.previousElementSibling;
+    const wrapper = btn.closest(".buscador-wrapper");
+    const input = wrapper.querySelector(".buscador");
+
     input.value = "";
     input.dispatchEvent(new Event("input"));
     input.focus();
@@ -176,6 +178,7 @@ document.addEventListener("keydown", e => {
       if (input.value !== "") {
         input.value = "";
         input.dispatchEvent(new Event("input"));
+        input.blur();
       }
     });
   }
