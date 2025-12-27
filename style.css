@@ -151,6 +151,7 @@ h2 {
 .tabs-nav {
   margin-bottom: 25px;
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   justify-content: center; /* centrado y más lindo */
 }
@@ -173,13 +174,13 @@ h2 {
 
 /* BOTÓN BIBLIOTECA */
 .tabs-nav .bib-btn {
-  background: #37a7ad;
+  background: #80d4d8;
   color: #ffffff;
   box-shadow: 0 8px 20px rgba(55, 167, 173, 0.35);
 }
 
 .tabs-nav .bib-btn:hover {
-  background: #2f8f94;
+  background: #60d1d7;
   transform: translateY(-4px);
   box-shadow: 0 12px 26px rgba(55, 167, 173, 0.45);
 }
@@ -227,7 +228,7 @@ h2 {
 }
 
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 
   .card-buttons {
     grid-template-columns: 1fr; /* uno por fila */
@@ -242,6 +243,28 @@ h2 {
   .bmc-btn h3 {
     font-size: 1.8rem; /* evita que se “salga” o se corte */
   }
+
+  
+  .tabs-nav button {
+    padding: 12px;
+    min-width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    justify-content: center;
+  }
+
+  /* ocultar texto, dejar solo icono */
+  .tabs-nav button span,
+  .tabs-nav button:not(.bmc-btn):not(.bib-btn)::after {
+    display: none;
+  }
+
+  /* truco simple: ocultar texto dejando el emoji */
+  .tabs-nav button {
+    white-space: nowrap;
+  }
+
 }
 
 .footer-link {
