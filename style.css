@@ -311,4 +311,45 @@ h2 {
   .buscador {
     max-width: 100%;
   }
+
+  .buscador-wrapper {
+    max-width: 100%;
+  }
+}
+
+
+.buscador-wrapper {
+  max-width: 900px;          /* igual que la tabla */
+  margin: 0 auto 14px auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.buscador {
+  flex: 1;                   /* ocupa todo el ancho disponible */
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 16px;
+  border: 1px solid #d2c7ec;
+  box-shadow: 0 4px 10px rgba(120,84,197,0.12);
+}
+
+
+.clear-btn {
+  background: #f0e9ff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #6a4fbf;
+  box-shadow: 0 4px 10px rgba(120,84,197,0.15);
+  transition: 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #e1ceff;
+  transform: scale(1.05);
 }

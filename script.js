@@ -160,3 +160,23 @@ function activarBusqueda(data, tablaId, inputId) {
   });
 }
 
+
+document.querySelectorAll(".clear-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = btn.previousElementSibling;
+    input.value = "";
+    input.dispatchEvent(new Event("input"));
+    input.focus();
+  });
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".buscador").forEach(input => {
+      if (input.value !== "") {
+        input.value = "";
+        input.dispatchEvent(new Event("input"));
+      }
+    });
+  }
+});
