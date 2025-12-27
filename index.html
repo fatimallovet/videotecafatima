@@ -17,12 +17,6 @@
 
 
 
-
-  <p class="tagline">
-    Mis recomendaciones de series y pelis, organizadas para que sea fácil encontrar algo que te guste. <br>
-    La calificación que aparece es la mía (obvio es subjetiva). ✨
-  </p>
-
 <div class="card-buttons">
     <div class="card-btn" onclick="openTab('peliculas', event)">
         <div class="icon">🎬</div>
@@ -33,6 +27,12 @@
         <div class="icon">📺</div>
         <h3>Series</h3>
     </div>
+
+    <div class="card-btn" onclick="openTab('como-funciona', event)">
+      <div class="icon">❓</div>
+      <h3>Cómo funciona</h3>
+    </div>
+
 
     <div class="card-btn bib-home-btn"
         onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
@@ -134,6 +134,40 @@
     </table>
   </div>
 </section>
+
+
+<!-- Cómo FUnciona -->
+<section id="como-funciona" class="tab">
+  <h2>Cómo funciona</h2>
+
+  <div class="tabs-nav">
+    <button onclick="openTab('inicio', event)">🏠 <span>Inicio</span></button>
+    <button onclick="openTab('peliculas', event)">🎬 <span>Películas</span></button>
+    <button onclick="openTab('series', event)">📺 <span>Series</span></button>
+
+    <button class="bib-btn"
+      onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
+      📚 <span>Ir a Biblioteca</span>
+    </button>
+
+    <button class="bmc-btn"
+      onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
+      🍿 <span>Buy me some Popcorn</span>
+    </button>
+  </div>
+
+  <div style="max-width: 700px; margin: 40px auto; text-align: left;">
+    <p><strong>Esta videoteca funciona así:</strong></p>
+    <ul>
+      <li>📋 Las listas están ordenadas y se pueden buscar y filtrar.</li>
+      <li>⭐ La calificación es personal y subjetiva.</li>
+      <li>🖱️ Al tocar una película o serie, se abre su ficha.</li>
+      <li>⚠️ El apartado <em>Flags</em> avisa de contenido sensible.</li>
+      <li>📚 Biblioteca te lleva a mi proyecto de libros.</li>
+    </ul>
+  </div>
+</section>
+
 
 <!-- MODAL -->
 <div id="modal" class="modal">
