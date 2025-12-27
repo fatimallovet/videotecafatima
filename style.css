@@ -171,6 +171,21 @@ h2 {
   gap: 8px;
 }
 
+/* BOTÓN BIBLIOTECA */
+.tabs-nav .bib-btn {
+  background: #37a7ad;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(55, 167, 173, 0.35);
+}
+
+.tabs-nav .bib-btn:hover {
+  background: #2f8f94;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(55, 167, 173, 0.45);
+}
+
+
+
 .tabs-nav button:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 26px rgba(120,84,197,0.28);
