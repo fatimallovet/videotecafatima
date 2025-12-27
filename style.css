@@ -175,6 +175,7 @@ h2 {
 /* BOTÓN BIBLIOTECA */
 .tabs-nav .bib-btn {
   background: #80d4d8;
+  font-family: "Cookie", cursive !important;
   color: #ffffff;
   box-shadow: 0 8px 20px rgba(55, 167, 173, 0.35);
 }
@@ -238,6 +239,8 @@ h2 {
 }
 
 .bib-home-btn h3 {
+  font-family: "Cookie", cursive !important;
+  font-size: 2rem;
   color: #ffffff;
 }
 
