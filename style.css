@@ -228,6 +228,26 @@ h2 {
 }
 
 
+
+
+/* BOTÓN BIBLIOTECA EN HOME */
+.bib-home-btn {
+  background: linear-gradient(135deg, #80d4d8, #6fd1c9);
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(55, 167, 173, 0.35);
+}
+
+.bib-home-btn h3 {
+  color: #ffffff;
+}
+
+.bib-home-btn:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 32px rgba(55, 167, 173, 0.55);
+}
+
+
+
 @media (max-width: 600px) {
 
   .card-buttons {
@@ -365,8 +385,6 @@ h2 {
 }
 
 
-
-
 .clear-btn {
   background: #f0e9ff;
   border: none;
@@ -384,3 +402,4 @@ h2 {
   background: #e1ceff;
   transform: scale(1.05);
 }
+
