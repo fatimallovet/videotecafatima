@@ -99,6 +99,9 @@ h2 {
   padding: 14px;
   border-bottom: 1px solid #eee;
   text-align: left;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
 }
 
 .tabla-lista th {
