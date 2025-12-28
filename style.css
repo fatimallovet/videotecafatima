@@ -87,6 +87,7 @@ h2 {
 }
 
 .tabla-lista {
+  table-layout: fixed; /* 🔑 clave */
   width: 100%;
   border-collapse: collapse;
   background: white;
@@ -111,6 +112,35 @@ h2 {
 .tabla-lista tr:hover {
   background: #f7efff;
   cursor: pointer;
+}
+
+/* ANCHOS DE COLUMNAS – DESKTOP Y MÓVIL */
+.tabla-lista th:nth-child(1),
+.tabla-lista td:nth-child(1) {
+  width: 10%;
+  text-align: center;
+}
+
+.tabla-lista th:nth-child(2),
+.tabla-lista td:nth-child(2) {
+  width: 35%;
+}
+
+.tabla-lista th:nth-child(3),
+.tabla-lista td:nth-child(3) {
+  width: 12%;
+  text-align: center;
+}
+
+.tabla-lista th:nth-child(4),
+.tabla-lista td:nth-child(4) {
+  width: 13%;
+  text-align: center;
+}
+
+.tabla-lista th:nth-child(5),
+.tabla-lista td:nth-child(5) {
+  width: 30%;
 }
 
 /* MODAL */
@@ -365,6 +395,7 @@ h2 {
   .tabla-lista td {
     padding: 8px 10px;     /* antes 14px */
     font-size: 0.9rem;    /* un pelín más chica */
+    white-space: normal;        /* 🔑 permite saltos */
     word-break: break-word;
     overflow-wrap: anywhere;
 
@@ -376,32 +407,9 @@ h2 {
     max-width: 100%;
   }
 }
-
-@media (max-width: 600px) {
-
-  .tabla-lista th:first-child,
-  .tabla-lista td:first-child {
-    width: 40px;
-    font-size: 0.85rem;
-  }
-
-  .tabla-lista th:nth-child(2),
-  .tabla-lista td:nth-child(2) {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .tabla-lista th:nth-child(5),
-  .tabla-lista td:nth-child(5) {
-    max-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
 }
+
+
 
 @media (max-width: 600px) {
 
