@@ -99,8 +99,7 @@ h2 {
   padding: 14px;
   border-bottom: 1px solid #eee;
   text-align: left;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+
 
 }
 
@@ -346,7 +345,7 @@ h2 {
 
 .tabla-lista th:first-child,
 .tabla-lista td:first-child {
-  width: 60px;
+  width: 50px;
   text-align: center;
   color: #7a66b3;
   font-weight: 600;
@@ -366,6 +365,8 @@ h2 {
   .tabla-lista td {
     padding: 8px 10px;     /* antes 14px */
     font-size: 0.9rem;    /* un pelín más chica */
+    word-break: break-word;
+    overflow-wrap: anywhere;
 
   .buscador {
     max-width: 100%;
@@ -380,13 +381,13 @@ h2 {
 
   .tabla-lista th:first-child,
   .tabla-lista td:first-child {
-    width: 44px;
+    width: 40px;
     font-size: 0.85rem;
   }
 
   .tabla-lista th:nth-child(2),
   .tabla-lista td:nth-child(2) {
-    max-width: 200px;
+    max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
