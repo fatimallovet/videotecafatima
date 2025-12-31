@@ -14,6 +14,7 @@ fetch(URL_PELIS)
   .then(r => r.text())
   .then(txt => {
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
+    res.data.sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
     llenarTabla(res.data, "tablaPeliculas", "Película");
     hacerTablaOrdenable("tablaPeliculas");
     activarBusqueda(res.data, "tablaPeliculas", "busquedaPeliculas");
@@ -24,6 +25,7 @@ fetch(URL_SERIES)
   .then(r => r.text())
   .then(txt => {
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
+    res.data.sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
     llenarTabla(res.data, "tablaSeries", "Serie");
     hacerTablaOrdenable("tablaSeries");
     activarBusqueda(res.data, "tablaSeries", "busquedaSeries");
