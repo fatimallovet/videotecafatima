@@ -484,30 +484,30 @@ h2 {
   /* ANCHOS DE COLUMNAS –  MÓVIL */
 .tabla-lista th:nth-child(1),
 .tabla-lista td:nth-child(1) {
-  width: 8%;
+  width: 9%;
   text-align: center;
 }
 
 .tabla-lista th:nth-child(2),
 .tabla-lista td:nth-child(2) {
-  width: 33%;
+  width: 35%;
 }
 
 .tabla-lista th:nth-child(3),
 .tabla-lista td:nth-child(3) {
-  width: 12%;
+  width: 14%;
   text-align: center;
 }
 
 .tabla-lista th:nth-child(4),
 .tabla-lista td:nth-child(4) {
-  width: 13%;
+  width: 11%;
   text-align: center;
 }
 
 .tabla-lista th:nth-child(5),
 .tabla-lista td:nth-child(5) {
-  width: 34%;
+  width: 31%;
 }
 }
 
