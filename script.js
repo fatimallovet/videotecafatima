@@ -27,6 +27,15 @@ fetch(URL_SERIES)
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     res.data.sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
     llenarTabla(res.data, "tablaSeries", "Serie");
+    
+    function extraerAnio(valor) {
+      if (!valor) return null;
+
+      // Busca el primer número de 4 dígitos
+      const match = valor.toString().match(/\d{4}/);
+      return match ? Number(match[0]) : null;
+    }
+
     hacerTablaOrdenable("tablaSeries");
     activarBusqueda(res.data, "tablaSeries", "busquedaSeries");
   });
@@ -118,9 +127,18 @@ function hacerTablaOrdenable(tablaId) {
         let A = a.children[colIndex].innerText.trim();
         let B = b.children[colIndex].innerText.trim();
 
-        // Si es número, convertir
-        if (!isNaN(A) && A !== "") A = Number(A);
-        if (!isNaN(B) && B !== "") B = Number(B);
+        // 🧠 Caso especial: columna Año
+        if (headers[colIndex].innerText.includes("Año")) {
+          A = extraerAnio(A);
+          B = extraerAnio(B);
+        } else {
+          if (!isNaN(A) && A !== "") A = Number(A);
+          if (!isNaN(B) && B !== "") B = Number(B);
+        }
+
+        // Valores nulos siempre al final
+        if (A === null) return 1;
+        if (B === null) return -1;
 
         if (A < B) return asc ? -1 : 1;
         if (A > B) return asc ? 1 : -1;
