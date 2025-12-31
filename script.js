@@ -27,15 +27,6 @@ fetch(URL_SERIES)
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     res.data.sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
     llenarTabla(res.data, "tablaSeries", "Serie");
-    
-    function extraerAnio(valor) {
-      if (!valor) return null;
-
-      // Busca el primer número de 4 dígitos
-      const match = valor.toString().match(/\d{4}/);
-      return match ? Number(match[0]) : null;
-    }
-
     hacerTablaOrdenable("tablaSeries");
     activarBusqueda(res.data, "tablaSeries", "busquedaSeries");
   });
@@ -107,6 +98,15 @@ function cerrarModal() {
   document.getElementById("modal").style.display = "none";
 }
 
+
+/* EXTRAER AÑO PARA ORDENAR SERIES */
+    function extraerAnio(valor) {
+      if (!valor) return null;
+
+      // Busca el primer número de 4 dígitos
+      const match = valor.toString().match(/\d{4}/);
+      return match ? Number(match[0]) : null;
+    }
 
 
 /* ORDENAR TABLAS */
