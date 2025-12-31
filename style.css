@@ -129,7 +129,7 @@ h2 {
 .tabla-lista th:nth-child(3),
 .tabla-lista td:nth-child(3) {
   width: 14%;
-  text-align: center;
+  text-align: left;
 }
 
 .tabla-lista th:nth-child(4),
