@@ -429,7 +429,6 @@ h2 {
     white-space: normal;        /* 🔑 permite saltos */
     word-break: break-word;
     overflow-wrap: anywhere;
-  }
 
   .buscador {
     max-width: 100%;
@@ -439,7 +438,7 @@ h2 {
     max-width: 100%;
   }
 }
-
+}
 
 
 
