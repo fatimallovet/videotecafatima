@@ -82,7 +82,7 @@ body {
 }
 
 h2 {
-  color: #5c3f9f;
+  color: #556b5d;
   font-size: 2rem;
   margin-top: 10px;
 }
@@ -529,7 +529,7 @@ h2 {
 .logo {
   font-weight: 700;
   font-size: 1.2rem;
-  color: #5c3f9f;
+  color: #556b5d;
 }
 
 .menu {
@@ -547,7 +547,7 @@ h2 {
 }
 
 .menu button:hover {
-  color: #5c3f9f;
+  color: #556b5d;
 }
 
 .top-actions {
