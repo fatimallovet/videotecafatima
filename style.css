@@ -28,7 +28,7 @@ body {
 .tagline {
   font-size: 1.2rem;
   margin-bottom: 40px;
-  color: #7e6ca8;
+  color: #556b5d;
 }
 
 /* BOTONES EN TARJETAS */
@@ -68,7 +68,7 @@ body {
 .card-btn h3 {
   margin-top: 12px;
   font-size: 1.3rem;
-  color: #5c3f9f;
+  color: #556b5d;
 }
 
 /* TABLAS */
@@ -207,7 +207,7 @@ h2 {
   float: right;
   cursor: pointer;
   font-size: 1.2rem;
-  color: #6a4fbf;
+  color: #556b5d;
 }
 
 .tabs-nav {
@@ -220,7 +220,7 @@ h2 {
 
 .tabs-nav button {
   background: white;
-  color: #5c3f9f;
+  color: #556b5d;
   border: none;
   padding: 14px 22px;
   border-radius: 18px;
@@ -381,7 +381,7 @@ h2 {
   height: 44px;
   cursor: pointer;
   font-size: 1rem;
-  color: #6a4fbf;
+  color: #556b5d;
   box-shadow: 0 4px 10px rgba(120,84,197,0.15);
   transition: 0.2s ease;
 }
@@ -407,7 +407,7 @@ h2 {
 .tabla-lista td:first-child {
   width: 50px;
   text-align: center;
-  color: #7a66b3;
+  color: #556b5d;
   font-weight: 600;
 }
 
