@@ -2,8 +2,8 @@
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  background: #f5f5f7;
-  color: #1c1c1c;
+  background: #faf7ff;
+  color: #44325b;
 }
 
 /* HOME */
@@ -68,7 +68,7 @@ body {
 .card-btn h3 {
   margin-top: 12px;
   font-size: 1.3rem;
-  color: #e50914;
+  color: #5c3f9f;
 }
 
 /* TABLAS */
@@ -82,7 +82,7 @@ body {
 }
 
 h2 {
-  color: #111;
+  color: #5c3f9f;
   font-size: 2rem;
   margin-top: 10px;
 }
@@ -106,12 +106,12 @@ h2 {
 }
 
 .tabla-lista th {
-  background: #f0f0f0;
-  color: #e50914;
+  background: #eadcff;
+  color: #5c3f9f;
 }
 
 .tabla-lista tr:hover {
-  background: #f5f5f5;
+  background: #f7efff;
   cursor: pointer;
 }
 
@@ -221,7 +221,7 @@ h2 {
 
 .tabs-nav button {
   background: white;
-  color: #e50914;
+  color: #5c3f9f;
   border: none;
   padding: 14px 22px;
   border-radius: 18px;
@@ -529,7 +529,7 @@ h2 {
 .logo {
   font-weight: 700;
   font-size: 1.2rem;
-  color: #e50914;
+  color: #5c3f9f;
 }
 
 .menu {
@@ -547,7 +547,7 @@ h2 {
 }
 
 .menu button:hover {
-  color: #e50914;
+  color: #5c3f9f;
 }
 
 .top-actions {
@@ -585,7 +585,7 @@ h2 {
 }
 
 .main-btn {
-  background: #e50914;
+  background: #6a4fbf;
   color: white;
   border: none;
   padding: 16px 26px;
@@ -601,8 +601,8 @@ h2 {
 
 .secondary-btn {
   background: white;
-  border: 2px solid #e50914;
-  color: #e50914;
+  border: 2px solid #6a4fbf;
+  color: #6a4fbf;
   padding: 16px 26px;
   border-radius: 14px;
   font-size: 1rem;
