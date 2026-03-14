@@ -263,31 +263,12 @@ h2 {
 
 
 /* BOTÓN BMC ESTILO PERSONALIZADO */
-.bmc-btn {
-  background: #FFDD00 !important;
-  font-family: "Cookie", cursive !important;
-  color: #000 !important;
-  box-shadow: 0 10px 25px rgba(255, 221, 0, 0.35);
-}
+
 
 .bmc-btn h3 {
   font-family: "Cookie", cursive !important;
   font-size: 2rem; /* más estilo */
   color: #000 !important;
-}
-
-.bmc-btn:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 14px 32px rgba(255, 221, 0, 0.55);
-  background: #ffe95e !important;
-}
-
-.tabs-nav .bmc-btn {
-  background: #FFDD00 !important;
-  font-family: "Cookie", cursive !important;
-  color: #000 !important;
-  font-size: 1.5rem;
-  box-shadow: 0 8px 20px rgba(255,221,0,0.50);
 }
 
 
@@ -310,9 +291,6 @@ h2 {
   transform: translateY(-8px);
   box-shadow: 0 14px 32px rgba(55, 167, 173, 0.55);
 }
-
-
-
 
 
 .footer-link {
@@ -387,7 +365,7 @@ h2 {
 }
 
 .clear-btn:hover {
-  background: #e1ceff;
+  background: #cefffd;
   transform: scale(1.05);
 }
 
@@ -627,3 +605,21 @@ h2 {
 }
 
 
+.bib-btn,
+.support-btn {
+  background: #556b5d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.25s ease;
+}
+
+.bib-btn:hover,
+.support-btn:hover {
+  background: #44564a;
+  transform: translateY(-2px);
+}
