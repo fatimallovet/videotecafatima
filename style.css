@@ -607,19 +607,28 @@ h2 {
 
 .bib-btn,
 .support-btn {
-  background: #556b5d;
+  background: linear-gradient(135deg,#556b5d,#6f8777);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 12px;
+  padding: 10px 18px;
+  border-radius: 14px;
   font-size: 0.9rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: 0.25s ease;
+  font-weight: 600;
+  letter-spacing: .3px;
+  transition: all .25s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
 .bib-btn:hover,
 .support-btn:hover {
-  background: #44564a;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.20);
+  background: linear-gradient(135deg,#4b5e52,#61796a);
+}
+
+.bib-btn:active,
+.support-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
