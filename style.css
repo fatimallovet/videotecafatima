@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
-  background: #faf7ff;
+  background: linear-gradient(180deg, #faf7ff 0%, #f1e9ff 100%);
   color: #44325b;
 }
 
@@ -18,12 +18,12 @@ body {
 }
 
 .brand {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 2.2rem;
-  letter-spacing: 1px;
-
-  font-weight: 700;
+  font-size: 2.8rem;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+  color: #4b2e83;
 }
 
 .tagline {
@@ -88,22 +88,21 @@ h2 {
   margin-top: 10px;
 }
 
-.tabla-lista {
-  table-layout: fixed; /* 🔑 clave */
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgba(120,84,197,0.12);
+.tabla-lista th {
+  background: linear-gradient(180deg,#f3eaff,#e5d7ff);
+  color: #4b2e83;
+  font-weight: 700;
+  letter-spacing: .4px;
 }
 
 .tabla-lista th, .tabla-lista td {
-  padding: 14px;
-  border-bottom: 1px solid #eee;
+  padding: 14px 16px;
   text-align: left;
+}
 
-
+.tabla-lista tbody tr {
+  border-bottom: 1px solid #f0e9ff;
+  transition: background .2s ease, transform .15s ease;
 }
 
 .tabla-lista th {
@@ -111,8 +110,9 @@ h2 {
   color: #5c3f9f;
 }
 
-.tabla-lista tr:hover {
-  background: #f7efff;
+.tabla-lista tbody tr:hover {
+  background: #f3eaff;
+  transform: scale(1.01);
   cursor: pointer;
 }
 
@@ -125,7 +125,9 @@ h2 {
 
 .tabla-lista th:nth-child(2),
 .tabla-lista td:nth-child(2) {
-  width: 35%;
+  width: 40%;
+  font-weight: 600;
+  color: #3d2a66;
 }
 
 .tabla-lista th:nth-child(3),
@@ -411,6 +413,7 @@ h2 {
   text-align: center;
   color: #7a66b3;
   font-weight: 600;
+  opacity: .75;
 }
 
 
