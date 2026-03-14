@@ -18,18 +18,16 @@ body {
 }
 
 .brand {
-  margin-bottom: 8px;
-  font-size: 2.6rem;
-  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
   font-weight: 700;
-  color: #4b2f8f;
 }
 
 .tagline {
-  font-size: 1.05rem;
-  max-width: 520px;
-  margin: 0 auto 45px auto;
-  line-height: 1.6;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
   color: #7e6ca8;
 }
 
@@ -431,7 +429,6 @@ h2 {
     white-space: normal;        /* 🔑 permite saltos */
     word-break: break-word;
     overflow-wrap: anywhere;
-  }
 
   .buscador {
     max-width: 100%;
@@ -441,7 +438,7 @@ h2 {
     max-width: 100%;
   }
 }
-
+}
 
 
 
