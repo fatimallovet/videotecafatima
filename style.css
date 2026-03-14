@@ -106,13 +106,12 @@ h2 {
 }
 
 .tabla-lista th {
-  background: #eadcff;
-  color: #5c3f9f;
+  background: #ece8df;
+  color: #556b5d;
 }
 
 .tabla-lista tr:hover {
-  background: #f7efff;
-  cursor: pointer;
+  background: #f0ede6;
 }
 
 /* ANCHOS DE COLUMNAS – DESKTOP Y MÓVIL */
@@ -564,17 +563,17 @@ h2 {
 .hero-title {
   font-size: 3rem;
   line-height: 1.2;
-  color: #3a2b59;
+  color: #1f1f1f;
 }
 
 .hero-title span {
-  color: #6a4fbf;
+  color: #556b5d;
 }
 
 .hero-sub {
   margin-top: 20px;
   font-size: 1.1rem;
-  color: #6f6391;
+  color: #6b6b6b;
 }
 
 .hero-buttons {
@@ -585,7 +584,7 @@ h2 {
 }
 
 .main-btn {
-  background: #6a4fbf;
+  background: #556b5d;
   color: white;
   border: none;
   padding: 16px 26px;
@@ -601,8 +600,8 @@ h2 {
 
 .secondary-btn {
   background: white;
-  border: 2px solid #6a4fbf;
-  color: #6a4fbf;
+  border: 2px solid #556b5d;
+  color: #556b5d;
   padding: 16px 26px;
   border-radius: 14px;
   font-size: 1rem;
