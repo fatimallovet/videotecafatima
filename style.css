@@ -174,9 +174,45 @@ h2 {
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
 
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 1.6rem;
+  color: #4b2e83;
+  border-bottom: 2px solid #eee6ff;
+  padding-bottom: 8px;
+}
+
+.modal-content p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.modal-content strong {
+  color: #6a4fbf;
+  font-weight: 600;
+}
+
+.modal-resena {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f6f0ff;
+  border-radius: 10px;
+  font-style: italic;
+}
+
 .modal-content * {
   word-break: break-word;
   overflow-wrap: anywhere;
+}
+
+#modal-imdb {
+  text-decoration: none;
+  color: #5c3f9f;
+  font-weight: 600;
+}
+
+#modal-imdb:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 600px) {
