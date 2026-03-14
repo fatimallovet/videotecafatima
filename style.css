@@ -514,3 +514,117 @@ h2 {
 }
 
 
+.topbar {
+  position: sticky;
+  top: 0;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 100;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #5c3f9f;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu button {
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #555;
+  font-weight: 500;
+}
+
+.menu button:hover {
+  color: #5c3f9f;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hero {
+  max-width: 850px;
+  margin: 110px auto 60px auto;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  line-height: 1.2;
+  color: #3a2b59;
+}
+
+.hero-title span {
+  color: #6a4fbf;
+}
+
+.hero-sub {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #6f6391;
+}
+
+.hero-buttons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.main-btn {
+  background: #6a4fbf;
+  color: white;
+  border: none;
+  padding: 16px 26px;
+  border-radius: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(106,79,191,0.35);
+}
+
+.main-btn:hover {
+  transform: translateY(-3px);
+}
+
+.secondary-btn {
+  background: white;
+  border: 2px solid #6a4fbf;
+  color: #6a4fbf;
+  padding: 16px 26px;
+  border-radius: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+
+@media (max-width: 700px){
+
+  .topbar{
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-title{
+    font-size: 2rem;
+  }
+
+  .hero-buttons{
+    flex-direction: column;
+  }
+
+}
+
+
