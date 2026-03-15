@@ -297,7 +297,7 @@ h2 {
 
 
 .clear-btn {
-  background: #f0e9ff;
+  background: #2f3836;
   border: none;
   border-radius: 50%;
   width: 38px;
@@ -310,7 +310,7 @@ h2 {
 }
 
 .clear-btn:hover {
-  background: #cefffd;
+  background: #3f4f4c;
   transform: scale(1.05);
 }
 
