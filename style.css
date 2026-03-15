@@ -304,8 +304,8 @@ h2 {
   height: 44px;
   cursor: pointer;
   font-size: 1rem;
-  color: #556b5d;
-  box-shadow: 0 4px 10px rgba(120,84,197,0.15);
+  color: #364a46;
+  box-shadow: 0 4px 10px rgba(44, 73, 65, 0.15);
   transition: 0.2s ease;
 }
 
