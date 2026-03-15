@@ -110,6 +110,10 @@ h2 {
   color: #556b5d;
 }
 
+.tabla-lista tbody tr {
+  cursor: pointer;
+}
+
 .tabla-lista tr:hover {
   background: #f0ede6;
 }
