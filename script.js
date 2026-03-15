@@ -1,5 +1,5 @@
 /* script.js */
-function openTab(tabId, event) {
+function openTab(tabId) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('visible'));
   document.getElementById(tabId).classList.add('visible');
 }
