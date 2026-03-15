@@ -47,7 +47,7 @@ body {
   height: 200px;
   background: white;
   border-radius: 22px;
-  box-shadow: 0 10px 25px rgba(120, 84, 197, 0.18);
+  box-shadow: 0 10px 25px rgba(49, 83, 71, 0.18);
   transition: 0.25s ease;
   cursor: pointer;
   display: flex;
@@ -58,7 +58,7 @@ body {
 
 .card-btn:hover {
   transform: translateY(-8px);
-  box-shadow: 0 14px 32px rgba(120, 84, 197, 0.28);
+  box-shadow: 0 14px 32px rgba(40, 63, 61, 0.28);
 }
 
 .icon {
@@ -94,7 +94,7 @@ h2 {
   background: white;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(120,84,197,0.12);
+  box-shadow: 0 6px 15px rgba(37, 63, 55, 0.12);
 }
 
 .tabla-lista th, .tabla-lista td {
@@ -284,7 +284,7 @@ h2 {
   font-size: 1rem;
   border-radius: 16px;
   border: 1px solid #4d7169;
-  box-shadow: 0 4px 10px rgba(120,84,197,0.12);
+  box-shadow: 0 4px 10px rgba(47, 68, 57, 0.12);
 }
 
 .buscador-wrapper {
