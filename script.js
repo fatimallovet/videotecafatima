@@ -11,7 +11,10 @@ const URL_SERIES = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfZKKu9u0US
 
 /* CARGAR PELÍCULAS */
 fetch(URL_PELIS)
-  .then(r => r.text())
+  .then(r => {
+  if (!r.ok) throw new Error("Error cargando películas");
+  return r.text();
+})
   .then(txt => {
     const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
     res.data.sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
