@@ -80,13 +80,21 @@
 <!-- PELÍCULAS -->
 <section id="peliculas" class="tab">
   <h2>Películas</h2>
-  
- <div class="buscador-wrapper">
-  <input type="text" id="busquedaPeliculas" class="buscador" placeholder="Buscar en películas...">
-  <button class="clear-btn" title="Limpiar" aria-label="Limpiar búsqueda">✖</button>
-</div>
 
-  <div class="tabla-wrapper">
+  <div class="controles-wrapper">
+    <div class="buscador-wrapper">
+      <input type="text" id="busquedaPeliculas" class="buscador" placeholder="Buscar en películas...">
+      <button class="clear-btn" title="Limpiar" aria-label="Limpiar búsqueda">✖</button>
+    </div>
+    <div class="toggle-vista" id="togglePeliculas">
+      <button class="vista-btn activo" data-vista="cards" title="Vista tarjetas">⊞</button>
+      <button class="vista-btn" data-vista="tabla" title="Vista lista">☰</button>
+    </div>
+  </div>
+
+  <div id="cardsPeliculas" class="cards-grid"></div>
+
+  <div class="tabla-wrapper" id="tablawrapperPeliculas" style="display:none">
     <table id="tablaPeliculas" class="tabla-lista">
       <thead>
         <tr>
@@ -106,14 +114,20 @@
 <section id="series" class="tab">
   <h2>Series</h2>
 
-  
-  <div class="buscador-wrapper">
-  <input type="text" id="busquedaSeries" class="buscador" placeholder="Buscar en series...">
-  <button class="clear-btn" title="Limpiar">✖</button>
-</div>
+  <div class="controles-wrapper">
+    <div class="buscador-wrapper">
+      <input type="text" id="busquedaSeries" class="buscador" placeholder="Buscar en series...">
+      <button class="clear-btn" title="Limpiar">✖</button>
+    </div>
+    <div class="toggle-vista" id="toggleSeries">
+      <button class="vista-btn activo" data-vista="cards" title="Vista tarjetas">⊞</button>
+      <button class="vista-btn" data-vista="tabla" title="Vista lista">☰</button>
+    </div>
+  </div>
 
+  <div id="cardsSeries" class="cards-grid"></div>
 
-  <div class="tabla-wrapper">
+  <div class="tabla-wrapper" id="tablawrapperSeries" style="display:none">
     <table id="tablaSeries" class="tabla-lista">
       <thead>
         <tr>
