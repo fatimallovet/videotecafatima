@@ -163,7 +163,6 @@ function crearCard(item, tipo) {
       '<div class="pelicard-genero">' + genero + '</div>' +
       '<div class="pelicard-footer">' +
         '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
-        '<span class="pelicard-nota">' + calif + '</span>' +
         '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' +
           (enD ? "♥" : "♡") +
         '</button>' +
@@ -343,8 +342,21 @@ function actualizarFab() {
 
 /* Panel */
 function compartirItem(titulo) {
-  var texto = "Te recomiendo ver: " + titulo +
-              " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  /* Buscar el item completo en los datos para usar fichaTexto */
+  var encontrado = null;
+  dataPeliculas.concat(dataSeries).forEach(function(item) {
+    if ((item["Título"] || item["Titulo"] || "") === titulo) encontrado = item;
+  });
+
+  var texto;
+  if (encontrado) {
+    /* Necesitamos saber el Tipo; buscamos en cuál lista estaba */
+    var esPeli = dataPeliculas.some(function(i) { return (i["Título"]||i["Titulo"]||"") === titulo; });
+    texto = fichaTexto(Object.assign({}, encontrado, { Tipo: esPeli ? "Pelicula" : "Serie" }));
+  } else {
+    texto = "🎬 " + titulo + "\n— Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  }
+
   var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   if (esMobil && navigator.share) {
     navigator.share({ text: texto }).catch(function(){});
