@@ -219,75 +219,65 @@ document.addEventListener("keydown", function(e) {
 });
 
 /* ══════════════════════════════════════
-   POSTERS (TMDB)
-   ══════════════════════════════════════ */
-var posterCache = {};
-
-function obtenerPoster(titulo, anio, tipo) {
-  var clave = titulo + "_" + anio + "_" + tipo;
-  if (posterCache[clave] !== undefined) return Promise.resolve(posterCache[clave]);
-
-  var mediaType = tipo === "Serie" ? "tv" : "movie";
-  var q         = encodeURIComponent(titulo);
-  var yearStr   = anio ? (String(anio).match(/\d{4}/) || [""])[0] : "";
-  var yearParam = yearStr ? "&year=" + yearStr : "";
-  var url       = "https://api.themoviedb.org/3/search/" + mediaType +
-                  "?api_key=8265bd1679663a7ea12ac168da84d2e8&query=" + q + yearParam + "&language=es-ES";
-
-  return fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(json) {
-      var path   = json.results && json.results[0] && json.results[0].poster_path;
-      var imgUrl = path ? "https://image.tmdb.org/t/p/w342" + path : null;
-      posterCache[clave] = imgUrl;
-      return imgUrl;
-    })
-    .catch(function() {
-      posterCache[clave] = null;
-      return null;
-    });
-}
-
-/* ══════════════════════════════════════
    CARDS
    ══════════════════════════════════════ */
+/* Devuelve clase CSS de color según el primer género */
+function claseBanda(genero) {
+  if (!genero) return "banda-otros";
+  var g = genero.toLowerCase();
+  if (g.includes("drama"))                          return "banda-drama";
+  if (g.includes("comedia") || g.includes("comedy"))return "banda-comedia";
+  if (g.includes("thriller") || g.includes("suspen"))return "banda-thriller";
+  if (g.includes("terror") || g.includes("horror")) return "banda-terror";
+  if (g.includes("accion") || g.includes("acción") || g.includes("aventura")) return "banda-accion";
+  if (g.includes("romance") || g.includes("romántic"))return "banda-romance";
+  if (g.includes("ciencia") || g.includes("sci-fi") || g.includes("ficcion"))return "banda-ciencia";
+  if (g.includes("animacion") || g.includes("animación") || g.includes("anime"))return "banda-animacion";
+  if (g.includes("documental") || g.includes("document"))return "banda-doc";
+  if (g.includes("crimen") || g.includes("crime") || g.includes("policial"))return "banda-crimen";
+  if (g.includes("historia") || g.includes("period") || g.includes("biogr"))return "banda-historia";
+  return "banda-otros";
+}
+
+/* Convierte calificación numérica a estrellitas */
+function estrellas(calif) {
+  var n = parseFloat(calif);
+  if (isNaN(n)) return "";
+  var llenas  = Math.floor(n / 2);
+  var media   = (n % 2) >= 1 ? 1 : 0;
+  var vacias  = 5 - llenas - media;
+  return "★".repeat(llenas) + (media ? "½" : "") + "☆".repeat(vacias);
+}
+
 function crearCard(item, tipo) {
   var card = document.createElement("div");
   card.className = "pelicard";
 
-  var titulo = item["Título"] || item["Titulo"] || "";
-  var anio   = item["Año"]    || item["Anio"]   || "";
-  var genero = item["Género"] || item["Genero"] || "";
-  var calif  = item["Calificación"] || item["Calificacion"] || "";
-  var emoji  = tipo === "Serie" ? "📺" : "🎬";
-  var generoCorto = genero ? " · " + genero.split(",")[0] : "";
+  var titulo  = item["Título"]        || item["Titulo"]        || "";
+  var anio    = item["Año"]           || item["Anio"]          || "";
+  var genero  = item["Género"]        || item["Genero"]        || "";
+  var calif   = item["Calificación"]  || item["Calificacion"]  || "";
+  var tipoLabel = tipo === "Serie" ? "Serie" : "Película";
+  var anioCorto = String(anio).match(/\d{4}/);
+  anioCorto = anioCorto ? anioCorto[0] : anio;
 
   card.innerHTML =
-    '<div class="pelicard-poster-placeholder">' +
-      '<span style="font-size:2rem">' + emoji + '</span>' +
-      '<span class="placeholder-titulo">' + titulo + '</span>' +
-    '</div>' +
-    '<div class="pelicard-info">' +
+    '<div class="pelicard-banda ' + claseBanda(genero) + '"></div>' +
+    '<div class="pelicard-body">' +
+      '<div class="pelicard-header">' +
+        '<span class="pelicard-tipo">' + tipoLabel + '</span>' +
+        '<span class="pelicard-anio">' + anioCorto + '</span>' +
+      '</div>' +
       '<div class="pelicard-titulo">' + titulo + '</div>' +
-      '<div class="pelicard-meta">' + anio + generoCorto + '</div>' +
-      '<div class="pelicard-calificacion">★ ' + calif + '</div>' +
+      '<div class="pelicard-genero">' + genero + '</div>' +
+      '<div class="pelicard-footer">' +
+        '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
+        '<span class="pelicard-nota">' + calif + '</span>' +
+      '</div>' +
     '</div>';
 
   card.addEventListener("click", function() {
     mostrarModal(Object.assign({}, item, { Tipo: tipo }));
-  });
-
-  /* Póster en segundo plano */
-  obtenerPoster(titulo, anio, tipo).then(function(url) {
-    if (!url) return;
-    var placeholder = card.querySelector(".pelicard-poster-placeholder");
-    if (!placeholder) return;
-    var img     = document.createElement("img");
-    img.className = "pelicard-poster";
-    img.src     = url;
-    img.alt     = titulo;
-    img.loading = "lazy";
-    img.onload  = function() { placeholder.replaceWith(img); };
   });
 
   return card;
@@ -297,11 +287,9 @@ function llenarCards(data, gridId, tipo) {
   var grid = document.getElementById(gridId);
   if (!grid) return;
   grid.innerHTML = "";
-
   data.forEach(function(item) {
     if (Object.values(item).join("").trim() === "") return;
-    var card = crearCard(item, tipo);
-    grid.appendChild(card);
+    grid.appendChild(crearCard(item, tipo));
   });
 }
 
