@@ -136,9 +136,8 @@ function claseBanda(g) {
 
 function estrellas(calif) {
   var n = parseFloat(calif);
-  if (isNaN(n)) return "";
-  var ll = Math.floor(n/2), med = (n%2)>=1?1:0, vac = 5-ll-med;
-  return "★".repeat(ll) + (med?"½":"") + "☆".repeat(vac);
+  if (isNaN(n) || calif === "") return "";
+  return "⭐ " + n.toFixed(1).replace(".0","");
 }
 
 function crearCard(item, tipo) {
@@ -262,14 +261,7 @@ function compartirTitulo() {
   }
 }
 
-function copiarFallback(texto) {
-  var ta = document.createElement("textarea");
-  ta.value = texto; ta.style.cssText = "position:fixed;opacity:0";
-  document.body.appendChild(ta); ta.focus(); ta.select();
-  try { document.execCommand("copy"); mostrarToast("¡Copiado al portapapeles! 📋"); }
-  catch(e) { mostrarToast("No se pudo copiar 😕"); }
-  document.body.removeChild(ta);
-}
+function copiarFallback(texto) { _copiarFallback(texto); }
 
 function mostrarToast(msg) {
   var t = document.getElementById("toast-compartir");
@@ -350,6 +342,52 @@ function actualizarFab() {
 }
 
 /* Panel */
+function compartirItem(titulo) {
+  var texto = "Te recomiendo ver: " + titulo +
+              " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (esMobil && navigator.share) {
+    navigator.share({ text: texto }).catch(function(){});
+  } else {
+    _copiarAlPortapapeles(texto);
+  }
+}
+
+function compartirListaCompleta() {
+  if (_deseos.length === 0) return;
+  var lineas = _deseos.map(function(d, i) {
+    return (i+1) + ". " + d.titulo + (d.tipo ? " (" + d.tipo + ")" : "");
+  });
+  var texto = "🎬 Mi lista de deseos — Videoteca Fátima\n\n" +
+              lineas.join("\n") +
+              "\n\nhttps://fatimallovet.github.io/videotecafatima/";
+  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (esMobil && navigator.share) {
+    navigator.share({ text: texto }).catch(function(){});
+  } else {
+    _copiarAlPortapapeles(texto);
+  }
+}
+
+function _copiarAlPortapapeles(texto) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto)
+      .then(function()  { mostrarToast("¡Copiado al portapapeles! 📋"); })
+      .catch(function() { _copiarFallback(texto); });
+  } else {
+    _copiarFallback(texto);
+  }
+}
+
+function _copiarFallback(texto) {
+  var ta = document.createElement("textarea");
+  ta.value = texto; ta.style.cssText = "position:fixed;opacity:0";
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand("copy"); mostrarToast("¡Copiado al portapapeles! 📋"); }
+  catch(e) { mostrarToast("No se pudo copiar 😕"); }
+  document.body.removeChild(ta);
+}
+
 function renderPanelDeseos() {
   var lista = document.getElementById("deseos-lista");
   var cnt   = document.getElementById("deseos-count");
@@ -371,15 +409,21 @@ function renderPanelDeseos() {
         '<span class="deseo-meta">' + (item.tipo || "") +
           (item.genero ? " · " + item.genero.split(",")[0] : "") + '</span>' +
       '</div>' +
-      '<button class="deseo-quitar" title="Quitar">✖</button>';
+      '<div class="deseo-acciones">' +
+        '<button class="deseo-compartir-item" title="Compartir">↗</button>' +
+        '<button class="deseo-quitar" title="Quitar">✖</button>' +
+      '</div>';
 
     row.querySelector(".deseo-quitar").addEventListener("click", function() {
       _deseos = _deseos.filter(function(d) { return d.titulo !== item.titulo; });
       guardarDeseos();
       renderPanelDeseos();
       sincronizarCardDeseo(item.titulo);
-      /* Si el modal está abierto con este título, actualizar su botón */
       if (_tituloActual === item.titulo) actualizarBtnDeseoModal();
+    });
+
+    row.querySelector(".deseo-compartir-item").addEventListener("click", function() {
+      compartirItem(item.titulo);
     });
 
     lista.appendChild(row);

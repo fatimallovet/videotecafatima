@@ -911,10 +911,13 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 20px;
+  padding: 0 20px;
+  height: 42px;           /* altura fija igual para ambos */
+  box-sizing: border-box;
   border-radius: 12px;
   font-size: 0.88rem;
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
   transition: 0.2s ease;
   font-family: "Poppins", sans-serif;
@@ -1121,3 +1124,66 @@ h2 {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── ESTRELLAS → calificación numérica ── */
+.pelicard-estrellas {
+  font-size: 0.82rem;
+  color: #d4aa50;
+}
+
+/* ── ACCIONES por ítem en lista de deseos ── */
+.deseo-acciones {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.deseo-compartir-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9aab9e;
+  font-size: 0.95rem;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.deseo-compartir-item:hover {
+  color: #556b5d;
+  background: #f0ede6;
+}
+
+/* ── Footer del panel: compartir lista + vaciar ── */
+.deseos-footer {
+  display: flex;
+  border-top: 1px solid #edeae3;
+}
+
+.deseos-compartir-lista-btn,
+.deseos-vaciar-btn {
+  flex: 1;
+  padding: 14px 10px;
+  background: #f9f6f1;
+  border: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 0;
+  width: auto;
+}
+
+.deseos-compartir-lista-btn {
+  color: #556b5d;
+  border-right: 1px solid #edeae3;
+  font-weight: 600;
+}
+.deseos-compartir-lista-btn:hover { background: #eaf0ec; }
+
+.deseos-vaciar-btn {
+  color: #888;
+  border-top: none;  /* ya viene del footer */
+}
+.deseos-vaciar-btn:hover { background: #f0ede6; color: #b05070; }
