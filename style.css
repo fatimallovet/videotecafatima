@@ -901,6 +901,7 @@ h2 {
    ══════════════════════════════════════ */
 .modal-acciones {
   display: flex;
+  align-items: center;
   gap: 10px;
   margin-top: 20px;
   flex-wrap: wrap;
