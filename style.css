@@ -842,3 +842,280 @@ h2 {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ══════════════════════════════════════
+   CONTROLES: buscador corto + select
+   ══════════════════════════════════════ */
+.controles-wrapper {
+  max-width: 900px;
+  margin: 0 auto 16px auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.controles-wrapper .buscador-wrapper {
+  flex: 0 1 340px;   /* buscador más corto, no crece infinito */
+  margin: 0;
+  max-width: none;
+}
+
+.orden-select {
+  flex-shrink: 0;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid #4d7169;
+  background: white;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.88rem;
+  color: #364a46;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(47,68,57,0.10);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23556b5d' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
+
+.orden-select:focus { outline: none; border-color: #556b5d; }
+
+@media (max-width: 600px) {
+  .controles-wrapper {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .controles-wrapper .buscador-wrapper {
+    flex: 1 1 180px;
+  }
+  .orden-select {
+    flex: 1 1 auto;
+    font-size: 0.82rem;
+  }
+}
+
+/* ══════════════════════════════════════
+   ACCIONES DEL MODAL (compartir + guardar)
+   ══════════════════════════════════════ */
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.modal-compartir-btn,
+.modal-deseos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.modal-compartir-btn {
+  background: #556b5d;
+  color: white;
+}
+.modal-compartir-btn:hover { background: #445a4e; transform: translateY(-2px); }
+
+.modal-deseos-btn {
+  background: #f0ede6;
+  color: #556b5d;
+  border: 1.5px solid #c8c0b0;
+}
+.modal-deseos-btn:hover { background: #e6e2d9; transform: translateY(-2px); }
+.modal-deseos-btn.activo {
+  background: #ffe8ef;
+  color: #b05070;
+  border-color: #e8b0c0;
+}
+
+/* ══════════════════════════════════════
+   BOTÓN ♡ EN CARD
+   ══════════════════════════════════════ */
+.card-deseo-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #c8c0b0;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+.card-deseo-btn:hover  { color: #b05070; transform: scale(1.2); }
+.card-deseo-btn.activo { color: #b05070; }
+
+/* ══════════════════════════════════════
+   FAB LISTA DE DESEOS
+   ══════════════════════════════════════ */
+.fab-deseos {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 500;
+  background: #556b5d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 13px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(37,63,55,0.30);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: 0.2s ease;
+}
+.fab-deseos:hover { background: #445a4e; transform: translateY(-3px); }
+
+@media (max-width: 600px) {
+  .fab-deseos { bottom: 18px; right: 16px; padding: 11px 16px; font-size: 0.9rem; }
+}
+
+/* ══════════════════════════════════════
+   PANEL LISTA DE DESEOS
+   ══════════════════════════════════════ */
+.panel-deseos {
+  position: fixed;
+  top: 0; right: -100%;
+  width: 340px;
+  max-width: 92vw;
+  height: 100%;
+  background: white;
+  z-index: 800;
+  box-shadow: -6px 0 30px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+}
+.panel-deseos.abierto { right: 0; }
+
+.panel-deseos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #edeae3;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f1f1f;
+}
+
+.deseos-count {
+  background: #556b5d;
+  color: white;
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.panel-close-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #777;
+}
+
+.deseos-lista {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+}
+
+.deseo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0ede6;
+  gap: 10px;
+}
+
+.deseo-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+.deseo-titulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1f1f1f;
+  line-height: 1.3;
+}
+.deseo-meta {
+  font-size: 0.74rem;
+  color: #8a9490;
+}
+
+.deseo-quitar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b0b8b3;
+  font-size: 0.85rem;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.deseo-quitar:hover { color: #b05070; }
+
+.deseos-vacia {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.88rem;
+  margin-top: 40px;
+  line-height: 1.7;
+}
+
+.deseos-vaciar-btn {
+  margin: 0;
+  padding: 14px;
+  background: #f9f6f1;
+  border: none;
+  border-top: 1px solid #edeae3;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.deseos-vaciar-btn:hover { background: #f0ede6; color: #b05070; }
+
+/* ══════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════ */
+.toast-compartir {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1f1f1f;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-family: "Poppins", sans-serif;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast-compartir.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

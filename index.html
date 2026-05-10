@@ -83,31 +83,17 @@
 
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
-      <input type="text" id="busquedaPeliculas" class="buscador" placeholder="Buscar en películas...">
+      <input type="text" id="busquedaPeliculas" class="buscador" placeholder="Buscar...">
       <button class="clear-btn" title="Limpiar" aria-label="Limpiar búsqueda">✖</button>
     </div>
-    <div class="toggle-vista" id="togglePeliculas">
-      <button class="vista-btn activo" data-vista="cards" title="Vista tarjetas">⊞</button>
-      <button class="vista-btn" data-vista="tabla" title="Vista lista">☰</button>
-    </div>
+    <select id="ordenPeliculas" class="orden-select">
+      <option value="recientes">Más recientes</option>
+      <option value="calificacion">Calificación ↓</option>
+      <option value="anio">Año ↓</option>
+    </select>
   </div>
 
   <div id="cardsPeliculas" class="cards-grid"></div>
-
-  <div class="tabla-wrapper" id="tablawrapperPeliculas" style="display:none">
-    <table id="tablaPeliculas" class="tabla-lista">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Título</th>
-          <th>Año</th>
-          <th>Calif.</th>
-          <th>Género</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 </section>
 
 <!-- SERIES -->
@@ -116,31 +102,17 @@
 
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
-      <input type="text" id="busquedaSeries" class="buscador" placeholder="Buscar en series...">
+      <input type="text" id="busquedaSeries" class="buscador" placeholder="Buscar...">
       <button class="clear-btn" title="Limpiar">✖</button>
     </div>
-    <div class="toggle-vista" id="toggleSeries">
-      <button class="vista-btn activo" data-vista="cards" title="Vista tarjetas">⊞</button>
-      <button class="vista-btn" data-vista="tabla" title="Vista lista">☰</button>
-    </div>
+    <select id="ordenSeries" class="orden-select">
+      <option value="recientes">Más recientes</option>
+      <option value="calificacion">Calificación ↓</option>
+      <option value="anio">Año ↓</option>
+    </select>
   </div>
 
   <div id="cardsSeries" class="cards-grid"></div>
-
-  <div class="tabla-wrapper" id="tablawrapperSeries" style="display:none">
-    <table id="tablaSeries" class="tabla-lista">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Título</th>
-          <th>Año</th>
-          <th>Calif.</th>
-          <th>Género</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 </section>
 
 
@@ -208,15 +180,34 @@
         <a id="modal-imdb" href="" target="_blank">Ver ficha</a>
       </p>
 
-      <button class="modal-compartir-btn" onclick="compartirTitulo()">
-        🔗 Compartir
-      </button>
+      <div class="modal-acciones">
+        <button class="modal-compartir-btn" onclick="compartirTitulo()">🔗 Compartir</button>
+        <button class="modal-deseos-btn" id="modal-deseos-btn" onclick="toggleDeseo()">♡ Guardar</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
 <div id="toast-compartir" class="toast-compartir">¡Enlace copiado!</div>
+
+<!-- PANEL LISTA DE DESEOS -->
+<div id="panel-deseos" class="panel-deseos">
+  <div class="panel-deseos-header">
+    <span>🎬 Mi lista de deseos</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="deseos-count" class="deseos-count">0</span>
+      <button onclick="cerrarPanelDeseos()" class="panel-close-btn">✖</button>
+    </div>
+  </div>
+  <div id="deseos-lista" class="deseos-lista"></div>
+  <button class="deseos-vaciar-btn" onclick="vaciarDeseos()">🗑 Vaciar lista</button>
+</div>
+
+<!-- FAB lista de deseos -->
+<button class="fab-deseos" id="fab-deseos" onclick="abrirPanelDeseos()" title="Mi lista de deseos" style="display:none">
+  ♡ <span id="fab-count">0</span>
+</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="script.js"></script>

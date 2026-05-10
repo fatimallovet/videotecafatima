@@ -1,4 +1,4 @@
-/* script.js */
+/* script.js — Videoteca Fátima */
 
 /* ── NAVEGACIÓN ── */
 function openTab(tabId) {
@@ -10,199 +10,95 @@ function openTab(tabId) {
 const URL_PELIS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfZKKu9u0USHXUnyUHQXSxf4uRXK--I5t_5JEE4pjUhe23SWVEZfg1u1R33zazOyh2GIDb9koa8hga/pub?gid=0&single=true&output=csv";
 const URL_SERIES = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfZKKu9u0USHXUnyUHQXSxf4uRXK--I5t_5JEE4pjUhe23SWVEZfg1u1R33zazOyh2GIDb9koa8hga/pub?gid=2141924116&single=true&output=csv";
 
-/* ── DATOS EN MEMORIA ── */
-let dataPeliculas = [];
-let dataSeries    = [];
+/* ── DATOS ── */
+var dataPeliculas = [];
+var dataSeries    = [];
+
+/* ── ESTADO MODAL ── */
+var _itemActual   = {};
+var _tituloActual = "";
 
 /* ══════════════════════════════════════
-   CARGA DE DATOS
+   CARGA DE DATOS — un fetch por sección
    ══════════════════════════════════════ */
 fetch(URL_PELIS)
-  .then(r => { if (!r.ok) throw new Error("Error cargando peliculas"); return r.text(); })
-  .then(txt => {
-    const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
-    dataPeliculas = res.data
-      .filter(item => Object.values(item).join("").trim() !== "")
-      .sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
-
-    llenarTabla(dataPeliculas, "tablaPeliculas", "Pelicula");
-    hacerTablaOrdenable("tablaPeliculas");
-    llenarCards(dataPeliculas, "cardsPeliculas", "Pelicula");
-    iniciarToggle("togglePeliculas", "cardsPeliculas", "tablawrapperPeliculas");
-    activarBusqueda(dataPeliculas, "tablaPeliculas", "busquedaPeliculas", "cardsPeliculas", "Pelicula");
+  .then(function(r) { if (!r.ok) throw new Error("Error"); return r.text(); })
+  .then(function(txt) {
+    var res = Papa.parse(txt, { header: true, skipEmptyLines: true });
+    dataPeliculas = res.data.filter(function(i) { return Object.values(i).join("").trim() !== ""; });
+    renderizar("Pelicula");
+    activarBusqueda("busquedaPeliculas", "Pelicula");
+    activarOrden("ordenPeliculas", "Pelicula");
   });
 
 fetch(URL_SERIES)
-  .then(r => r.text())
-  .then(txt => {
-    const res = Papa.parse(txt, { header: true, skipEmptyLines: true });
-    dataSeries = res.data
-      .filter(item => Object.values(item).join("").trim() !== "")
-      .sort((a, b) => Number(b["No."] || b["No"]) - Number(a["No."] || a["No"]));
-
-    llenarTabla(dataSeries, "tablaSeries", "Serie");
-    hacerTablaOrdenable("tablaSeries");
-    llenarCards(dataSeries, "cardsSeries", "Serie");
-    iniciarToggle("toggleSeries", "cardsSeries", "tablawrapperSeries");
-    activarBusqueda(dataSeries, "tablaSeries", "busquedaSeries", "cardsSeries", "Serie");
+  .then(function(r) { return r.text(); })
+  .then(function(txt) {
+    var res = Papa.parse(txt, { header: true, skipEmptyLines: true });
+    dataSeries = res.data.filter(function(i) { return Object.values(i).join("").trim() !== ""; });
+    renderizar("Serie");
+    activarBusqueda("busquedaSeries", "Serie");
+    activarOrden("ordenSeries", "Serie");
   });
 
 /* ══════════════════════════════════════
-   LLENAR TABLA
+   ORDENAR + FILTRAR → RENDERIZAR
    ══════════════════════════════════════ */
-function llenarTabla(data, tablaId, tipo) {
-  const tbody = document.querySelector("#" + tablaId + " tbody");
-  tbody.innerHTML = "";
+function getNum(item, key) {
+  var v = item[key] || item[key.replace(/[óÓ]/g,"o").replace(/[éÉ]/g,"e")] || "";
+  return parseFloat(v) || 0;
+}
+function getAnio(item) {
+  var v = item["Año"] || item["Anio"] || "";
+  var m = String(v).match(/\d{4}/);
+  return m ? Number(m[0]) : 0;
+}
+function getNo(item) { return Number(item["No."] || item["No"] || 0); }
 
-  data.forEach(item => {
-    const valores = Object.values(item).join("").trim();
-    if (valores === "") return;
+function ordenarData(data, criterio) {
+  var c = data.slice();
+  if (criterio === "recientes")    c.sort(function(a,b){ return getNo(b) - getNo(a); });
+  if (criterio === "calificacion") c.sort(function(a,b){ return getNum(b,"Calificación") - getNum(a,"Calificación"); });
+  if (criterio === "anio")         c.sort(function(a,b){ return getAnio(b) - getAnio(a); });
+  return c;
+}
 
-    const row = document.createElement("tr");
-    row.innerHTML =
-      "<td>" + (item["No."] || item["No"] || "") + "</td>" +
-      "<td>" + (item["Titulo"] || item["\u00CDtulo"] || item["T\u00EDtulo"] || "") + "</td>" +
-      "<td>" + (item["Año"] || item["A\u00F1o"] || "") + "</td>" +
-      "<td>" + (item["Calificacion"] || item["Calificaci\u00F3n"] || "") + "</td>" +
-      "<td>" + (item["Genero"] || item["G\u00E9nero"] || "") + "</td>";
-    row.addEventListener("click", () => mostrarModal(Object.assign({}, item, { Tipo: tipo })));
-    tbody.appendChild(row);
+function renderizar(tipo) {
+  var esPeli  = tipo === "Pelicula";
+  var data    = esPeli ? dataPeliculas : dataSeries;
+  var gridId  = esPeli ? "cardsPeliculas" : "cardsSeries";
+  var inputId = esPeli ? "busquedaPeliculas" : "busquedaSeries";
+  var ordenId = esPeli ? "ordenPeliculas" : "ordenSeries";
+
+  var texto    = (document.getElementById(inputId) || {value:""}).value.toLowerCase();
+  var criterio = (document.getElementById(ordenId)  || {value:"recientes"}).value;
+
+  var filtrados = data.filter(function(item) {
+    var campos = [
+      item["Título"] || item["Titulo"],
+      item["Género"] || item["Genero"],
+      item["Tono"], item["Ritmo"], item["Etiquetas"],
+      item["Reseña"] || item["Resena"]
+    ];
+    return campos.some(function(c) { return (c||"").toString().toLowerCase().includes(texto); });
   });
+
+  llenarCards(ordenarData(filtrados, criterio), gridId, tipo);
 }
 
-/* ══════════════════════════════════════
-   MODAL
-   ══════════════════════════════════════ */
-var _tituloActual = "";
-
-function mostrarModal(d) {
-  var titulo     = d["Título"] || d["Titulo"] || "";
-  var calif      = d["Calificación"] || d["Calificacion"] || "";
-  var origen     = d["Origen"] || "";
-  var anio       = d["Año"] || d["Anio"] || "";
-  var genero     = d["Género"] || d["Genero"] || "";
-  var tono       = d["Tono"] || "";
-  var ritmo      = d["Ritmo"] || "";
-  var publico    = d["Público"] || d["Publico"] || "";
-  var etiquetas  = d["Etiquetas"] || "";
-  var flags      = d["Flags"] || "";
-  var resena     = d["Reseña"] || d["Resena"] || "";
-
-  _tituloActual = titulo;
-  document.getElementById("modal-titulo").textContent       = titulo;
-  document.getElementById("modal-calificacion").textContent = calif;
-  document.getElementById("modal-origen").textContent       = origen;
-  document.getElementById("modal-anio").textContent         = anio;
-
-  document.getElementById("modal-label-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula" ? "Minutos: " : "Capítulos: ";
-  document.getElementById("modal-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula"
-      ? (d["Minutos"] || "")
-      : (d["Capítulos"] || d["Capitulos"] || "");
-
-  document.getElementById("modal-genero").textContent    = genero;
-  document.getElementById("modal-tono").textContent      = tono;
-  document.getElementById("modal-ritmo").textContent     = ritmo;
-  document.getElementById("modal-publico").textContent   = publico;
-  document.getElementById("modal-etiquetas").textContent = etiquetas;
-  document.getElementById("modal-flags").textContent     = flags;
-  document.getElementById("modal-resena").textContent    = resena;
-
-  var imdb = document.getElementById("modal-imdb");
-  if (d["IMDB"]) {
-    imdb.href = d["IMDB"];
-    imdb.style.display = "inline";
-  } else {
-    imdb.href = "#";
-    imdb.style.display = "none";
-  }
-
-  document.getElementById("modal").style.display = "flex";
+function activarBusqueda(inputId, tipo) {
+  var el = document.getElementById(inputId);
+  if (el) el.addEventListener("input", function() { renderizar(tipo); });
+}
+function activarOrden(selectId, tipo) {
+  var el = document.getElementById(selectId);
+  if (el) el.addEventListener("change", function() { renderizar(tipo); });
 }
 
-function cerrarModal() {
-  document.getElementById("modal").style.display = "none";
-}
-
-/* ══════════════════════════════════════
-   ORDENAR TABLAS
-   ══════════════════════════════════════ */
-function extraerAnio(valor) {
-  if (!valor) return null;
-  var match = valor.toString().match(/\d{4}/);
-  return match ? Number(match[0]) : null;
-}
-
-function hacerTablaOrdenable(tablaId) {
-  var tabla   = document.getElementById(tablaId);
-  var headers = tabla.querySelectorAll("th");
-  var tbody   = tabla.querySelector("tbody");
-
-  headers.forEach(function(th, colIndex) {
-    th.style.cursor = "pointer";
-    var asc = true;
-
-    th.addEventListener("click", function() {
-      var rows = Array.from(tbody.querySelectorAll("tr"));
-
-      rows.sort(function(a, b) {
-        var A = a.children[colIndex].innerText.trim();
-        var B = b.children[colIndex].innerText.trim();
-
-        if (headers[colIndex].innerText.includes("Año")) {
-          A = extraerAnio(A);
-          B = extraerAnio(B);
-        } else {
-          if (!isNaN(A) && A !== "") A = Number(A);
-          if (!isNaN(B) && B !== "") B = Number(B);
-        }
-
-        if (A === null) return 1;
-        if (B === null) return -1;
-        if (A < B) return asc ? -1 : 1;
-        if (A > B) return asc ? 1 : -1;
-        return 0;
-      });
-
-      asc = !asc;
-      rows.forEach(function(r) { tbody.appendChild(r); });
-    });
-  });
-}
-
-/* ══════════════════════════════════════
-   BUSQUEDA (tabla + cards)
-   ══════════════════════════════════════ */
-function activarBusqueda(data, tablaId, inputId, gridId, tipo) {
-  var input = document.getElementById(inputId);
-  input.addEventListener("input", function() {
-    var texto = input.value.toLowerCase();
-
-    var filtrados = data.filter(function(item) {
-      var campos = [
-        item["Título"] || item["Titulo"],
-        item["Género"] || item["Genero"],
-        item["Tono"],
-        item["Ritmo"],
-        item["Etiquetas"],
-        item["Reseña"] || item["Resena"]
-      ];
-      return campos.some(function(c) {
-        return (c || "").toString().toLowerCase().includes(texto);
-      });
-    });
-
-    llenarTabla(filtrados, tablaId, tipo);
-    hacerTablaOrdenable(tablaId);
-    llenarCards(filtrados, gridId, tipo);
-  });
-}
-
+/* Limpiar */
 document.querySelectorAll(".clear-btn").forEach(function(btn) {
   btn.addEventListener("click", function() {
-    var wrapper = btn.closest(".buscador-wrapper");
-    var input   = wrapper.querySelector(".buscador");
+    var input = btn.closest(".buscador-wrapper").querySelector(".buscador");
     input.value = "";
     input.dispatchEvent(new Event("input"));
     input.focus();
@@ -211,12 +107,9 @@ document.querySelectorAll(".clear-btn").forEach(function(btn) {
 
 document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") {
-    document.querySelectorAll(".buscador").forEach(function(input) {
-      if (input.value !== "") {
-        input.value = "";
-        input.dispatchEvent(new Event("input"));
-        input.blur();
-      }
+    cerrarModal();
+    document.querySelectorAll(".buscador").forEach(function(i) {
+      if (i.value !== "") { i.value = ""; i.dispatchEvent(new Event("input")); }
     });
   }
 });
@@ -224,51 +117,47 @@ document.addEventListener("keydown", function(e) {
 /* ══════════════════════════════════════
    CARDS
    ══════════════════════════════════════ */
-/* Devuelve clase CSS de color según el primer género */
-function claseBanda(genero) {
-  if (!genero) return "banda-otros";
-  var g = genero.toLowerCase();
-  if (g.includes("drama"))                          return "banda-drama";
-  if (g.includes("comedia") || g.includes("comedy"))return "banda-comedia";
-  if (g.includes("thriller") || g.includes("suspen"))return "banda-thriller";
-  if (g.includes("terror") || g.includes("horror")) return "banda-terror";
-  if (g.includes("accion") || g.includes("acción") || g.includes("aventura")) return "banda-accion";
-  if (g.includes("romance") || g.includes("romántic"))return "banda-romance";
-  if (g.includes("ciencia") || g.includes("sci-fi") || g.includes("ficcion"))return "banda-ciencia";
-  if (g.includes("animacion") || g.includes("animación") || g.includes("anime"))return "banda-animacion";
-  if (g.includes("documental") || g.includes("document"))return "banda-doc";
-  if (g.includes("crimen") || g.includes("crime") || g.includes("policial"))return "banda-crimen";
-  if (g.includes("historia") || g.includes("period") || g.includes("biogr"))return "banda-historia";
+function claseBanda(g) {
+  if (!g) return "banda-otros";
+  g = g.toLowerCase();
+  if (g.includes("drama"))                                            return "banda-drama";
+  if (g.includes("comedia") || g.includes("comedy"))                 return "banda-comedia";
+  if (g.includes("thriller") || g.includes("suspen"))                return "banda-thriller";
+  if (g.includes("terror")  || g.includes("horror"))                 return "banda-terror";
+  if (g.includes("accion")  || g.includes("acción") || g.includes("aventura")) return "banda-accion";
+  if (g.includes("romance") || g.includes("romántic"))               return "banda-romance";
+  if (g.includes("ciencia") || g.includes("sci-fi")  || g.includes("ficcion")) return "banda-ciencia";
+  if (g.includes("animacion") || g.includes("animación") || g.includes("anime")) return "banda-animacion";
+  if (g.includes("documental"))                                       return "banda-doc";
+  if (g.includes("crimen")  || g.includes("crime")   || g.includes("policial")) return "banda-crimen";
+  if (g.includes("historia")|| g.includes("period")  || g.includes("biogr"))    return "banda-historia";
   return "banda-otros";
 }
 
-/* Convierte calificación numérica a estrellitas */
 function estrellas(calif) {
   var n = parseFloat(calif);
   if (isNaN(n)) return "";
-  var llenas  = Math.floor(n / 2);
-  var media   = (n % 2) >= 1 ? 1 : 0;
-  var vacias  = 5 - llenas - media;
-  return "★".repeat(llenas) + (media ? "½" : "") + "☆".repeat(vacias);
+  var ll = Math.floor(n/2), med = (n%2)>=1?1:0, vac = 5-ll-med;
+  return "★".repeat(ll) + (med?"½":"") + "☆".repeat(vac);
 }
 
 function crearCard(item, tipo) {
   var card = document.createElement("div");
   card.className = "pelicard";
 
-  var titulo  = item["Título"]        || item["Titulo"]        || "";
-  var anio    = item["Año"]           || item["Anio"]          || "";
-  var genero  = item["Género"]        || item["Genero"]        || "";
-  var calif   = item["Calificación"]  || item["Calificacion"]  || "";
-  var tipoLabel = tipo === "Serie" ? "Serie" : "Película";
-  var anioCorto = String(anio).match(/\d{4}/);
-  anioCorto = anioCorto ? anioCorto[0] : anio;
+  var titulo    = item["Título"]       || item["Titulo"]       || "";
+  var anio      = item["Año"]          || item["Anio"]         || "";
+  var genero    = item["Género"]       || item["Genero"]       || "";
+  var calif     = item["Calificación"] || item["Calificacion"] || "";
+  var label     = tipo === "Serie" ? "Serie" : "Película";
+  var anioCorto = (String(anio).match(/\d{4}/) || [""])[0];
+  var enD       = estaEnDeseos(titulo);
 
   card.innerHTML =
     '<div class="pelicard-banda ' + claseBanda(genero) + '"></div>' +
     '<div class="pelicard-body">' +
       '<div class="pelicard-header">' +
-        '<span class="pelicard-tipo">' + tipoLabel + '</span>' +
+        '<span class="pelicard-tipo">' + label + '</span>' +
         '<span class="pelicard-anio">' + anioCorto + '</span>' +
       '</div>' +
       '<div class="pelicard-titulo">' + titulo + '</div>' +
@@ -276,8 +165,21 @@ function crearCard(item, tipo) {
       '<div class="pelicard-footer">' +
         '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
         '<span class="pelicard-nota">' + calif + '</span>' +
+        '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' +
+          (enD ? "♥" : "♡") +
+        '</button>' +
       '</div>' +
     '</div>';
+
+  /* Botón ♡ en la card — no abre modal */
+  card.querySelector(".card-deseo-btn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    var obj = { titulo: titulo, tipo: label, genero: genero, calif: calif };
+    toggleDeseoItem(obj);
+    var ahora = estaEnDeseos(titulo);
+    this.textContent = ahora ? "♥" : "♡";
+    this.classList.toggle("activo", ahora);
+  });
 
   card.addEventListener("click", function() {
     mostrarModal(Object.assign({}, item, { Tipo: tipo }));
@@ -297,86 +199,210 @@ function llenarCards(data, gridId, tipo) {
 }
 
 /* ══════════════════════════════════════
-   TOGGLE VISTA
+   MODAL
    ══════════════════════════════════════ */
-function iniciarToggle(toggleId, gridId, tablaWrapperId) {
-  var toggle = document.getElementById(toggleId);
-  if (!toggle) return;
+function mostrarModal(d) {
+  _itemActual   = d;
+  _tituloActual = d["Título"] || d["Titulo"] || "";
 
-  toggle.querySelectorAll(".vista-btn").forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      toggle.querySelectorAll(".vista-btn").forEach(function(b) {
-        b.classList.remove("activo");
-      });
-      btn.classList.add("activo");
+  document.getElementById("modal-titulo").textContent       = _tituloActual;
+  document.getElementById("modal-calificacion").textContent = d["Calificación"] || d["Calificacion"] || "";
+  document.getElementById("modal-origen").textContent       = d["Origen"] || "";
+  document.getElementById("modal-anio").textContent         = d["Año"] || d["Anio"] || "";
 
-      var grid         = document.getElementById(gridId);
-      var tablaWrapper = document.getElementById(tablaWrapperId);
+  document.getElementById("modal-label-minutos-o-caps").textContent =
+    d["Tipo"] === "Pelicula" ? "Minutos: " : "Capítulos: ";
+  document.getElementById("modal-minutos-o-caps").textContent =
+    d["Tipo"] === "Pelicula" ? (d["Minutos"] || "") : (d["Capítulos"] || d["Capitulos"] || "");
 
-      if (btn.dataset.vista === "cards") {
-        grid.style.display         = "grid";
-        tablaWrapper.style.display = "none";
-      } else {
-        grid.style.display         = "none";
-        tablaWrapper.style.display = "block";
-      }
-    });
-  });
+  document.getElementById("modal-genero").textContent    = d["Género"]    || d["Genero"]    || "";
+  document.getElementById("modal-tono").textContent      = d["Tono"]      || "";
+  document.getElementById("modal-ritmo").textContent     = d["Ritmo"]     || "";
+  document.getElementById("modal-publico").textContent   = d["Público"]   || d["Publico"]   || "";
+  document.getElementById("modal-etiquetas").textContent = d["Etiquetas"] || "";
+  document.getElementById("modal-flags").textContent     = d["Flags"]     || "";
+  document.getElementById("modal-resena").textContent    = d["Reseña"]    || d["Resena"]    || "";
+
+  var imdb = document.getElementById("modal-imdb");
+  if (d["IMDB"]) { imdb.href = d["IMDB"]; imdb.style.display = "inline"; }
+  else           { imdb.href = "#";        imdb.style.display = "none";   }
+
+  /* Botón deseos en modal */
+  actualizarBtnDeseoModal();
+  document.getElementById("modal").style.display = "flex";
 }
 
-
-/* ══════════════════════════════════════
-   COMPARTIR
-   ══════════════════════════════════════ */
-function compartirTitulo() {
-  var texto = "Te recomiendo ver: " + _tituloActual + " — Videoteca Fátima https://fatimallovet.github.io/videotecafatima/";
-
-  if (navigator.share) {
-    navigator.share({ text: texto }).catch(function() {});
-  } else {
-    navigator.clipboard.writeText(texto).then(function() {
-      mostrarToast("¡Enlace copiado al portapapeles!");
-    }).catch(function() {
-      mostrarToast("No se pudo copiar 😕");
-    });
-  }
+function cerrarModal() {
+  document.getElementById("modal").style.display = "none";
 }
-
-function mostrarToast(msg) {
-  var toast = document.getElementById("toast-compartir");
-  toast.textContent = msg;
-  toast.classList.add("visible");
-  setTimeout(function() { toast.classList.remove("visible"); }, 2800);
-}
-
-/* ══════════════════════════════════════
-   CERRAR MODAL AL HACER CLIC FUERA
-   ══════════════════════════════════════ */
 function cerrarModalFuera(e) {
   if (e.target === document.getElementById("modal")) cerrarModal();
 }
 
 /* ══════════════════════════════════════
-   MÓVIL: forzar cards al cargar
+   COMPARTIR — escritorio siempre clipboard,
+               móvil usa share nativo
    ══════════════════════════════════════ */
-function forzarCardsEnMovil() {
-  if (window.innerWidth > 600) return;
-  ["tablawrapperPeliculas", "tablawrapperSeries"].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) { el.style.display = "none"; el.classList.add("tablawrapper-movil-hidden"); }
-  });
-  ["cardsPeliculas", "cardsSeries"].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = "grid";
-  });
-  /* Marcar botón cards como activo */
-  document.querySelectorAll(".toggle-vista .vista-btn[data-vista='cards']").forEach(function(b) {
-    b.classList.add("activo");
-  });
-  document.querySelectorAll(".toggle-vista .vista-btn[data-vista='tabla']").forEach(function(b) {
-    b.classList.remove("activo");
+function compartirTitulo() {
+  var texto = "Te recomiendo ver: " + _tituloActual +
+              " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (esMobil && navigator.share) {
+    navigator.share({ text: texto }).catch(function(){});
+  } else {
+    /* Escritorio: clipboard */
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto)
+        .then(function()  { mostrarToast("¡Copiado al portapapeles! 📋"); })
+        .catch(function() { copiarFallback(texto); });
+    } else {
+      copiarFallback(texto);
+    }
+  }
+}
+
+function copiarFallback(texto) {
+  var ta = document.createElement("textarea");
+  ta.value = texto; ta.style.cssText = "position:fixed;opacity:0";
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand("copy"); mostrarToast("¡Copiado al portapapeles! 📋"); }
+  catch(e) { mostrarToast("No se pudo copiar 😕"); }
+  document.body.removeChild(ta);
+}
+
+function mostrarToast(msg) {
+  var t = document.getElementById("toast-compartir");
+  t.textContent = msg;
+  t.classList.add("visible");
+  setTimeout(function() { t.classList.remove("visible"); }, 2800);
+}
+
+/* ══════════════════════════════════════
+   LISTA DE DESEOS
+   ══════════════════════════════════════ */
+var _deseos = [];
+try { _deseos = JSON.parse(localStorage.getItem("videoteca_deseos") || "[]"); } catch(e) {}
+
+function guardarDeseos() {
+  try { localStorage.setItem("videoteca_deseos", JSON.stringify(_deseos)); } catch(e) {}
+  actualizarFab();
+}
+
+function estaEnDeseos(titulo) {
+  return _deseos.some(function(d) { return d.titulo === titulo; });
+}
+
+function toggleDeseoItem(obj) {
+  if (estaEnDeseos(obj.titulo)) {
+    _deseos = _deseos.filter(function(d) { return d.titulo !== obj.titulo; });
+  } else {
+    _deseos.push(obj);
+    mostrarToast("Añadido a tu lista ♥");
+  }
+  guardarDeseos();
+  renderPanelDeseos();
+}
+
+/* Desde el modal */
+function toggleDeseo() {
+  var d      = _itemActual;
+  var titulo = d["Título"] || d["Titulo"] || "";
+  var tipo   = d["Tipo"] === "Pelicula" ? "Película" : "Serie";
+  var genero = d["Género"] || d["Genero"] || "";
+  var calif  = d["Calificación"] || d["Calificacion"] || "";
+
+  toggleDeseoItem({ titulo: titulo, tipo: tipo, genero: genero, calif: calif });
+  actualizarBtnDeseoModal();
+
+  /* Sincronizar botón en card visible */
+  sincronizarCardDeseo(titulo);
+}
+
+function actualizarBtnDeseoModal() {
+  var btn = document.getElementById("modal-deseos-btn");
+  if (!btn) return;
+  var enD = estaEnDeseos(_tituloActual);
+  btn.textContent = enD ? "♥ En mi lista" : "♡ Guardar";
+  btn.classList.toggle("activo", enD);
+}
+
+function sincronizarCardDeseo(titulo) {
+  document.querySelectorAll(".pelicard").forEach(function(card) {
+    var tit = card.querySelector(".pelicard-titulo");
+    if (!tit || tit.textContent !== titulo) return;
+    var btn = card.querySelector(".card-deseo-btn");
+    if (!btn) return;
+    var enD = estaEnDeseos(titulo);
+    btn.textContent = enD ? "♥" : "♡";
+    btn.classList.toggle("activo", enD);
   });
 }
 
-document.addEventListener("DOMContentLoaded", forzarCardsEnMovil);
-window.addEventListener("resize", forzarCardsEnMovil);
+/* FAB */
+function actualizarFab() {
+  var n   = _deseos.length;
+  var fab = document.getElementById("fab-deseos");
+  var cnt = document.getElementById("fab-count");
+  if (!fab) return;
+  cnt.textContent   = n;
+  fab.style.display = n > 0 ? "flex" : "none";
+}
+
+/* Panel */
+function renderPanelDeseos() {
+  var lista = document.getElementById("deseos-lista");
+  var cnt   = document.getElementById("deseos-count");
+  if (!lista) return;
+  if (cnt) cnt.textContent = _deseos.length;
+  lista.innerHTML = "";
+
+  if (_deseos.length === 0) {
+    lista.innerHTML = '<p class="deseos-vacia">Tu lista está vacía.<br>Toca ♡ en cualquier tarjeta.</p>';
+    return;
+  }
+
+  _deseos.forEach(function(item) {
+    var row = document.createElement("div");
+    row.className = "deseo-item";
+    row.innerHTML =
+      '<div class="deseo-info">' +
+        '<span class="deseo-titulo">' + item.titulo + '</span>' +
+        '<span class="deseo-meta">' + (item.tipo || "") +
+          (item.genero ? " · " + item.genero.split(",")[0] : "") + '</span>' +
+      '</div>' +
+      '<button class="deseo-quitar" title="Quitar">✖</button>';
+
+    row.querySelector(".deseo-quitar").addEventListener("click", function() {
+      _deseos = _deseos.filter(function(d) { return d.titulo !== item.titulo; });
+      guardarDeseos();
+      renderPanelDeseos();
+      sincronizarCardDeseo(item.titulo);
+      /* Si el modal está abierto con este título, actualizar su botón */
+      if (_tituloActual === item.titulo) actualizarBtnDeseoModal();
+    });
+
+    lista.appendChild(row);
+  });
+}
+
+function abrirPanelDeseos() {
+  renderPanelDeseos();
+  document.getElementById("panel-deseos").classList.add("abierto");
+}
+function cerrarPanelDeseos() {
+  document.getElementById("panel-deseos").classList.remove("abierto");
+}
+function vaciarDeseos() {
+  _deseos = [];
+  guardarDeseos();
+  renderPanelDeseos();
+  document.querySelectorAll(".card-deseo-btn").forEach(function(b) {
+    b.textContent = "♡"; b.classList.remove("activo");
+  });
+  actualizarBtnDeseoModal();
+  mostrarToast("Lista vaciada");
+}
+
+/* Init */
+document.addEventListener("DOMContentLoaded", function() { actualizarFab(); });
