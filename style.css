@@ -166,18 +166,26 @@ h2 {
   width: 100%;
   max-width: 620px;
   max-height: 85vh;
-  overflow-y: auto;
-  overflow-x: hidden;          /* 🔑 mata el scroll lateral */
-  padding: 24px;
+  overflow: hidden;
   border-radius: 18px;
-  box-sizing: border-box;      /* 🔑 CLAVE */
+  box-sizing: border-box;
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-content * {
+.modal-inner {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px;
+  flex: 1;
+}
+
+.modal-inner * {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
 
 @media (max-width: 600px) {
 
@@ -187,10 +195,13 @@ h2 {
 
   .modal-content {
     max-width: 100%;
-    padding: 16px;
-    font-size: 0.92rem;        /* texto un poco más chico */
+    font-size: 0.92rem;
     line-height: 1.45;
     border-radius: 16px;
+  }
+
+  .modal-inner {
+    padding: 18px;
   }
 
   .modal-content p {
@@ -769,4 +780,65 @@ h2 {
   .pelicard-titulo {
     font-size: 0.88rem;
   }
+}
+
+/* ── MÓVIL: forzar vista cards, ocultar toggle tabla ── */
+@media (max-width: 600px) {
+  .cards-grid {
+    display: grid !important;
+  }
+  .tablawrapper-movil-hidden {
+    display: none !important;
+  }
+  .toggle-vista .vista-btn[data-vista="tabla"] {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+}
+
+/* ── BOTÓN COMPARTIR EN MODAL ── */
+.modal-compartir-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 10px 20px;
+  background: #556b5d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.modal-compartir-btn:hover {
+  background: #445a4e;
+  transform: translateY(-2px);
+}
+
+/* Toast de confirmación */
+.toast-compartir {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1f1f1f;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-family: "Poppins", sans-serif;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.toast-compartir.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

@@ -73,6 +73,8 @@ function llenarTabla(data, tablaId, tipo) {
 /* ══════════════════════════════════════
    MODAL
    ══════════════════════════════════════ */
+var _tituloActual = "";
+
 function mostrarModal(d) {
   var titulo     = d["Título"] || d["Titulo"] || "";
   var calif      = d["Calificación"] || d["Calificacion"] || "";
@@ -86,6 +88,7 @@ function mostrarModal(d) {
   var flags      = d["Flags"] || "";
   var resena     = d["Reseña"] || d["Resena"] || "";
 
+  _tituloActual = titulo;
   document.getElementById("modal-titulo").textContent       = titulo;
   document.getElementById("modal-calificacion").textContent = calif;
   document.getElementById("modal-origen").textContent       = origen;
@@ -320,3 +323,60 @@ function iniciarToggle(toggleId, gridId, tablaWrapperId) {
     });
   });
 }
+
+
+/* ══════════════════════════════════════
+   COMPARTIR
+   ══════════════════════════════════════ */
+function compartirTitulo() {
+  var texto = "Te recomiendo ver: " + _tituloActual + " — Videoteca Fátima https://fatimallovet.github.io/videotecafatima/";
+
+  if (navigator.share) {
+    navigator.share({ text: texto }).catch(function() {});
+  } else {
+    navigator.clipboard.writeText(texto).then(function() {
+      mostrarToast("¡Enlace copiado al portapapeles!");
+    }).catch(function() {
+      mostrarToast("No se pudo copiar 😕");
+    });
+  }
+}
+
+function mostrarToast(msg) {
+  var toast = document.getElementById("toast-compartir");
+  toast.textContent = msg;
+  toast.classList.add("visible");
+  setTimeout(function() { toast.classList.remove("visible"); }, 2800);
+}
+
+/* ══════════════════════════════════════
+   CERRAR MODAL AL HACER CLIC FUERA
+   ══════════════════════════════════════ */
+function cerrarModalFuera(e) {
+  if (e.target === document.getElementById("modal")) cerrarModal();
+}
+
+/* ══════════════════════════════════════
+   MÓVIL: forzar cards al cargar
+   ══════════════════════════════════════ */
+function forzarCardsEnMovil() {
+  if (window.innerWidth > 600) return;
+  ["tablawrapperPeliculas", "tablawrapperSeries"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.display = "none"; el.classList.add("tablawrapper-movil-hidden"); }
+  });
+  ["cardsPeliculas", "cardsSeries"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = "grid";
+  });
+  /* Marcar botón cards como activo */
+  document.querySelectorAll(".toggle-vista .vista-btn[data-vista='cards']").forEach(function(b) {
+    b.classList.add("activo");
+  });
+  document.querySelectorAll(".toggle-vista .vista-btn[data-vista='tabla']").forEach(function(b) {
+    b.classList.remove("activo");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", forzarCardsEnMovil);
+window.addEventListener("resize", forzarCardsEnMovil);

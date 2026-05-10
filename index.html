@@ -182,32 +182,41 @@
 
 
 <!-- MODAL -->
-<div id="modal" class="modal">
+<div id="modal" class="modal" onclick="cerrarModalFuera(event)">
   <div class="modal-content">
-    <span class="close-btn" onclick="cerrarModal()">✖</span>
+    <div class="modal-inner">
+      <span class="close-btn" onclick="cerrarModal()">✖</span>
 
-    <h3 id="modal-titulo"></h3>
+      <h3 id="modal-titulo"></h3>
 
-    <p><strong>Calificación:</strong> <span id="modal-calificacion"></span></p>
-    <p><strong>Origen:</strong> <span id="modal-origen"></span></p>
-    <p><strong>Año:</strong> <span id="modal-anio"></span></p>
-    <p>
-      <strong id="modal-label-minutos-o-caps"></strong>
-      <span id="modal-minutos-o-caps"></span>
-    </p>
-    <p><strong>Género:</strong> <span id="modal-genero"></span></p>
-    <p><strong>Tono:</strong> <span id="modal-tono"></span></p>
-    <p><strong>Ritmo:</strong> <span id="modal-ritmo"></span></p>
-    <p><strong>Público:</strong> <span id="modal-publico"></span></p>
-    <p><strong>Etiquetas:</strong> <span id="modal-etiquetas"></span></p>
-    <p><strong>Flags:</strong> <span id="modal-flags"></span></p>
-    <p><strong>Reseña:</strong> <span id="modal-resena"></span></p>
+      <p><strong>Calificación:</strong> <span id="modal-calificacion"></span></p>
+      <p><strong>Origen:</strong> <span id="modal-origen"></span></p>
+      <p><strong>Año:</strong> <span id="modal-anio"></span></p>
+      <p>
+        <strong id="modal-label-minutos-o-caps"></strong>
+        <span id="modal-minutos-o-caps"></span>
+      </p>
+      <p><strong>Género:</strong> <span id="modal-genero"></span></p>
+      <p><strong>Tono:</strong> <span id="modal-tono"></span></p>
+      <p><strong>Ritmo:</strong> <span id="modal-ritmo"></span></p>
+      <p><strong>Público:</strong> <span id="modal-publico"></span></p>
+      <p><strong>Etiquetas:</strong> <span id="modal-etiquetas"></span></p>
+      <p><strong>Flags:</strong> <span id="modal-flags"></span></p>
+      <p><strong>Reseña:</strong> <span id="modal-resena"></span></p>
 
-    <p><strong>IMDB:</strong> 
-      <a id="modal-imdb" href="" target="_blank">Ver ficha</a>
-    </p>
+      <p><strong>IMDB:</strong>
+        <a id="modal-imdb" href="" target="_blank">Ver ficha</a>
+      </p>
+
+      <button class="modal-compartir-btn" onclick="compartirTitulo()">
+        🔗 Compartir
+      </button>
+    </div>
   </div>
 </div>
+
+<!-- TOAST -->
+<div id="toast-compartir" class="toast-compartir">¡Enlace copiado!</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="script.js"></script>
