@@ -283,25 +283,14 @@ function fichaTexto(d) {
 }
 
 function compartirTitulo() {
-  var texto = "Te recomiendo ver: " + _tituloActual +
-              " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var texto   = fichaTexto(_itemActual);
   var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
   if (esMobil && navigator.share) {
     navigator.share({ text: texto }).catch(function(){});
   } else {
-    /* Escritorio: clipboard */
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(texto)
-        .then(function()  { mostrarToast("¡Copiado al portapapeles! 📋"); })
-        .catch(function() { copiarFallback(texto); });
-    } else {
-      copiarFallback(texto);
-    }
+    _copiarAlPortapapeles(texto);
   }
 }
-
-function copiarFallback(texto) { _copiarFallback(texto); }
 
 function mostrarToast(msg) {
   var t = document.getElementById("toast-compartir");
