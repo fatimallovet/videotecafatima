@@ -241,6 +241,47 @@ function cerrarModalFuera(e) {
    COMPARTIR — escritorio siempre clipboard,
                móvil usa share nativo
    ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   FICHA COMPLETA EN TEXTO
+   ══════════════════════════════════════ */
+function fichaTexto(d) {
+  var tipo      = (d["Tipo"] === "Pelicula") ? "Película" : "Serie";
+  var titulo    = d["Título"]       || d["Titulo"]       || "";
+  var calif     = d["Calificación"] || d["Calificacion"] || "";
+  var origen    = d["Origen"]       || "";
+  var anio      = d["Año"]          || d["Anio"]         || "";
+  var durLabel  = (d["Tipo"] === "Pelicula") ? "Minutos" : "Capítulos";
+  var durVal    = (d["Tipo"] === "Pelicula")
+                   ? (d["Minutos"] || "")
+                   : (d["Capítulos"] || d["Capitulos"] || "");
+  var genero    = d["Género"]       || d["Genero"]       || "";
+  var tono      = d["Tono"]         || "";
+  var ritmo     = d["Ritmo"]        || "";
+  var publico   = d["Público"]      || d["Publico"]      || "";
+  var etiquetas = d["Etiquetas"]    || "";
+  var flags     = d["Flags"]        || "";
+  var resena    = d["Reseña"]       || d["Resena"]       || "";
+  var imdb      = d["IMDB"]         || "";
+
+  var lineas = [];
+  lineas.push("🎬 " + titulo + " (" + tipo + ")");
+  lineas.push("─────────────────────────");
+  if (calif)     lineas.push("⭐ Calificación: " + calif + " / 10");
+  if (anio)      lineas.push("📅 Año: " + anio);
+  if (origen)    lineas.push("🌍 Origen: " + origen);
+  if (durVal)    lineas.push("⏱ " + durLabel + ": " + durVal);
+  if (genero)    lineas.push("🎭 Género: " + genero);
+  if (tono)      lineas.push("💬 Tono: " + tono);
+  if (ritmo)     lineas.push("⚡ Ritmo: " + ritmo);
+  if (publico)   lineas.push("👥 Público: " + publico);
+  if (etiquetas) lineas.push("🏷 Etiquetas: " + etiquetas);
+  if (flags)     lineas.push("⚠️ Flags: " + flags);
+  if (resena)    lineas.push("\n📝 " + resena);
+  if (imdb)      lineas.push("\n🔗 IMDB: " + imdb);
+  lineas.push("\n— Videoteca Fátima: https://fatimallovet.github.io/videotecafatima/");
+  return lineas.join("\n");
+}
+
 function compartirTitulo() {
   var texto = "Te recomiendo ver: " + _tituloActual +
               " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";

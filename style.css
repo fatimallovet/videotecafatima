@@ -796,29 +796,6 @@ h2 {
   }
 }
 
-/* ── BOTÓN COMPARTIR EN MODAL ── */
-.modal-compartir-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 18px;
-  padding: 10px 20px;
-  background: #556b5d;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-  font-family: "Poppins", sans-serif;
-}
-
-.modal-compartir-btn:hover {
-  background: #445a4e;
-  transform: translateY(-2px);
-}
-
 /* Toast de confirmación */
 .toast-compartir {
   position: fixed;
