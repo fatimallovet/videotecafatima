@@ -244,24 +244,35 @@ function cerrarModalFuera(e) {
 /* ══════════════════════════════════════
    FICHA COMPLETA EN TEXTO
    ══════════════════════════════════════ */
+function campo(d, nombres) {
+  /* Busca la primera clave que exista en el objeto, ignorando tildes y mayúsculas */
+  var keys = Object.keys(d);
+  for (var i = 0; i < nombres.length; i++) {
+    var buscado = nombres[i].toLowerCase();
+    for (var j = 0; j < keys.length; j++) {
+      if (keys[j].toLowerCase() === buscado) return d[keys[j]] || "";
+    }
+  }
+  return "";
+}
+
 function fichaTexto(d) {
-  var tipo      = (d["Tipo"] === "Pelicula") ? "Película" : "Serie";
-  var titulo    = d["Título"]       || d["Titulo"]       || "";
-  var calif     = d["Calificación"] || d["Calificacion"] || "";
-  var origen    = d["Origen"]       || "";
-  var anio      = d["Año"]          || d["Anio"]         || "";
-  var durLabel  = (d["Tipo"] === "Pelicula") ? "Minutos" : "Capítulos";
-  var durVal    = (d["Tipo"] === "Pelicula")
-                   ? (d["Minutos"] || "")
-                   : (d["Capítulos"] || d["Capitulos"] || "");
-  var genero    = d["Género"]       || d["Genero"]       || "";
-  var tono      = d["Tono"]         || "";
-  var ritmo     = d["Ritmo"]        || "";
-  var publico   = d["Público"]      || d["Publico"]      || "";
-  var etiquetas = d["Etiquetas"]    || "";
-  var flags     = d["Flags"]        || "";
-  var resena    = d["Reseña"]       || d["Resena"]       || "";
-  var imdb      = d["IMDB"]         || "";
+  var esPeli    = d["Tipo"] === "Pelicula";
+  var tipo      = esPeli ? "Película" : "Serie";
+  var titulo    = campo(d, ["Título","Titulo"]);
+  var calif     = campo(d, ["Calificación","Calificacion"]);
+  var origen    = campo(d, ["Origen"]);
+  var anio      = campo(d, ["Año","Anio"]);
+  var durLabel  = esPeli ? "Minutos" : "Capítulos";
+  var durVal    = esPeli ? campo(d, ["Minutos"]) : campo(d, ["Capítulos","Capitulos"]);
+  var genero    = campo(d, ["Género","Genero"]);
+  var tono      = campo(d, ["Tono"]);
+  var ritmo     = campo(d, ["Ritmo"]);
+  var publico   = campo(d, ["Público","Publico"]);
+  var etiquetas = campo(d, ["Etiquetas"]);
+  var flags     = campo(d, ["Flags"]);
+  var resena    = campo(d, ["Reseña","Resena"]);
+  var imdb      = campo(d, ["IMDB"]);
 
   var lineas = [];
   lineas.push("🎬 " + titulo + " (" + tipo + ")");
