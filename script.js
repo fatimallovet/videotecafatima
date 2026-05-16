@@ -280,14 +280,14 @@ function fichaTexto(d) {
   if (calif)     lineas.push("⭐ Calificación: " + calif + " / 10");
   if (anio)      lineas.push("Año: " + anio);
   if (origen)    lineas.push("Origen: " + origen);
-  if (durVal)    lineas.push("⏱ " + durLabel + ": " + durVal);
-  if (genero)    lineas.push("🎭 Género: " + genero);
+  if (durVal)    lineas.push(durLabel + ": " + durVal);
+  if (genero)    lineas.push("Género: " + genero);
   if (tono)      lineas.push("Tono: " + tono);
   if (ritmo)     lineas.push("Ritmo: " + ritmo);
   if (publico)   lineas.push("Público: " + publico);
   if (etiquetas) lineas.push("Etiquetas: " + etiquetas);
   if (flags)     lineas.push("⚠️ Flags: " + flags);
-  if (resena)    lineas.push("\n📝 " + resena);
+  if (resena)    lineas.push("\nReseña: " + resena);
   if (imdb)      lineas.push("\n🔗 IMDB: " + imdb);
   lineas.push("\n— Recomendada por: Fátima Llovet");
   lineas.push("https://fatimallovet.github.io/videotecafatima/");
