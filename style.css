@@ -1165,3 +1165,160 @@ h2 {
   border-top: none;  /* ya viene del footer */
 }
 .deseos-vaciar-btn:hover { background: #f0ede6; color: #b05070; }
+
+/* ══════════════════════════════════════
+   PÓSTER EN CARD
+   ══════════════════════════════════════ */
+.pelicard-poster-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pelicard-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.pelicard:hover .pelicard-poster {
+  transform: scale(1.04);
+}
+
+/* Overlay semitransparente con calificación y ♡ */
+.pelicard-poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10px 10px 8px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.pelicard:hover .pelicard-poster-overlay {
+  opacity: 1;
+}
+
+/* En móvil siempre visible */
+@media (max-width: 600px) {
+  .pelicard-poster-overlay {
+    opacity: 1;
+  }
+}
+
+.pelicard-estrellas-over {
+  font-size: 0.82rem;
+  color: #ffe082;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* El ♡ en el overlay (sobre la imagen) */
+.pelicard-poster-wrap .card-deseo-btn {
+  color: rgba(255,255,255,0.75);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  font-size: 1.1rem;
+}
+.pelicard-poster-wrap .card-deseo-btn:hover,
+.pelicard-poster-wrap .card-deseo-btn.activo {
+  color: #ff8fa3;
+  transform: scale(1.2);
+}
+
+/* Card sin póster: el cuerpo ocupa todo */
+.pelicard:not(:has(.pelicard-poster-wrap)) .pelicard-body {
+  flex: 1;
+}
+
+/* ══════════════════════════════════════
+   PÓSTER EN MODAL
+   ══════════════════════════════════════ */
+.modal-poster-wrap {
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.modal-poster-img {
+  width: 120px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.20);
+  cursor: zoom-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-block;
+}
+
+.modal-poster-img:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+
+/* ══════════════════════════════════════
+   LIGHTBOX
+   ══════════════════════════════════════ */
+.lightbox-poster {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 2000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.lightbox-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.lightbox-inner img {
+  width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.lightbox-inner p {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
+}
+.lightbox-close:hover {
+  background: #f0f0f0;
+  transform: scale(1.1);
+}
