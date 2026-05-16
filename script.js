@@ -288,7 +288,6 @@ function fichaTexto(d) {
   if (etiquetas) lineas.push("Etiquetas: " + etiquetas);
   if (flags)     lineas.push("⚠️ Flags: " + flags);
   if (resena)    lineas.push("\nReseña: " + resena);
-  if (imdb)      lineas.push("\n🔗 IMDB: " + imdb);
   lineas.push("\n— Recomendada por: Fátima Llovet");
   lineas.push("https://fatimallovet.github.io/videotecafatima/");
   return lineas.join("\n");
