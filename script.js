@@ -144,44 +144,65 @@ function crearCard(item, tipo) {
   var card = document.createElement("div");
   card.className = "pelicard";
 
-  var titulo    = item["Título"]       || item["Titulo"]       || "";
-  var anio      = item["Año"]          || item["Anio"]         || "";
-  var genero    = item["Género"]       || item["Genero"]       || "";
-  var calif     = item["Calificación"] || item["Calificacion"] || "";
-  var poster    = item["Poster"]       || item["poster"]       || "";
+  var titulo    = campo(item, ["Título","Titulo"]);
+  var anio      = campo(item, ["Año","Anio"]);
+  var genero    = campo(item, ["Género","Genero"]);
+  var calif     = campo(item, ["Calificación","Calificacion"]);
+  var poster    = campo(item, ["Poster","poster","Póster","póster"]).trim();
   var label     = tipo === "Serie" ? "Serie" : "Película";
   var anioCorto = (String(anio).match(/\d{4}/) || [""])[0];
   var enD       = estaEnDeseos(titulo);
+  var bandaClass = claseBanda(genero);
 
   /* Zona superior: póster si existe, banda de color si no */
-  var zonaTop = poster
-    ? '<div class="pelicard-poster-wrap">' +
-        '<img class="pelicard-poster" src="' + poster + '" alt="' + titulo + '" loading="lazy" onerror="this.parentElement.outerHTML='<div class=\"pelicard-banda ' + claseBanda(genero) + '\"></div>'">' +
-        '<div class="pelicard-poster-overlay">' +
-          '<span class="pelicard-estrellas-over">' + estrellas(calif) + '</span>' +
-          '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
-        '</div>' +
+  var zonaTop;
+  if (poster) {
+    var wrap = document.createElement("div");
+    wrap.className = "pelicard-poster-wrap";
+    var img = document.createElement("img");
+    img.className = "pelicard-poster";
+    img.src = poster;
+    img.alt = titulo;
+    img.loading = "lazy";
+    img.onerror = function() {
+      wrap.outerHTML = '<div class="pelicard-banda ' + bandaClass + '"></div>';
+    };
+    var overlay = document.createElement("div");
+    overlay.className = "pelicard-poster-overlay";
+    overlay.innerHTML =
+      '<span class="pelicard-estrellas-over">' + estrellas(calif) + '</span>' +
+      '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>';
+    wrap.appendChild(img);
+    wrap.appendChild(overlay);
+    card.appendChild(wrap);
+    zonaTop = null; // ya añadido
+  } else {
+    zonaTop = '<div class="pelicard-banda ' + bandaClass + '"></div>';
+  }
+
+  /* Cuerpo de la card (siempre) */
+  var body = document.createElement("div");
+  body.className = "pelicard-body";
+  body.innerHTML =
+    '<div class="pelicard-header">' +
+      '<span class="pelicard-tipo">' + label + '</span>' +
+      '<span class="pelicard-anio">' + anioCorto + '</span>' +
+    '</div>' +
+    '<div class="pelicard-titulo">' + titulo + '</div>' +
+    '<div class="pelicard-genero">' + genero + '</div>' +
+    (poster ? '' :
+      '<div class="pelicard-footer">' +
+        '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
+        '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
       '</div>'
-    : '<div class="pelicard-banda ' + claseBanda(genero) + '"></div>';
+    );
 
-  card.innerHTML =
-    zonaTop +
-    '<div class="pelicard-body">' +
-      '<div class="pelicard-header">' +
-        '<span class="pelicard-tipo">' + label + '</span>' +
-        '<span class="pelicard-anio">' + anioCorto + '</span>' +
-      '</div>' +
-      '<div class="pelicard-titulo">' + titulo + '</div>' +
-      '<div class="pelicard-genero">' + genero + '</div>' +
-      (poster ? '' :
-        '<div class="pelicard-footer">' +
-          '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
-          '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
-        '</div>'
-      ) +
-    '</div>';
+  if (!poster) {
+    card.innerHTML = zonaTop;
+  }
+  card.appendChild(body);
 
-  /* Botón ♡ en la card — no abre modal */
+  /* Botón ♡ — no abre modal */
   card.querySelector(".card-deseo-btn").addEventListener("click", function(e) {
     e.stopPropagation();
     var obj = { titulo: titulo, tipo: label, genero: genero, calif: calif };
@@ -238,7 +259,7 @@ function mostrarModal(d) {
   else           { imdb.href = "#";        imdb.style.display = "none";   }
 
   /* Póster en modal */
-  var poster = d["Poster"] || d["poster"] || "";
+  var poster = campo(d, ["Poster","poster","Póster","póster"]).trim();
   var modalPoster = document.getElementById("modal-poster-wrap");
   if (poster) {
     modalPoster.innerHTML =
