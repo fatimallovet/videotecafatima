@@ -1282,14 +1282,27 @@ h2 {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  max-width: 340px;
-  width: 100%;
+  /* Alto máximo menos espacio para título y padding */
+  max-height: calc(100vh - 80px);
+  width: auto;
 }
 
 .lightbox-inner img {
-  width: 100%;
+  /* La imagen crece hasta llenar el alto disponible, nunca sale de pantalla */
+  max-height: calc(100vh - 120px);
+  max-width: min(80vw, 500px);   /* en desktop cap a 500px de ancho */
+  width: auto;
+  height: auto;
   border-radius: 14px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+/* Móvil: más ajustado */
+@media (max-width: 600px) {
+  .lightbox-inner img {
+    max-width: 90vw;
+    max-height: calc(100vh - 100px);
+  }
 }
 
 .lightbox-inner p {
