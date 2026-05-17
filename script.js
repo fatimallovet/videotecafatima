@@ -148,12 +148,24 @@ function crearCard(item, tipo) {
   var anio      = item["Año"]          || item["Anio"]         || "";
   var genero    = item["Género"]       || item["Genero"]       || "";
   var calif     = item["Calificación"] || item["Calificacion"] || "";
+  var poster    = item["Poster"]       || item["poster"]       || "";
   var label     = tipo === "Serie" ? "Serie" : "Película";
   var anioCorto = (String(anio).match(/\d{4}/) || [""])[0];
   var enD       = estaEnDeseos(titulo);
 
+  /* Zona superior: póster si existe, banda de color si no */
+  var zonaTop = poster
+    ? '<div class="pelicard-poster-wrap">' +
+        '<img class="pelicard-poster" src="' + poster + '" alt="' + titulo + '" loading="lazy" onerror="this.parentElement.outerHTML='<div class=\"pelicard-banda ' + claseBanda(genero) + '\"></div>'">' +
+        '<div class="pelicard-poster-overlay">' +
+          '<span class="pelicard-estrellas-over">' + estrellas(calif) + '</span>' +
+          '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
+        '</div>' +
+      '</div>'
+    : '<div class="pelicard-banda ' + claseBanda(genero) + '"></div>';
+
   card.innerHTML =
-    '<div class="pelicard-banda ' + claseBanda(genero) + '"></div>' +
+    zonaTop +
     '<div class="pelicard-body">' +
       '<div class="pelicard-header">' +
         '<span class="pelicard-tipo">' + label + '</span>' +
@@ -161,12 +173,12 @@ function crearCard(item, tipo) {
       '</div>' +
       '<div class="pelicard-titulo">' + titulo + '</div>' +
       '<div class="pelicard-genero">' + genero + '</div>' +
-      '<div class="pelicard-footer">' +
-        '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
-        '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' +
-          (enD ? "♥" : "♡") +
-        '</button>' +
-      '</div>' +
+      (poster ? '' :
+        '<div class="pelicard-footer">' +
+          '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
+          '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
+        '</div>'
+      ) +
     '</div>';
 
   /* Botón ♡ en la card — no abre modal */
@@ -224,6 +236,21 @@ function mostrarModal(d) {
   var imdb = document.getElementById("modal-imdb");
   if (d["IMDB"]) { imdb.href = d["IMDB"]; imdb.style.display = "inline"; }
   else           { imdb.href = "#";        imdb.style.display = "none";   }
+
+  /* Póster en modal */
+  var poster = d["Poster"] || d["poster"] || "";
+  var modalPoster = document.getElementById("modal-poster-wrap");
+  if (poster) {
+    modalPoster.innerHTML =
+      '<img id="modal-poster-img" class="modal-poster-img" src="' + poster + '" alt="' + (d["Título"]||d["Titulo"]||"") + '" title="Ver en grande">';
+    modalPoster.style.display = "block";
+    document.getElementById("modal-poster-img").addEventListener("click", function() {
+      abrirPosterGrande(poster, d["Título"]||d["Titulo"]||"");
+    });
+  } else {
+    modalPoster.style.display = "none";
+    modalPoster.innerHTML = "";
+  }
 
   /* Botón deseos en modal */
   actualizarBtnDeseoModal();
@@ -503,3 +530,34 @@ function vaciarDeseos() {
 
 /* Init */
 document.addEventListener("DOMContentLoaded", function() { actualizarFab(); });
+
+/* ══════════════════════════════════════
+   LIGHTBOX PÓSTER
+   ══════════════════════════════════════ */
+function abrirPosterGrande(url, titulo) {
+  var lb = document.getElementById("lightbox-poster");
+  if (!lb) {
+    lb = document.createElement("div");
+    lb.id = "lightbox-poster";
+    lb.className = "lightbox-poster";
+    lb.innerHTML =
+      '<div class="lightbox-inner">' +
+        '<button class="lightbox-close" onclick="cerrarPosterGrande()">✖</button>' +
+        '<img id="lightbox-img" src="" alt="">' +
+        '<p id="lightbox-titulo"></p>' +
+      '</div>';
+    lb.addEventListener("click", function(e) {
+      if (e.target === lb) cerrarPosterGrande();
+    });
+    document.body.appendChild(lb);
+  }
+  document.getElementById("lightbox-img").src   = url;
+  document.getElementById("lightbox-img").alt   = titulo;
+  document.getElementById("lightbox-titulo").textContent = titulo;
+  lb.style.display = "flex";
+}
+
+function cerrarPosterGrande() {
+  var lb = document.getElementById("lightbox-poster");
+  if (lb) lb.style.display = "none";
+}
