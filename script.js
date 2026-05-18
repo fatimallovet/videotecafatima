@@ -435,20 +435,12 @@ function sincronizarCardDeseo(titulo) {
 
 /* FAB */
 function actualizarFab() {
-  var n = _deseos.length;
-
-  /* FAB desktop */
+  var n   = _deseos.length;
   var fab = document.getElementById("fab-deseos");
   var cnt = document.getElementById("fab-count");
-  if (fab) { cnt.textContent = n; fab.style.display = n > 0 ? "flex" : "none"; }
-
-  /* Botón wishlist en bottom-nav móvil */
-  var botBtn = document.getElementById("bottom-wishlist-btn");
-  var botCnt = document.getElementById("bottom-wishlist-count");
-  if (botBtn) {
-    botCnt.textContent = n > 0 ? " " + n : "";
-    botBtn.classList.toggle("tiene-items", n > 0);
-  }
+  if (!fab) return;
+  cnt.textContent   = n;
+  fab.style.display = n > 0 ? "flex" : "none";
 }
 
 /* Panel */

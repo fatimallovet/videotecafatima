@@ -615,19 +615,6 @@ h2 {
   .tab.visible {
     padding-bottom: 80px;
   }
-
-  /* Ocultar FAB flotante — la wishlist está en la barra inferior */
-  .fab-deseos {
-    display: none !important;
-  }
-
-  /* Wishlist en barra inferior */
-  .bottom-wishlist {
-    color: #aaa;
-  }
-  .bottom-wishlist.tiene-items {
-    color: #b05070;
-  }
 }
 
 
@@ -1031,7 +1018,8 @@ h2 {
 }
 .fab-deseos:hover { background: #445a4e; transform: translateY(-3px); }
 
-
+@media (max-width: 600px) {
+  .fab-deseos { bottom: 18px; right: 16px; padding: 11px 16px; font-size: 0.9rem; }
 }
 
 /* ══════════════════════════════════════
@@ -1039,23 +1027,18 @@ h2 {
    ══════════════════════════════════════ */
 .panel-deseos {
   position: fixed;
-  top: 0; right: 0;
-  bottom: 0;
+  top: 0; right: -100%;
   width: 340px;
   max-width: 92vw;
+  height: 100%;
   background: white;
-  z-index: 1000;
+  z-index: 800;
   box-shadow: -6px 0 30px rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
-  transform: translateX(100%);   /* oculto fuera a la derecha */
-  visibility: hidden;
+  transition: right 0.3s ease;
 }
-.panel-deseos.abierto {
-  transform: translateX(0);
-  visibility: visible;
-}
+.panel-deseos.abierto { right: 0; }
 
 .panel-deseos-header {
   display: flex;
