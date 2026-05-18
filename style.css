@@ -615,6 +615,16 @@ h2 {
   .tab.visible {
     padding-bottom: 80px;
   }
+
+  /* En móvil el FAB se reemplaza por el botón del bottom-nav */
+  .fab-deseos {
+    display: none !important;
+  }
+
+  /* Wishlist en bottom-nav */
+  #bottom-wishlist-btn.tiene-items {
+    color: #b05070;
+  }
 }
 
 
