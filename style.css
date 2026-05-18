@@ -1039,7 +1039,7 @@ h2 {
    ══════════════════════════════════════ */
 .panel-deseos {
   position: fixed;
-  top: 0; right: -100%;
+  top: 0; right: 0;
   bottom: 0;
   width: 340px;
   max-width: 92vw;
@@ -1048,9 +1048,14 @@ h2 {
   box-shadow: -6px 0 30px rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
+  transition: transform 0.3s ease;
+  transform: translateX(100%);   /* oculto fuera a la derecha */
+  visibility: hidden;
 }
-.panel-deseos.abierto { right: 0; }
+.panel-deseos.abierto {
+  transform: translateX(0);
+  visibility: visible;
+}
 
 .panel-deseos-header {
   display: flex;
