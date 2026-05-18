@@ -35,12 +35,8 @@
   <div class="top-actions">
     <button class="icon-btn" title="Biblioteca"
       onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">📚</button>
-    <button class="icon-btn" title="Apoyar"
-      onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">☕</button>
-    <button class="icon-btn wishlist-icon-btn" id="wishlist-top-btn"
-      onclick="abrirPanelDeseos()" title="Lista de deseos" style="display:none">
-      ♡ <span id="wishlist-top-count">0</span>
-    </button>
+    <button class="support-icon-btn"
+      onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">☕ Apoyar</button>
   </div>
 
 </header>
@@ -59,17 +55,12 @@
     <span class="bottom-icon">ℹ️</span>
     <span class="bottom-label">Info</span>
   </button>
-  <button class="bottom-btn" id="wishlist-bottom-btn" onclick="abrirPanelDeseos()" style="display:none">
-    <span class="bottom-icon">♡ <span id="wishlist-bottom-count">0</span></span>
-    <span class="bottom-label">Mi lista</span>
-  </button>
 </nav>
 
 
 
 <!-- PELÍCULAS -->
 <section id="peliculas" class="tab visible">
-  <h2>Películas</h2>
 
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
@@ -88,7 +79,6 @@
 
 <!-- SERIES -->
 <section id="series" class="tab">
-  <h2>Series</h2>
 
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
@@ -199,7 +189,10 @@
   </div>
 </div>
 
-<!-- FAB eliminado: wishlist ahora está en header y bottom-nav -->
+<!-- FAB lista de deseos -->
+<button class="fab-deseos" id="fab-deseos" onclick="abrirPanelDeseos()" title="Mi lista de deseos" style="display:none">
+  ♡ <span id="fab-count">0</span>
+</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="script.js"></script>

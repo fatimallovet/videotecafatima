@@ -546,14 +546,7 @@ h2 {
 
 .icon-btn:hover { background: #f0ede6; }
 
-.wishlist-icon-btn {
-  font-size: 0.85rem;
-  font-weight: 700;
-  width: auto;
-  padding: 0 10px;
-  gap: 4px;
-  color: #b05070;
-}
+
 
 /* ══════════════════════════════════════
    BARRA INFERIOR — SOLO MÓVIL
@@ -1395,3 +1388,19 @@ h2 {
   background: #f0f0f0;
   transform: scale(1.1);
 }
+
+/* ── BOTÓN APOYAR CON TEXTO ── */
+.support-icon-btn {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #556b5d;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  transition: 0.18s;
+  white-space: nowrap;
+}
+.support-icon-btn:hover { background: #f0ede6; }
