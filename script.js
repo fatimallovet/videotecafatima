@@ -1,9 +1,23 @@
 /* script.js — Videoteca Fátima */
 
 /* ── NAVEGACIÓN ── */
-function openTab(tabId) {
+function openTab(tabId) { setTab(tabId); } // alias por compatibilidad
+
+function setTab(tabId) {
+  /* Secciones */
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('visible'));
-  document.getElementById(tabId).classList.add('visible');
+  var target = document.getElementById(tabId);
+  if (target) target.classList.add('visible');
+
+  /* Tabs del header (desktop) */
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.toggle('activo', b.dataset.tab === tabId);
+  });
+
+  /* Botones barra inferior (móvil) */
+  document.querySelectorAll('.bottom-btn').forEach(function(b) {
+    b.classList.toggle('activo', b.dataset.tab === tabId);
+  });
 }
 
 /* ── URLS ── */
@@ -421,12 +435,23 @@ function sincronizarCardDeseo(titulo) {
 
 /* FAB */
 function actualizarFab() {
-  var n   = _deseos.length;
-  var fab = document.getElementById("fab-deseos");
-  var cnt = document.getElementById("fab-count");
-  if (!fab) return;
-  cnt.textContent   = n;
-  fab.style.display = n > 0 ? "flex" : "none";
+  var n = _deseos.length;
+
+  /* Botón en header (desktop) */
+  var topBtn = document.getElementById("wishlist-top-btn");
+  var topCnt = document.getElementById("wishlist-top-count");
+  if (topBtn) {
+    topCnt.textContent   = n;
+    topBtn.style.display = n > 0 ? "flex" : "none";
+  }
+
+  /* Botón en barra inferior (móvil) */
+  var botBtn = document.getElementById("wishlist-bottom-btn");
+  var botCnt = document.getElementById("wishlist-bottom-count");
+  if (botBtn) {
+    botCnt.textContent   = n;
+    botBtn.style.display = n > 0 ? "flex" : "none";
+  }
 }
 
 /* Panel */

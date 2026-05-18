@@ -20,65 +20,55 @@
 
 <body>
 
-  <!-- NUEVO HEADER -->
 <header class="topbar">
 
-  <div class="logo" onclick="openTab('inicio')" style="cursor:pointer">
+  <div class="logo" onclick="setTab('peliculas')" style="cursor:pointer">
     🎬 Videoteca Fátima
   </div>
 
-  <nav class="menu">
-    <button onclick="openTab('peliculas')">Películas</button>
-    <button onclick="openTab('series')">Series</button>
-    <button onclick="openTab('como-funciona')">Sobre el Proyecto</button>
+  <nav class="tabs-center">
+    <button class="tab-btn activo" data-tab="peliculas" onclick="setTab('peliculas')">🎬 Películas</button>
+    <button class="tab-btn" data-tab="series" onclick="setTab('series')">📺 Series</button>
+    <button class="tab-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">ℹ️ Info</button>
   </nav>
 
   <div class="top-actions">
-    <button class="bib-btn"
-      onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
-      📚 Biblioteca
+    <button class="icon-btn" title="Biblioteca"
+      onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">📚</button>
+    <button class="icon-btn" title="Apoyar"
+      onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">☕</button>
+    <button class="icon-btn wishlist-icon-btn" id="wishlist-top-btn"
+      onclick="abrirPanelDeseos()" title="Lista de deseos" style="display:none">
+      ♡ <span id="wishlist-top-count">0</span>
     </button>
-
-  <button class="support-btn"
-    onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
-    🤝 Apoyar
-  </button>
   </div>
 
 </header>
 
-<!-- HOME NUEVO -->
-<section id="inicio" class="tab visible home">
+<!-- BARRA DE NAVEGACIÓN MÓVIL (fija al pie) -->
+<nav class="bottom-nav">
+  <button class="bottom-btn activo" data-tab="peliculas" onclick="setTab('peliculas')">
+    <span class="bottom-icon">🎬</span>
+    <span class="bottom-label">Películas</span>
+  </button>
+  <button class="bottom-btn" data-tab="series" onclick="setTab('series')">
+    <span class="bottom-icon">📺</span>
+    <span class="bottom-label">Series</span>
+  </button>
+  <button class="bottom-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">
+    <span class="bottom-icon">ℹ️</span>
+    <span class="bottom-label">Info</span>
+  </button>
+  <button class="bottom-btn" id="wishlist-bottom-btn" onclick="abrirPanelDeseos()" style="display:none">
+    <span class="bottom-icon">♡ <span id="wishlist-bottom-count">0</span></span>
+    <span class="bottom-label">Mi lista</span>
+  </button>
+</nav>
 
-  <div class="hero">
 
-    <h1 class="hero-title">
-      Mis recomendaciones personales<br>
-      <span>de películas y series</span>
-    </h1>
-
-    <p class="hero-sub">
-      Películas y series para todos los gustos.
-    </p>
-
-    <div class="hero-buttons">
-
-      <button class="main-btn" onclick="openTab('peliculas')">
-        🎬 Explorar películas
-      </button>
-
-      <button class="main-btn" onclick="openTab('series')">
-        📺 Ver series
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
 
 <!-- PELÍCULAS -->
-<section id="peliculas" class="tab">
+<section id="peliculas" class="tab visible">
   <h2>Películas</h2>
 
   <div class="controles-wrapper">
@@ -209,10 +199,7 @@
   </div>
 </div>
 
-<!-- FAB lista de deseos -->
-<button class="fab-deseos" id="fab-deseos" onclick="abrirPanelDeseos()" title="Mi lista de deseos" style="display:none">
-  ♡ <span id="fab-count">0</span>
-</button>
+<!-- FAB eliminado: wishlist ahora está en header y bottom-nav -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="script.js"></script>
