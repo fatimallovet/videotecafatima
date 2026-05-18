@@ -615,6 +615,19 @@ h2 {
   .tab.visible {
     padding-bottom: 80px;
   }
+
+  /* Ocultar FAB flotante — la wishlist está en la barra inferior */
+  .fab-deseos {
+    display: none !important;
+  }
+
+  /* Wishlist en barra inferior */
+  .bottom-wishlist {
+    color: #aaa;
+  }
+  .bottom-wishlist.tiene-items {
+    color: #b05070;
+  }
 }
 
 
@@ -1018,8 +1031,7 @@ h2 {
 }
 .fab-deseos:hover { background: #445a4e; transform: translateY(-3px); }
 
-@media (max-width: 600px) {
-  .fab-deseos { display: none !important; }
+
 }
 
 /* ══════════════════════════════════════
@@ -1404,7 +1416,3 @@ h2 {
   white-space: nowrap;
 }
 .support-icon-btn:hover { background: #f0ede6; }
-
-/* ── WISHLIST EN BOTTOM-NAV ── */
-.bottom-wishlist { color: #aaa; }
-.bottom-wishlist.tiene-items { color: #b05070; }
