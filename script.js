@@ -558,9 +558,11 @@ function renderPanelDeseos() {
 function abrirPanelDeseos() {
   renderPanelDeseos();
   document.getElementById("panel-deseos").classList.add("abierto");
+  document.getElementById("panel-deseos-overlay").classList.add("visible");
 }
 function cerrarPanelDeseos() {
   document.getElementById("panel-deseos").classList.remove("abierto");
+  document.getElementById("panel-deseos-overlay").classList.remove("visible");
 }
 function vaciarDeseos() {
   _deseos = [];

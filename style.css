@@ -719,6 +719,16 @@ h2 {
 }
 .panel-deseos-overlay.visible { display: block; }
 
+.panel-deseos-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 799;
+  display: none;
+  cursor: pointer;
+}
+.panel-deseos-overlay.visible { display: block; }
+
 .panel-deseos {
   position: fixed;
   top: 0; right: -100%;
