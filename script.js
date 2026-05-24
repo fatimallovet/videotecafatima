@@ -652,8 +652,7 @@ function clasificarMoods(item, tipo) {
   }
 
   // ✨ Quiero inspirarme
-  if (m(tono, ["inspirador","heroico","optimista"]) &&
-      m(genero, ["biograf","deport","histor","superaci"])) {
+  if (m(tono, ["inspirador","heroico","optimista"])) {
     moods.push("inspirar");
   }
 
