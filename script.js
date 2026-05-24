@@ -558,11 +558,9 @@ function renderPanelDeseos() {
 function abrirPanelDeseos() {
   renderPanelDeseos();
   document.getElementById("panel-deseos").classList.add("abierto");
-  document.getElementById("panel-deseos-overlay").classList.add("visible");
 }
 function cerrarPanelDeseos() {
   document.getElementById("panel-deseos").classList.remove("abierto");
-  document.getElementById("panel-deseos-overlay").classList.remove("visible");
 }
 function vaciarDeseos() {
   _deseos = [];
@@ -607,4 +605,143 @@ function abrirPosterGrande(url, titulo) {
 function cerrarPosterGrande() {
   var lb = document.getElementById("lightbox-poster");
   if (lb) lb.style.display = "none";
+}
+
+/* ══════════════════════════════════════
+   MOODS
+   ══════════════════════════════════════ */
+
+var MOODS_DEF = {
+  llorar:     { emoji: "😭", nombre: "Necesito llorar" },
+  inspirar:   { emoji: "✨", nombre: "Quiero inspirarme" },
+  divertido:  { emoji: "😄", nombre: "Ligero y divertido" },
+  romantico:  { emoji: "💕", nombre: "Modo romántico" },
+  adrenalina: { emoji: "🔥", nombre: "Adrenalina pura" },
+  calidad:    { emoji: "🏆", nombre: "Cine de calidad" },
+  navidad:    { emoji: "🎄", nombre: "Navideñas" },
+  diferente:  { emoji: "🎭", nombre: "Algo diferente" }
+};
+
+function clasificarMoods(item, tipo) {
+  var titulo  = campo(item, ["Título","Titulo"]).toLowerCase();
+  var genero  = campo(item, ["Género","Genero"]).toLowerCase();
+  var tono    = campo(item, ["Tono"]).toLowerCase();
+  var ritmo   = campo(item, ["Ritmo"]).toLowerCase();
+  var califStr = campo(item, ["Calificación","Calificacion"]);
+  var calif   = parseFloat(califStr) || 0;
+
+  function m(txt, palabras) {
+    return palabras.some(function(p) { return txt.indexOf(p) !== -1; });
+  }
+
+  var moods = [];
+
+  // 😭 Necesito llorar
+  if (m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental"])) {
+    moods.push("llorar");
+  }
+
+  // ✨ Quiero inspirarme
+  if (m(tono, ["inspirador","heroico","optimista"]) &&
+      m(genero, ["biograf","deport","histor","superaci"])) {
+    moods.push("inspirar");
+  }
+
+  // 😄 Ligero y divertido
+  if (m(tono, ["ligero","divertido","ingenioso","dinámico","cómico","sarcástico","teatral"]) ||
+      (m(genero, ["comedia"]) && m(tono, ["ligero","divertido","optimista","sarcástico","teatral","ágil"]))) {
+    moods.push("divertido");
+  }
+
+  // 💕 Modo romántico
+  if (m(tono, ["romántico","cálido","nostálgico"]) ||
+      (m(genero, ["romance"]) && m(tono, ["romántico","cálido","emotivo","nostálgico","melancólico"]))) {
+    moods.push("romantico");
+  }
+
+  // 🔥 Adrenalina pura
+  if (m(ritmo, ["rápido","ágil"]) &&
+      m(genero, ["acción","thriller","suspenso","espionaje","crimen"])) {
+    moods.push("adrenalina");
+  }
+
+  // 🏆 Cine de calidad
+  if (calif >= 8 &&
+      m(tono, ["serio","reflexivo","elegante","sofisticado","histórico","tenso","épico","melancólico","surrealista"])) {
+    moods.push("calidad");
+  }
+
+  // 🎄 Navideñas
+  if (m(genero, ["navideña","navidad","christmas"]) ||
+      m(titulo, ["navidad","navideña","christmas","angela"])) {
+    moods.push("navidad");
+  }
+
+  // 🎭 Algo diferente
+  if (m(tono, ["surrealista","teatral","agridulce","sarcástico"]) ||
+      m(genero, ["musical"]) ||
+      m(titulo, ["jojo","cruella","w: entre","concierto","puñales"])) {
+    moods.push("diferente");
+  }
+
+  return moods;
+}
+
+function actualizarContadoresMoods() {
+  var todos = dataPeliculas.concat(dataSeries);
+  var conteos = {};
+  Object.keys(MOODS_DEF).forEach(function(k) { conteos[k] = 0; });
+
+  todos.forEach(function(item) {
+    var tipo  = dataPeliculas.indexOf(item) !== -1 ? "Pelicula" : "Serie";
+    var moods = clasificarMoods(item, tipo);
+    moods.forEach(function(m) { conteos[m]++; });
+  });
+
+  Object.keys(conteos).forEach(function(k) {
+    var el = document.getElementById("count-" + k);
+    if (el) el.textContent = conteos[k] + " títulos";
+  });
+}
+
+function verMood(moodKey) {
+  var def   = MOODS_DEF[moodKey];
+  var todos = dataPeliculas.concat(dataSeries);
+
+  var filtrados = todos.filter(function(item) {
+    var tipo  = dataPeliculas.indexOf(item) !== -1 ? "Pelicula" : "Serie";
+    return clasificarMoods(item, tipo).indexOf(moodKey) !== -1;
+  });
+
+  // Ordenar por calificación desc
+  filtrados.sort(function(a, b) {
+    return (parseFloat(campo(b,["Calificación","Calificacion"])) || 0) -
+           (parseFloat(campo(a,["Calificación","Calificacion"])) || 0);
+  });
+
+  document.getElementById("moods-grid").style.display    = "none";
+  document.getElementById("mood-resultado").style.display = "block";
+  document.getElementById("mood-resultado-titulo").textContent =
+    def.emoji + " " + def.nombre;
+  document.querySelector(".moods-intro").style.display = "none";
+
+  var grid = document.getElementById("mood-cards");
+  grid.innerHTML = "";
+  filtrados.forEach(function(item) {
+    var tipo = dataPeliculas.indexOf(item) !== -1 ? "Pelicula" : "Serie";
+    grid.appendChild(crearCard(item, tipo));
+  });
+}
+
+function volverMoods() {
+  document.getElementById("moods-grid").style.display     = "grid";
+  document.getElementById("mood-resultado").style.display = "none";
+  document.querySelector(".moods-intro").style.display    = "block";
+}
+
+/* Actualizar contadores cuando los datos estén listos */
+var _moodsPendientes = 2; // espera pelis + series
+function checkMoodsReady() {
+  _moodsPendientes--;
+  if (_moodsPendientes === 0) actualizarContadoresMoods();
 }

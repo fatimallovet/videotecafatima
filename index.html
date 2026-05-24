@@ -22,13 +22,14 @@
 
 <header class="topbar">
 
-  <div class="logo">
-    <span class="logo-nombre">Videoteca</span> <span class="logo-apellido">Fátima</span>
+  <div class="logo" onclick="setTab('peliculas')" style="cursor:pointer">
+    🎬 Videoteca Fátima
   </div>
 
   <nav class="tabs-center">
     <button class="tab-btn activo" data-tab="peliculas" onclick="setTab('peliculas')">🎬 Películas</button>
     <button class="tab-btn" data-tab="series" onclick="setTab('series')">📺 Series</button>
+    <button class="tab-btn" data-tab="moods" onclick="setTab('moods')">🎭 Por mood</button>
     <button class="tab-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">ℹ️ Info</button>
   </nav>
 
@@ -50,6 +51,10 @@
   <button class="bottom-btn" data-tab="series" onclick="setTab('series')">
     <span class="bottom-icon">📺</span>
     <span class="bottom-label">Series</span>
+  </button>
+  <button class="bottom-btn" data-tab="moods" onclick="setTab('moods')">
+    <span class="bottom-icon">🎭</span>
+    <span class="bottom-label">Mood</span>
   </button>
   <button class="bottom-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">
     <span class="bottom-icon">ℹ️</span>
@@ -99,6 +104,76 @@
   <div id="cardsSeries" class="cards-grid"></div>
 </section>
 
+
+
+<!-- MOODS -->
+<section id="moods" class="tab">
+
+  <div class="moods-intro">
+    <p>¿Qué te apetece ver hoy?</p>
+  </div>
+
+  <!-- Grid de mood cards -->
+  <div id="moods-grid" class="moods-grid">
+
+    <div class="mood-card" onclick="verMood('llorar')">
+      <span class="mood-emoji">😭</span>
+      <span class="mood-nombre">Necesito llorar</span>
+      <span class="mood-count" id="count-llorar"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('inspirar')">
+      <span class="mood-emoji">✨</span>
+      <span class="mood-nombre">Quiero inspirarme</span>
+      <span class="mood-count" id="count-inspirar"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('divertido')">
+      <span class="mood-emoji">😄</span>
+      <span class="mood-nombre">Ligero y divertido</span>
+      <span class="mood-count" id="count-divertido"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('romantico')">
+      <span class="mood-emoji">💕</span>
+      <span class="mood-nombre">Modo romántico</span>
+      <span class="mood-count" id="count-romantico"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('adrenalina')">
+      <span class="mood-emoji">🔥</span>
+      <span class="mood-nombre">Adrenalina pura</span>
+      <span class="mood-count" id="count-adrenalina"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('calidad')">
+      <span class="mood-emoji">🏆</span>
+      <span class="mood-nombre">Cine de calidad</span>
+      <span class="mood-count" id="count-calidad"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('navidad')">
+      <span class="mood-emoji">🎄</span>
+      <span class="mood-nombre">Navideñas</span>
+      <span class="mood-count" id="count-navidad"></span>
+    </div>
+
+    <div class="mood-card" onclick="verMood('diferente')">
+      <span class="mood-emoji">🎭</span>
+      <span class="mood-nombre">Algo diferente</span>
+      <span class="mood-count" id="count-diferente"></span>
+    </div>
+
+  </div>
+
+  <!-- Resultados del mood seleccionado -->
+  <div id="mood-resultado" class="mood-resultado" style="display:none">
+    <button class="mood-volver" onclick="volverMoods()">← Volver</button>
+    <h3 id="mood-resultado-titulo" class="mood-resultado-titulo"></h3>
+    <div id="mood-cards" class="cards-grid"></div>
+  </div>
+
+</section>
 
 <!-- Cómo FUnciona -->
 <section id="como-funciona" class="tab">
@@ -191,9 +266,6 @@
 
 <!-- TOAST -->
 <div id="toast-compartir" class="toast-compartir">¡Enlace copiado!</div>
-
-<!-- OVERLAY PANEL DESEOS -->
-<div id="panel-deseos-overlay" class="panel-deseos-overlay" onclick="cerrarPanelDeseos()"></div>
 
 <!-- PANEL LISTA DE DESEOS -->
 <div id="panel-deseos" class="panel-deseos">
