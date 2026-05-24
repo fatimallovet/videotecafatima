@@ -636,6 +636,16 @@ function clasificarMoods(item, tipo) {
 
   var moods = [];
 
+  /* Detectar si es navideño — estos títulos van SOLO a navidad */
+  var esNavidad = m(genero, ["navideña","navidad","christmas"]) ||
+                  m(titulo, ["navidad","navideña","christmas","angela"]);
+
+  // 🎄 Navideñas — primero, y si aplica, no sigue a otros moods
+  if (esNavidad) {
+    moods.push("navidad");
+    return moods; // excluir de todos los demás
+  }
+
   // 😭 Necesito llorar
   if (m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental"])) {
     moods.push("llorar");
@@ -653,9 +663,10 @@ function clasificarMoods(item, tipo) {
     moods.push("divertido");
   }
 
-  // 💕 Modo romántico
-  if (m(tono, ["romántico","cálido","nostálgico"]) ||
-      (m(genero, ["romance"]) && m(tono, ["romántico","cálido","emotivo","nostálgico","melancólico"]))) {
+  // 💕 Modo romántico — requiere romance en el género Y tono romántico/nostálgico
+  // tono cálido solo no es suficiente, necesita romance explícito en género
+  if (m(tono, ["romántico"]) ||
+      (m(genero, ["romance"]) && m(tono, ["romántico","cálido","nostálgico","emotivo","melancólico"]))) {
     moods.push("romantico");
   }
 
@@ -669,12 +680,6 @@ function clasificarMoods(item, tipo) {
   if (calif >= 8 &&
       m(tono, ["serio","reflexivo","elegante","sofisticado","histórico","tenso","épico","melancólico","surrealista"])) {
     moods.push("calidad");
-  }
-
-  // 🎄 Navideñas
-  if (m(genero, ["navideña","navidad","christmas"]) ||
-      m(titulo, ["navidad","navideña","christmas","angela"])) {
-    moods.push("navidad");
   }
 
   // 🎭 Algo diferente
