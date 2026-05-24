@@ -623,68 +623,77 @@ var MOODS_DEF = {
 };
 
 function clasificarMoods(item, tipo) {
-  var titulo  = campo(item, ["Título","Titulo"]).toLowerCase();
-  var genero  = campo(item, ["Género","Genero"]).toLowerCase();
-  var tono    = campo(item, ["Tono"]).toLowerCase();
-  var ritmo   = campo(item, ["Ritmo"]).toLowerCase();
+  var titulo   = campo(item, ["Título","Titulo"]).toLowerCase();
+  var genero   = campo(item, ["Género","Genero"]).toLowerCase();
+  var tono     = campo(item, ["Tono"]).toLowerCase();
+  var ritmo    = campo(item, ["Ritmo"]).toLowerCase();
   var califStr = campo(item, ["Calificación","Calificacion"]);
-  var calif   = parseFloat(califStr) || 0;
+  var calif    = parseFloat(califStr) || 0;
 
-  function m(txt, palabras) {
-    return palabras.some(function(p) { return txt.indexOf(p) !== -1; });
-  }
+  function m(txt, pp) { return pp.some(function(p){ return txt.indexOf(p) !== -1; }); }
 
   var moods = [];
 
-  /* Detectar si es navideño — estos títulos van SOLO a navidad */
-  var esNavidad = m(genero, ["navideña","navidad","christmas"]) ||
-                  m(titulo, ["navidad","navideña","christmas","angela"]);
-
-  // 🎄 Navideñas — primero, y si aplica, no sigue a otros moods
-  if (esNavidad) {
-    moods.push("navidad");
-    return moods; // excluir de todos los demás
+  /* ── NAVIDAD: exclusivo, no pasa a otros moods ── */
+  if (m(genero, ["navideña","navidad","christmas"]) ||
+      m(titulo,  ["navidad","angela","christmas"])) {
+    return ["navidad"];
   }
 
-  // 😭 Necesito llorar
-  if (m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental"])) {
+  /* ── 😭 LLORAR ──────────────────────────────────
+     Género: drama + tono emotivo/triste
+     También: drama médico, drama familiar, bélico/guerra con tono emotivo */
+  if (m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental","emocional","tierno","familiar"])) {
     moods.push("llorar");
   }
 
-  // ✨ Quiero inspirarme
+  /* ── ✨ INSPIRAR ─────────────────────────────────
+     Tono inspirador/heroico/optimista, cualquier género */
   if (m(tono, ["inspirador","heroico","optimista"])) {
     moods.push("inspirar");
   }
 
-  // 😄 Ligero y divertido
-  if (m(tono, ["ligero","divertido","ingenioso","dinámico","cómico","sarcástico","teatral"]) ||
-      (m(genero, ["comedia"]) && m(tono, ["ligero","divertido","optimista","sarcástico","teatral","ágil"]))) {
+  /* ── 😄 DIVERTIDO ───────────────────────────────
+     Género comedia/aventura + tono ligero/divertido
+     También: acción-comedia, fantasía ligera */
+  if (m(genero, ["comedia"]) ||
+      m(tono,   ["ligero","divertido","ingenioso","sarcástico","teatral","dinámico","mágico"])) {
     moods.push("divertido");
   }
 
-  // 💕 Modo romántico — requiere romance en el género Y tono romántico/nostálgico
-  // tono cálido solo no es suficiente, necesita romance explícito en género
-  if (m(tono, ["romántico"]) ||
-      (m(genero, ["romance"]) && m(tono, ["romántico","cálido","nostálgico","emotivo","melancólico"]))) {
+  /* ── 💕 ROMÁNTICO ───────────────────────────────
+     Género romance + tono afín
+     O tono romántico explícito */
+  if (m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["romance","drama","familiar"]) ||
+      m(tono, ["romántico"])) {
     moods.push("romantico");
   }
 
-  // 🔥 Adrenalina pura
-  if (m(ritmo, ["rápido","ágil"]) &&
-      m(genero, ["acción","thriller","suspenso","espionaje","crimen"])) {
+  /* ── 🔥 ADRENALINA ──────────────────────────────
+     Géneros de acción/tensión + ritmo rápido o tono intenso
+     Incluye: thriller, suspenso, espionaje, crimen, sci-fi de acción */
+  if (m(genero, ["acción","thriller","suspenso","espionaje","crimen","intriga"]) &&
+      (m(ritmo, ["rápido","ágil","variado"]) || m(tono, ["tenso","intenso","trepidante","intrigante","crudo"]))) {
     moods.push("adrenalina");
   }
 
-  // 🏆 Cine de calidad
+  /* ── 🏆 CALIDAD ─────────────────────────────────
+     Calificación ≥ 8 + tono que indica profundidad/elaboración
+     Incluye: histórico, épico, elegante, reflexivo, serio, surrealista */
   if (calif >= 8 &&
-      m(tono, ["serio","reflexivo","elegante","sofisticado","histórico","tenso","épico","melancólico","surrealista"])) {
+      m(tono, ["serio","reflexivo","elegante","sofisticado","histórico","épico",
+               "melancólico","surrealista","tenso","intrigante","dramático","oscuro"])) {
     moods.push("calidad");
   }
 
-  // 🎭 Algo diferente
-  if (m(tono, ["surrealista","teatral","agridulce","sarcástico"]) ||
-      m(genero, ["musical"]) ||
-      m(titulo, ["jojo","cruella","w: entre","concierto","puñales"])) {
+  /* ── 🎭 DIFERENTE ───────────────────────────────
+     Musical, fantástico-surrealista, tono teatral/agridulce
+     Títulos únicos que no encajan bien en otras categorías */
+  if (m(genero, ["musical","sci-fi","ciencia ficción","fantasía"]) &&
+      m(tono,   ["surrealista","teatral","agridulce","nostálgico","mágico","misterioso","dramático"]) ||
+      m(tono,   ["surrealista","teatral","agridulce"]) ||
+      m(titulo, ["jojo","cruella","w: entre","concierto","puñales","robot salvaje",
+                 "recuerdos","alquimia","sonido de la magia"])) {
     moods.push("diferente");
   }
 
