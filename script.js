@@ -654,10 +654,12 @@ function clasificarMoods(item, tipo) {
   }
 
   /* ── 😄 DIVERTIDO ───────────────────────────────
-     Género comedia/aventura + tono ligero/divertido
-     También: acción-comedia, fantasía ligera */
-  if (m(genero, ["comedia"]) ||
-      m(tono,   ["ligero","divertido","ingenioso","sarcástico","teatral","dinámico","mágico"])) {
+     Comedia/tono ligero, PERO si tiene drama,
+     el tono debe ser explícitamente ligero/divertido para que entre */
+  var tieneDrama = m(genero, ["drama"]);
+  var tonoLigero = m(tono, ["ligero","divertido","ingenioso","sarcástico","teatral","dinámico","mágico","optimista"]);
+  if ((!tieneDrama && m(genero, ["comedia"])) ||
+      tonoLigero) {
     moods.push("divertido");
   }
 
