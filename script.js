@@ -662,10 +662,10 @@ function clasificarMoods(item, tipo) {
   }
 
   /* ── 💕 ROMÁNTICO ───────────────────────────────
-     Género romance + tono afín
-     O tono romántico explícito */
-  if (m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["romance","drama","familiar"]) ||
-      m(tono, ["romántico"])) {
+     Basta con tener "romance" en el género.
+     O tono romántico/cálido/nostálgico + drama/familiar */
+  if (m(genero, ["romance"]) ||
+      m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["drama","familiar"])) {
     moods.push("romantico");
   }
 
