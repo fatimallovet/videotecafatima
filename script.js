@@ -663,9 +663,12 @@ function clasificarMoods(item, tipo) {
 
   /* ── 💕 ROMÁNTICO ───────────────────────────────
      Basta con tener "romance" en el género.
-     O tono romántico/cálido/nostálgico + drama/familiar */
-  if (m(genero, ["romance"]) ||
-      m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["drama","familiar"])) {
+     O tono romántico/cálido/nostálgico + drama/familiar,
+     PERO no si el género principal es musical/fantasía (esos van a diferente) */
+  var esMusicalFantasia = m(genero, ["musical","fantasía"]) && !m(genero, ["romance"]);
+  if (!esMusicalFantasia &&
+      (m(genero, ["romance"]) ||
+       (m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["drama","familiar"])))) {
     moods.push("romantico");
   }
 
