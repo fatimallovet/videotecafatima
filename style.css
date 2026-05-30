@@ -1479,27 +1479,54 @@ h2 {
   padding: 0 20px 30px;
 }
 
+/* Barra sticky con botón volver + título */
+.mood-barra-volver {
+  position: sticky;
+  top: 58px;
+  background: #f4f1ea;
+  z-index: 90;
+  padding: 10px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto 16px;
+}
+
 .mood-volver {
-  background: none;
-  border: none;
+  background: white;
+  border: 1.5px solid #556b5d;
   color: #556b5d;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   font-family: "Poppins", sans-serif;
   cursor: pointer;
-  padding: 12px 0 8px;
+  padding: 7px 14px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-.mood-volver:hover { color: #3d4f48; }
+.mood-volver:hover { background: #556b5d; color: white; }
 
 .mood-resultado-titulo {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   color: #1f1f1f;
-  margin: 4px 0 20px;
+  margin: 0;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Cards del mood — mismo tamaño que el resto de la app */
+#mood-cards {
+  max-width: 900px;
+  margin: 0 auto;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 /* Responsive */
@@ -1516,4 +1543,10 @@ h2 {
 
   .mood-emoji { font-size: 2rem; }
   .mood-nombre { font-size: 0.85rem; }
+
+  .mood-barra-volver {
+    top: 52px;
+    padding: 8px 0 6px;
+  }
+  .mood-resultado-titulo { font-size: 0.95rem; }
 }
