@@ -731,10 +731,11 @@ function verMood(moodKey) {
     return clasificarMoods(item, tipo).indexOf(moodKey) !== -1;
   });
 
-  // Ordenar por más reciente (No. desc)
+  // Ordenar por año de estreno desc
   filtrados.sort(function(a, b) {
-    return (Number(campo(b,["No.","No"])) || 0) -
-           (Number(campo(a,["No.","No"])) || 0);
+    var ya = parseInt((campo(a,["Año","Anio"]) || "0").match(/\d{4}/) || 0);
+    var yb = parseInt((campo(b,["Año","Anio"]) || "0").match(/\d{4}/) || 0);
+    return yb - ya;
   });
 
   document.getElementById("moods-grid").style.display    = "none";
