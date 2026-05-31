@@ -731,10 +731,10 @@ function verMood(moodKey) {
     return clasificarMoods(item, tipo).indexOf(moodKey) !== -1;
   });
 
-  // Ordenar por calificación desc
+  // Ordenar por más reciente (No. desc)
   filtrados.sort(function(a, b) {
-    return (parseFloat(campo(b,["Calificación","Calificacion"])) || 0) -
-           (parseFloat(campo(a,["Calificación","Calificacion"])) || 0);
+    return (Number(campo(b,["No.","No"])) || 0) -
+           (Number(campo(a,["No.","No"])) || 0);
   });
 
   document.getElementById("moods-grid").style.display    = "none";
