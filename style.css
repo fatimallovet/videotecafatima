@@ -1309,8 +1309,8 @@ h2 {
 }
 
 .modal-poster-img {
-  width: 120px;
-  height: 180px;
+  width: 160px;
+  height: 240px;
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.20);
@@ -1522,11 +1522,10 @@ h2 {
   text-overflow: ellipsis;
 }
 
-/* Cards del mood — mismo tamaño que el resto de la app */
+/* Cards del mood — hereda .cards-grid, solo ajuste de margen */
 #mood-cards {
   max-width: 900px;
   margin: 0 auto;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 /* Responsive */
@@ -1551,7 +1550,7 @@ h2 {
   .mood-resultado-titulo { font-size: 0.95rem; }
 
   #mood-cards {
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+    gap: 12px !important;
   }
 }
