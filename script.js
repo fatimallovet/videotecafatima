@@ -72,8 +72,14 @@ function getNo(item) { return Number(item["No."] || item["No"] || 0); }
 function ordenarData(data, criterio) {
   var c = data.slice();
   if (criterio === "recientes")    c.sort(function(a,b){ return getNo(b) - getNo(a); });
-  if (criterio === "calificacion") c.sort(function(a,b){ return getNum(b,"Calificación") - getNum(a,"Calificación"); });
-  if (criterio === "anio")         c.sort(function(a,b){ return getAnio(b) - getAnio(a); });
+  if (criterio === "calificacion") c.sort(function(a,b){
+    var diff = getNum(b,"Calificación") - getNum(a,"Calificación");
+    return diff !== 0 ? diff : getNo(b) - getNo(a);
+  });
+  if (criterio === "anio")         c.sort(function(a,b){
+    var diff = getAnio(b) - getAnio(a);
+    return diff !== 0 ? diff : getNo(b) - getNo(a);
+  });
   return c;
 }
 
@@ -731,11 +737,12 @@ function verMood(moodKey) {
     return clasificarMoods(item, tipo).indexOf(moodKey) !== -1;
   });
 
-  // Ordenar por año de estreno desc
+  // Ordenar por año desc, desempate por No. desc
   filtrados.sort(function(a, b) {
-    var ya = parseInt((campo(a,["Año","Anio"]) || "0").match(/\d{4}/) || 0);
-    var yb = parseInt((campo(b,["Año","Anio"]) || "0").match(/\d{4}/) || 0);
-    return yb - ya;
+    var ya = parseInt(((campo(a,["Año","Anio"]) || "0").match(/[0-9]{4}/) || ["0"])[0]);
+    var yb = parseInt(((campo(b,["Año","Anio"]) || "0").match(/[0-9]{4}/) || ["0"])[0]);
+    if (yb !== ya) return yb - ya;
+    return (Number(campo(b,["No.","No"])) || 0) - (Number(campo(a,["No.","No"])) || 0);
   });
 
   document.getElementById("moods-grid").style.display    = "none";

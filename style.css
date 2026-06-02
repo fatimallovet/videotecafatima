@@ -832,8 +832,8 @@ h2 {
 /* ── RESPONSIVE CARDS ── */
 @media (max-width: 600px) {
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
   }
 
   .controles-wrapper {
@@ -1550,7 +1550,14 @@ h2 {
   .mood-resultado-titulo { font-size: 0.95rem; }
 
   #mood-cards {
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 10px !important;
+    padding: 0 !important;
+  }
+
+  /* Reducir padding lateral del tab moods en móvil */
+  #moods {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
