@@ -102,11 +102,13 @@ function renderizar(tipo) {
   var criterio = (document.getElementById(ordenId)  || {value:"recientes"}).value;
 
   var filtrados = data.filter(function(item) {
+    var streaming = obtenerStreaming(item);
     var campos = [
       item["Título"] || item["Titulo"],
       item["Género"] || item["Genero"],
       item["Tono"], item["Ritmo"], item["Etiquetas"],
-      item["Reseña"] || item["Resena"]
+      item["Reseña"] || item["Resena"],
+      streaming && streaming.plataformas ? streaming.plataformas.join(" ") : ""
     ];
     return campos.some(function(c) { return (c||"").toString().toLowerCase().includes(texto); });
   });
@@ -305,7 +307,7 @@ function mostrarModal(d) {
   var streaming = obtenerStreaming(d);
   var streamingWrap = document.getElementById("modal-streaming-wrap");
   if (streaming && streaming.plataformas && streaming.plataformas.length > 0) {
-    document.getElementById("modal-streaming").textContent = streaming.plataformas.join(", ");
+    document.getElementById("modal-streaming").innerHTML = pillsStreaming(streaming.plataformas);
     streamingWrap.style.display = "block";
   } else {
     streamingWrap.style.display = "none";
@@ -340,6 +342,19 @@ function obtenerStreaming(d) {
   var imdbId = extraerImdbId(campo(d, ["IMDB"]));
   if (!imdbId) return null;
   return streamingData[imdbId] || null;
+}
+
+function claseStreaming(nombre) {
+  var slug = nombre.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+    .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return "streaming-" + slug;
+}
+
+function pillsStreaming(plataformas) {
+  return plataformas.map(function(p) {
+    return '<span class="streaming-pill ' + claseStreaming(p) + '">' + p + '</span>';
+  }).join("");
 }
 
 function campo(d, nombres) {

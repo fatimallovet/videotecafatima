@@ -829,6 +829,62 @@ h2 {
 .banda-historia  { background: #8a7a5a; }
 .banda-otros     { background: #9aab9e; }
 
+/* ══════════════════════════════════════
+   STREAMING (modal)
+   ══════════════════════════════════════ */
+.modal-streaming-wrap {
+  margin: 16px 0;
+  padding: 12px 14px;
+  background: #f4f1ea;
+  border: 1px solid #e3ddd0;
+  border-radius: 12px;
+}
+
+.modal-streaming-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7a7060;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.modal-streaming-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.streaming-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: white;
+  background: #556b5d; /* color por defecto si la plataforma no tiene regla propia */
+}
+
+.streaming-netflix       { background: #a83244; }
+.streaming-prime-video   { background: #2f7a94; }
+.streaming-disney        { background: #35509e; }
+.streaming-max           { background: #6a4c93; }
+.streaming-apple-tv      { background: #2b2b2b; }
+.streaming-paramount     { background: #2b5fa8; }
+.streaming-star          { background: #2b2b2b; }
+.streaming-crunchyroll   { background: #c9772e; }
+.streaming-claro-video   { background: #a8342b; }
+.streaming-vix           { background: #2f9c8f; }
+
+.modal-streaming-credito {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: #a39c8c;
+}
+
 /* ── RESPONSIVE CARDS ── */
 @media (max-width: 600px) {
   .cards-grid {
