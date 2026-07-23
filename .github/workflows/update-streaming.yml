@@ -1,0 +1,38 @@
+name: Actualizar disponibilidad de streaming
+
+on:
+  schedule:
+    # Todos los lunes a las 09:00 UTC (~03:00 hora de CDMX)
+    - cron: "0 9 * * 1"
+  workflow_dispatch: {} # permite correrlo manualmente desde la pestaña "Actions"
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependencias
+        run: npm install papaparse
+
+      - name: Ejecutar script de streaming
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: node update-streaming.js
+
+      - name: Subir cambios si hay
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add streaming.json
+          git diff --staged --quiet || git commit -m "Actualizar disponibilidad de streaming"
+          git push
