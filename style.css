@@ -878,6 +878,16 @@ h2 {
 .streaming-claro-video   { background: #a8342b; }
 .streaming-vix           { background: #2f9c8f; }
 
+.streaming-ninguna {
+  background: transparent;
+  color: #a39c8c;
+  border: 1.5px dashed #cfc7b6;
+}
+
+.modal-streaming-wrap.sin-streaming {
+  background: #f7f5f0;
+}
+
 .modal-streaming-credito {
   display: block;
   margin-top: 8px;

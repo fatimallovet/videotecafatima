@@ -308,10 +308,13 @@ function mostrarModal(d) {
   var streamingWrap = document.getElementById("modal-streaming-wrap");
   if (streaming && streaming.plataformas && streaming.plataformas.length > 0) {
     document.getElementById("modal-streaming").innerHTML = pillsStreaming(streaming.plataformas);
-    streamingWrap.style.display = "block";
+    streamingWrap.classList.remove("sin-streaming");
   } else {
-    streamingWrap.style.display = "none";
+    document.getElementById("modal-streaming").innerHTML =
+      '<span class="streaming-pill streaming-ninguna">No disponible actualmente en streaming</span>';
+    streamingWrap.classList.add("sin-streaming");
   }
+  streamingWrap.style.display = "block";
 
   /* Botón deseos en modal */
   actualizarBtnDeseoModal();
