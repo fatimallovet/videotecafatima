@@ -27,6 +27,7 @@ const URL_SERIES = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfZKKu9u0US
 /* ── DATOS ── */
 var dataPeliculas = [];
 var dataSeries    = [];
+var streamingData = {}; // { "tt1234567": { titulo, plataformas, link, actualizado } }
 
 /* ── ESTADO MODAL ── */
 var _itemActual   = {};
@@ -54,6 +55,13 @@ fetch(URL_SERIES)
     activarBusqueda("busquedaSeries", "Serie");
     activarOrden("ordenSeries", "Serie");
   });
+
+/* streaming.json se genera solo cada semana vía GitHub Action.
+   Si por algo no existe o falla, seguimos sin romper el resto del sitio. */
+fetch("streaming.json")
+  .then(function(r) { return r.ok ? r.json() : {}; })
+  .then(function(json) { streamingData = json; })
+  .catch(function() { streamingData = {}; });
 
 /* ══════════════════════════════════════
    ORDENAR + FILTRAR → RENDERIZAR
@@ -293,6 +301,16 @@ function mostrarModal(d) {
     modalPoster.innerHTML = "";
   }
 
+  /* Disponibilidad en streaming */
+  var streaming = obtenerStreaming(d);
+  var streamingWrap = document.getElementById("modal-streaming-wrap");
+  if (streaming && streaming.plataformas && streaming.plataformas.length > 0) {
+    document.getElementById("modal-streaming").textContent = streaming.plataformas.join(", ");
+    streamingWrap.style.display = "block";
+  } else {
+    streamingWrap.style.display = "none";
+  }
+
   /* Botón deseos en modal */
   actualizarBtnDeseoModal();
   document.getElementById("modal").style.display = "flex";
@@ -312,6 +330,18 @@ function cerrarModalFuera(e) {
 /* ══════════════════════════════════════
    FICHA COMPLETA EN TEXTO
    ══════════════════════════════════════ */
+function extraerImdbId(url) {
+  if (!url) return null;
+  var m = String(url).match(/tt\d+/);
+  return m ? m[0] : null;
+}
+
+function obtenerStreaming(d) {
+  var imdbId = extraerImdbId(campo(d, ["IMDB"]));
+  if (!imdbId) return null;
+  return streamingData[imdbId] || null;
+}
+
 function campo(d, nombres) {
   /* Busca la primera clave que exista en el objeto, ignorando tildes y mayúsculas */
   var keys = Object.keys(d);
