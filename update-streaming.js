@@ -52,7 +52,29 @@ async function buscarEnTmdb(imdbId) {
   return null;
 }
 
-// Dado el tipo e ID de TMDB, regresa la lista de plataformas de streaming en REGION
+// Agrupa variantes de plan (con anuncios, básico, estándar, etc.) bajo el
+// nombre de marca principal, para no repetir "Netflix" dos veces por ejemplo.
+const REGLAS_MARCA = [
+  { patron: /netflix/i,                nombre: "Netflix" },
+  { patron: /prime video|amazon/i,     nombre: "Prime Video" },
+  { patron: /disney/i,                 nombre: "Disney+" },
+  { patron: /hbo max|^max$/i,          nombre: "Max" },
+  { patron: /apple tv/i,               nombre: "Apple TV+" },
+  { patron: /paramount/i,              nombre: "Paramount+" },
+  { patron: /star\+|star plus/i,       nombre: "Star+" },
+  { patron: /crunchyroll/i,            nombre: "Crunchyroll" },
+  { patron: /claro video/i,            nombre: "Claro Video" },
+  { patron: /\bvix\b/i,                nombre: "Vix" },
+];
+
+function normalizarProveedor(nombre) {
+  for (const regla of REGLAS_MARCA) {
+    if (regla.patron.test(nombre)) return regla.nombre;
+  }
+  return nombre; // si no coincide con ninguna regla, se deja tal cual
+}
+
+// Dado un tipo e ID de TMDB, regresa la lista de plataformas de streaming en REGION
 async function obtenerProveedores(tipo, id) {
   const url = `https://api.themoviedb.org/3/${tipo}/${id}/watch/providers?api_key=${TMDB_API_KEY}`;
   const res = await fetch(url);
@@ -62,7 +84,10 @@ async function obtenerProveedores(tipo, id) {
   const datosRegion = data.results && data.results[REGION];
   if (!datosRegion) return { flatrate: [], link: null };
 
-  const flatrate = (datosRegion.flatrate || []).map((p) => p.provider_name);
+  const nombresCrudos = (datosRegion.flatrate || []).map((p) => p.provider_name);
+  const nombresNormalizados = nombresCrudos.map(normalizarProveedor);
+  const flatrate = [...new Set(nombresNormalizados)]; // quita duplicados
+
   return { flatrate, link: datosRegion.link || null };
 }
 
