@@ -56,6 +56,14 @@ fetch(URL_SERIES)
     activarOrden("ordenSeries", "Serie");
   });
 
+/* info.html se separó del index para que se pueda editar sin tocar el resto del sitio */
+fetch("info.html")
+  .then(function(r) { return r.ok ? r.text() : "<p>No se pudo cargar la información.</p>"; })
+  .then(function(html) { document.getElementById("info-contenido").innerHTML = html; })
+  .catch(function() {
+    document.getElementById("info-contenido").innerHTML = "<p>No se pudo cargar la información.</p>";
+  });
+
 /* streaming.json se genera solo cada semana vía GitHub Action.
    Si por algo no existe o falla, seguimos sin romper el resto del sitio. */
 fetch("streaming.json")
@@ -311,7 +319,7 @@ function mostrarModal(d) {
     streamingWrap.classList.remove("sin-streaming");
   } else {
     document.getElementById("modal-streaming").innerHTML =
-      '<span class="streaming-pill streaming-ninguna">No disponible actualmente en streaming</span>';
+      '<span class="streaming-pill streaming-ninguna">No disponible actualmente</span>';
     streamingWrap.classList.add("sin-streaming");
   }
   streamingWrap.style.display = "block";

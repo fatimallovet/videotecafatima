@@ -895,6 +895,181 @@ h2 {
   color: #a39c8c;
 }
 
+/* ══════════════════════════════════════
+   SECCIÓN INFO (info.html)
+   ══════════════════════════════════════ */
+.info-page {
+  max-width: 680px;
+  margin: 32px auto 60px;
+  padding: 0 20px;
+  color: #3f3a32;
+}
+
+.info-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.info-hero h2 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #3f3a32;
+  margin: 0 0 6px;
+}
+.info-tagline {
+  font-family: "Cookie", cursive;
+  font-size: 1.6rem;
+  color: #556b5d;
+  margin: 0;
+}
+
+.info-block {
+  background: #fbfaf6;
+  border: 1px solid #eae4d6;
+  border-radius: 16px;
+  padding: 24px 26px;
+  line-height: 1.6;
+}
+.info-block p { margin: 0 0 12px; }
+.info-block p:last-child { margin-bottom: 0; }
+.info-block h3 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: #556b5d;
+  margin: 0 0 14px;
+}
+
+/* Divisor estilo boleto de cine: línea punteada con muescas a los lados */
+.info-divider {
+  position: relative;
+  height: 24px;
+  margin: 4px 0;
+}
+.info-divider::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 50%;
+  border-top: 2px dashed #d8d0bc;
+}
+.info-divider::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: #d8d0bc;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Lista "¿Cómo navegar?" */
+.info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.info-list li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.info-ico {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1ec;
+  border-radius: 10px;
+  font-size: 1.05rem;
+}
+.info-list strong {
+  display: block;
+  font-size: 0.96rem;
+  color: #3f3a32;
+  margin-bottom: 2px;
+}
+.info-list p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #6b6455;
+}
+
+/* Bloque de lista de deseos: pasos numerados */
+.info-callout {
+  background: #fff8f9;
+  border-color: #f2dde3;
+}
+.info-callout h3 { color: #b05070; }
+.info-steps {
+  list-style: none;
+  counter-reset: paso;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.info-steps li {
+  counter-increment: paso;
+  position: relative;
+  padding-left: 34px;
+  font-size: 0.92rem;
+  color: #5a5347;
+}
+.info-steps li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #b05070;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bloque de contacto */
+.info-contact {
+  text-align: center;
+}
+.info-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: #556b5d;
+  color: white !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+.info-contact-btn:hover {
+  background: #3f5346;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .info-block { padding: 20px 18px; }
+  .info-hero h2 { font-size: 1.4rem; }
+}
+
 /* ── RESPONSIVE CARDS ── */
 @media (max-width: 600px) {
   .cards-grid {
