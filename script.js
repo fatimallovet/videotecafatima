@@ -270,6 +270,12 @@ function llenarCards(data, gridId, tipo) {
 /* ══════════════════════════════════════
    MODAL
    ══════════════════════════════════════ */
+function toggleModalBloque(id, valor) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = (valor && String(valor).trim()) ? "" : "none";
+}
+
 function mostrarModal(d) {
   _itemActual   = d;
   _tituloActual = d["Título"] || d["Titulo"] || "";
@@ -280,21 +286,38 @@ function mostrarModal(d) {
   document.getElementById("modal-anio").textContent         = d["Año"] || d["Anio"] || "";
 
   document.getElementById("modal-label-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula" ? "Minutos: " : "Capítulos: ";
+    d["Tipo"] === "Pelicula" ? "⏱ Minutos" : "⏱ Capítulos";
   document.getElementById("modal-minutos-o-caps").textContent =
     d["Tipo"] === "Pelicula" ? (d["Minutos"] || "") : (d["Capítulos"] || d["Capitulos"] || "");
 
-  document.getElementById("modal-genero").textContent    = d["Género"]    || d["Genero"]    || "";
-  document.getElementById("modal-tono").textContent      = d["Tono"]      || "";
-  document.getElementById("modal-ritmo").textContent     = d["Ritmo"]     || "";
-  document.getElementById("modal-publico").textContent   = d["Público"]   || d["Publico"]   || "";
-  document.getElementById("modal-etiquetas").textContent = d["Etiquetas"] || "";
-  document.getElementById("modal-flags").textContent     = d["Flags"]     || "";
-  document.getElementById("modal-resena").textContent    = d["Reseña"]    || d["Resena"]    || "";
+  var genero    = d["Género"]    || d["Genero"]    || "";
+  var tono      = d["Tono"]      || "";
+  var ritmo     = d["Ritmo"]     || "";
+  var publico   = d["Público"]   || d["Publico"]   || "";
+  var etiquetas = d["Etiquetas"] || "";
+  var flags     = d["Flags"]     || "";
+  var resena    = d["Reseña"]    || d["Resena"]    || "";
+
+  document.getElementById("modal-genero").textContent    = genero;
+  document.getElementById("modal-tono").textContent      = tono;
+  document.getElementById("modal-ritmo").textContent     = ritmo;
+  document.getElementById("modal-publico").textContent   = publico;
+  document.getElementById("modal-etiquetas").textContent = etiquetas;
+  document.getElementById("modal-flags").textContent     = flags;
+  document.getElementById("modal-resena").textContent    = resena;
+
+  /* Oculta pills y secciones vacías para que la ficha no muestre huecos */
+  toggleModalBloque("modal-genero-pill", genero);
+  toggleModalBloque("modal-tono-pill", tono);
+  toggleModalBloque("modal-ritmo-pill", ritmo);
+  toggleModalBloque("modal-publico-pill", publico);
+  toggleModalBloque("modal-etiquetas-wrap", etiquetas);
+  toggleModalBloque("modal-flags-wrap", flags);
+  toggleModalBloque("modal-resena-wrap", resena);
 
   var imdb = document.getElementById("modal-imdb");
-  if (d["IMDB"]) { imdb.href = d["IMDB"]; imdb.style.display = "inline"; }
-  else           { imdb.href = "#";        imdb.style.display = "none";   }
+  if (d["IMDB"]) { imdb.href = d["IMDB"]; imdb.style.display = "inline-flex"; }
+  else           { imdb.href = "#";        imdb.style.display = "none";        }
 
   /* Póster en modal */
   var poster = campo(d, ["Poster","poster","Póster","póster"]).trim();
