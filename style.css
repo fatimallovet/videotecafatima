@@ -212,13 +212,13 @@ h2 {
   background: rgba(255, 255, 255, 0.32);
 }
 
-/* ── Banner: encabezado fijo con degradado, póster, título y rating ── */
+/* ── Banner: encabezado fijo con degradado, póster, título, rating y streaming ── */
 .modal-banner {
   display: flex;
   align-items: center;
   gap: 22px;
   padding: 26px 36px;
-  background: linear-gradient(135deg, #63806f 0%, #3f4f43 100%);
+  background: linear-gradient(135deg, #3a3833 0%, #1e1c19 100%);
   flex-shrink: 0;
 }
 
@@ -228,7 +228,7 @@ h2 {
 }
 
 #modal-titulo {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   font-family: "Poppins", sans-serif;
   font-size: 1.55rem;
   font-weight: 700;
@@ -236,11 +236,46 @@ h2 {
   line-height: 1.25;
 }
 
+.modal-banner-rating {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.modal-calif-stars {
+  position: relative;
+  display: inline-block;
+  font-size: 1.05rem;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.modal-calif-stars-base {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.modal-calif-stars-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #e0b256;
+}
+
+.modal-calif-num {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f1ece2;
+}
+
 .modal-banner-sub {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 500;
-  color: #dbe6df;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .modal-banner-sep {
@@ -248,30 +283,21 @@ h2 {
   opacity: 0.55;
 }
 
-.modal-calif-badge {
-  flex-shrink: 0;
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+/* Streaming dentro del banner: mismo contenido, sin la caja clara */
+.modal-banner .modal-streaming-wrap {
+  margin: 12px 0 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
-.modal-calif-num {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #3f4f43;
-  line-height: 1.1;
+.modal-banner .modal-streaming-label {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.modal-calif-max {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: #a39c8c;
+.modal-banner .modal-streaming-credito {
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* ── Cuadrícula de Género / Tono / Ritmo / Público ── */
@@ -470,6 +496,18 @@ h2 {
 
   .modal-banner-sub {
     text-align: center;
+  }
+
+  .modal-banner-rating {
+    justify-content: center;
+  }
+
+  .modal-banner .modal-streaming-wrap {
+    text-align: center;
+  }
+
+  .modal-banner .modal-streaming-pills {
+    justify-content: center;
   }
 
   .modal-meta-grid {

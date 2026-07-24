@@ -281,7 +281,16 @@ function mostrarModal(d) {
   _tituloActual = d["Título"] || d["Titulo"] || "";
 
   document.getElementById("modal-titulo").textContent       = _tituloActual;
-  document.getElementById("modal-calificacion").textContent = d["Calificación"] || d["Calificacion"] || "";
+
+  var califTexto = d["Calificación"] || d["Calificacion"] || "";
+  var califNum   = parseFloat(String(califTexto).replace(",", "."));
+  document.getElementById("modal-calificacion").textContent = califTexto;
+  var starsFill = document.getElementById("modal-calif-stars-fill");
+  if (starsFill) {
+    var pctEstrellas = isNaN(califNum) ? 0 : Math.max(0, Math.min(100, (califNum / 10) * 100));
+    starsFill.style.width = pctEstrellas + "%";
+  }
+
   document.getElementById("modal-origen").textContent       = d["Origen"] || "";
   document.getElementById("modal-anio").textContent         = d["Año"] || d["Anio"] || "";
 

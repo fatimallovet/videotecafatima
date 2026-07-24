@@ -193,6 +193,15 @@
 
       <div class="modal-banner-info">
         <h3 id="modal-titulo"></h3>
+
+        <div class="modal-banner-rating">
+          <span class="modal-calif-stars">
+            <span class="modal-calif-stars-base">★★★★★</span>
+            <span class="modal-calif-stars-fill" id="modal-calif-stars-fill">★★★★★</span>
+          </span>
+          <span class="modal-calif-num" id="modal-calificacion"></span>
+        </div>
+
         <p class="modal-banner-sub">
           <span id="modal-origen"></span>
           <span class="modal-banner-sep">·</span>
@@ -201,11 +210,12 @@
           <span id="modal-label-minutos-o-caps"></span>
           <span id="modal-minutos-o-caps"></span>
         </p>
-      </div>
 
-      <div class="modal-calif-badge">
-        <span class="modal-calif-num" id="modal-calificacion"></span>
-        <span class="modal-calif-max">/10</span>
+        <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
+          <span class="modal-streaming-label">📺 Disponible en</span>
+          <div id="modal-streaming" class="modal-streaming-pills"></div>
+          <small class="modal-streaming-credito">vía JustWatch</small>
+        </div>
       </div>
     </div>
 
@@ -264,12 +274,6 @@
           <span class="modal-detalle-label">Etiquetas</span>
           <p class="modal-detalle-texto" id="modal-etiquetas"></p>
         </div>
-      </div>
-
-      <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
-        <span class="modal-streaming-label">📺 Disponible en</span>
-        <div id="modal-streaming" class="modal-streaming-pills"></div>
-        <small class="modal-streaming-credito">Datos de streaming vía JustWatch</small>
       </div>
 
       <a id="modal-imdb" class="modal-imdb-link" href="" target="_blank">🎞️ Ver ficha en IMDB</a>
