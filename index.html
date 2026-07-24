@@ -186,68 +186,84 @@
 <!-- MODAL -->
 <div id="modal" class="modal" onclick="cerrarModalFuera(event)">
   <div class="modal-content">
+    <span class="close-btn" onclick="cerrarModal()">✖</span>
+
+    <div class="modal-banner">
+      <div id="modal-poster-wrap" class="modal-poster-wrap" style="display:none"></div>
+
+      <div class="modal-banner-info">
+        <h3 id="modal-titulo"></h3>
+        <p class="modal-banner-sub">
+          <span id="modal-origen"></span>
+          <span class="modal-banner-sep">·</span>
+          <span id="modal-anio"></span>
+          <span class="modal-banner-sep">·</span>
+          <span id="modal-label-minutos-o-caps"></span>
+          <span id="modal-minutos-o-caps"></span>
+        </p>
+      </div>
+
+      <div class="modal-calif-badge">
+        <span class="modal-calif-num" id="modal-calificacion"></span>
+        <span class="modal-calif-max">/10</span>
+      </div>
+    </div>
+
     <div class="modal-inner">
-      <span class="close-btn" onclick="cerrarModal()">✖</span>
 
-      <div class="modal-top">
-        <div id="modal-poster-wrap" class="modal-poster-wrap" style="display:none"></div>
-
-        <div class="modal-top-info">
-          <h3 id="modal-titulo"></h3>
-
-          <div class="modal-stats-grid">
-            <div class="modal-stat modal-stat-calif">
-              <span class="modal-stat-label">⭐ Calificación</span>
-              <span class="modal-stat-valor" id="modal-calificacion"></span>
-            </div>
-            <div class="modal-stat">
-              <span class="modal-stat-label">🌍 Origen</span>
-              <span class="modal-stat-valor" id="modal-origen"></span>
-            </div>
-            <div class="modal-stat">
-              <span class="modal-stat-label">📅 Año</span>
-              <span class="modal-stat-valor" id="modal-anio"></span>
-            </div>
-            <div class="modal-stat">
-              <span class="modal-stat-label" id="modal-label-minutos-o-caps"></span>
-              <span class="modal-stat-valor" id="modal-minutos-o-caps"></span>
-            </div>
-          </div>
-
-          <div class="modal-meta-list">
-            <div class="modal-meta-item" id="modal-genero-pill">
-              <span class="modal-meta-label">🎭 Género</span>
-              <span class="modal-meta-valor" id="modal-genero"></span>
-            </div>
-            <div class="modal-meta-item" id="modal-tono-pill">
-              <span class="modal-meta-label">🎨 Tono</span>
-              <span class="modal-meta-valor" id="modal-tono"></span>
-            </div>
-            <div class="modal-meta-item" id="modal-ritmo-pill">
-              <span class="modal-meta-label">⏩ Ritmo</span>
-              <span class="modal-meta-valor" id="modal-ritmo"></span>
-            </div>
-            <div class="modal-meta-item" id="modal-publico-pill">
-              <span class="modal-meta-label">👥 Público</span>
-              <span class="modal-meta-valor" id="modal-publico"></span>
-            </div>
-          </div>
+      <div class="modal-meta-grid">
+        <div class="modal-meta-item" id="modal-genero-pill">
+          <span class="modal-meta-icon">🎭</span>
+          <span class="modal-meta-text">
+            <span class="modal-meta-label">Género</span>
+            <span class="modal-meta-valor" id="modal-genero"></span>
+          </span>
+        </div>
+        <div class="modal-meta-item" id="modal-tono-pill">
+          <span class="modal-meta-icon">🎨</span>
+          <span class="modal-meta-text">
+            <span class="modal-meta-label">Tono</span>
+            <span class="modal-meta-valor" id="modal-tono"></span>
+          </span>
+        </div>
+        <div class="modal-meta-item" id="modal-ritmo-pill">
+          <span class="modal-meta-icon">⏩</span>
+          <span class="modal-meta-text">
+            <span class="modal-meta-label">Ritmo</span>
+            <span class="modal-meta-valor" id="modal-ritmo"></span>
+          </span>
+        </div>
+        <div class="modal-meta-item" id="modal-publico-pill">
+          <span class="modal-meta-icon">👥</span>
+          <span class="modal-meta-text">
+            <span class="modal-meta-label">Público</span>
+            <span class="modal-meta-valor" id="modal-publico"></span>
+          </span>
         </div>
       </div>
 
       <div class="modal-detalle-section modal-resena-section" id="modal-resena-wrap">
-        <span class="modal-detalle-label">📝 Reseña</span>
-        <p class="modal-detalle-texto" id="modal-resena"></p>
+        <span class="modal-detalle-icon">📝</span>
+        <div class="modal-detalle-body">
+          <span class="modal-detalle-label">Reseña</span>
+          <p class="modal-detalle-texto" id="modal-resena"></p>
+        </div>
       </div>
 
       <div class="modal-detalle-section modal-flags-section" id="modal-flags-wrap">
-        <span class="modal-detalle-label">⚠️ Flags</span>
-        <p class="modal-detalle-texto" id="modal-flags"></p>
+        <span class="modal-detalle-icon">⚠️</span>
+        <div class="modal-detalle-body">
+          <span class="modal-detalle-label">Flags</span>
+          <p class="modal-detalle-texto" id="modal-flags"></p>
+        </div>
       </div>
 
       <div class="modal-detalle-section modal-etiquetas-section" id="modal-etiquetas-wrap">
-        <span class="modal-detalle-label">🏷️ Etiquetas</span>
-        <p class="modal-detalle-texto" id="modal-etiquetas"></p>
+        <span class="modal-detalle-icon">🏷️</span>
+        <div class="modal-detalle-body">
+          <span class="modal-detalle-label">Etiquetas</span>
+          <p class="modal-detalle-texto" id="modal-etiquetas"></p>
+        </div>
       </div>
 
       <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">

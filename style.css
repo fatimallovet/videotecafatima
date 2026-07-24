@@ -169,8 +169,7 @@ h2 {
   overflow: hidden;
   border-radius: 20px;
   box-sizing: border-box;
-  box-shadow: 0 20px 50px rgba(31, 31, 31, 0.22);
-  border: 1px solid #ece7db;
+  box-shadow: 0 24px 60px rgba(20, 20, 18, 0.35);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -179,7 +178,7 @@ h2 {
 .modal-inner {
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 32px 40px;
+  padding: 26px 40px 32px;
   flex: 1;
 }
 
@@ -188,103 +187,137 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-/* ── Encabezado: póster + info lado a lado en escritorio ── */
-.modal-top {
+/* ── Botón cerrar: circulito flotante sobre el banner ── */
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
   display: flex;
-  gap: 28px;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+  transition: 0.2s;
 }
 
-.modal-top-info {
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* ── Banner: encabezado fijo con degradado, póster, título y rating ── */
+.modal-banner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 36px;
+  background: linear-gradient(135deg, #63806f 0%, #3f4f43 100%);
+  flex-shrink: 0;
+}
+
+.modal-banner-info {
   flex: 1;
   min-width: 0;
 }
 
 #modal-titulo {
-  margin: 0 0 16px 0;
+  margin: 0 0 10px 0;
   font-family: "Poppins", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  color: #1f1f1f;
+  color: #ffffff;
   line-height: 1.25;
-  padding-right: 28px; /* espacio para el botón cerrar */
 }
 
-/* ── Fila de stats horizontal: Calificación / Origen / Año / Min-Caps ── */
-.modal-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
+.modal-banner-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #dbe6df;
 }
 
-.modal-stat {
+.modal-banner-sep {
+  margin: 0 6px;
+  opacity: 0.55;
+}
+
+.modal-calif-badge {
+  flex-shrink: 0;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 10px 6px;
-  background: #f4f1ea;
-  border: 1px solid #e3ddd0;
-  border-radius: 12px;
-  text-align: center;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
 }
 
-.modal-stat-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #7a7060;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
+.modal-calif-num {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #3f4f43;
+  line-height: 1.1;
 }
 
-.modal-stat-valor {
-  font-size: 1.02rem;
+.modal-calif-max {
+  font-size: 0.6rem;
   font-weight: 700;
-  color: #1f1f1f;
+  color: #a39c8c;
 }
 
-.modal-stat-calif {
-  background: #556b5d;
-  border-color: #556b5d;
-}
-
-.modal-stat-calif .modal-stat-label {
-  color: #dce8e0;
-}
-
-.modal-stat-calif .modal-stat-valor {
-  color: #ffffff;
-}
-
-/* ── Filas etiquetadas: Género / Tono / Ritmo / Público ── */
-.modal-meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+/* ── Cuadrícula de Género / Tono / Ritmo / Público ── */
+.modal-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .modal-meta-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 12px;
+  gap: 11px;
+  padding: 10px 12px;
   background: #f4f1ea;
-  border: 1px solid #e3ddd0;
-  border-radius: 10px;
+  border: 1px solid #e7e2d5;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.modal-meta-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #556b5d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.modal-meta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .modal-meta-label {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  color: #7a7060;
+  color: #a39c8c;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  min-width: 92px;
-  flex-shrink: 0;
+  letter-spacing: 0.04em;
 }
 
 .modal-meta-valor {
@@ -295,14 +328,34 @@ h2 {
 
 /* ── Secciones de detalle: Reseña / Flags / Etiquetas ──
    Misma forma y estructura para las tres; solo cambia el
-   acento de color a la izquierda para poder distinguirlas. */
+   color del ícono/avatar para poder distinguirlas. */
 .modal-detalle-section {
-  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
   padding: 14px 16px;
   background: #f9f7f2;
   border: 1px solid #ece7db;
-  border-left: 4px solid #a39c8c;
-  border-radius: 10px;
+  border-radius: 14px;
+}
+
+.modal-detalle-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #ffffff;
+  background: #a39c8c;
+}
+
+.modal-detalle-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-detalle-label {
@@ -312,7 +365,7 @@ h2 {
   color: #7a7060;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .modal-detalle-texto {
@@ -322,8 +375,8 @@ h2 {
   line-height: 1.55;
 }
 
-.modal-resena-section {
-  border-left-color: #556b5d;
+.modal-resena-section .modal-detalle-icon {
+  background: #556b5d;
 }
 
 .modal-resena-section .modal-detalle-label {
@@ -334,16 +387,16 @@ h2 {
   font-style: italic;
 }
 
-.modal-flags-section {
-  border-left-color: #a8523f;
+.modal-flags-section .modal-detalle-icon {
+  background: #a8523f;
 }
 
 .modal-flags-section .modal-detalle-label {
   color: #a8523f;
 }
 
-.modal-etiquetas-section {
-  border-left-color: #a39c8c;
+.modal-etiquetas-section .modal-detalle-icon {
+  background: #a39c8c;
 }
 
 /* ── Enlace IMDB como botón discreto ── */
@@ -394,52 +447,35 @@ h2 {
   }
 
   .close-btn {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
-  .modal-top {
+  .modal-banner {
     flex-direction: column;
     align-items: center;
-    gap: 14px;
     text-align: center;
+    gap: 12px;
+    padding: 24px 20px;
+  }
+
+  .modal-poster-img {
+    width: 110px;
+    height: 165px;
   }
 
   #modal-titulo {
     text-align: center;
-    padding-right: 0;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
-  .modal-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .modal-banner-sub {
+    text-align: center;
+  }
+
+  .modal-meta-grid {
+    grid-template-columns: 1fr;
   }
 }
-
-
-.close-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #556b5d;
-  background: #f4f1ea;
-  border: 1px solid #e3ddd0;
-  transition: 0.2s;
-}
-
-.close-btn:hover {
-  background: #556b5d;
-  color: #ffffff;
-}
-
 
 
 /* BOTÓN BIBLIOTECA */
@@ -1399,7 +1435,9 @@ h2 {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #ece7db;
   flex-wrap: wrap;
 }
 
@@ -1423,10 +1461,20 @@ h2 {
   color: #556b5d;
 }
 
-.modal-compartir-btn:hover,
-.modal-deseos-btn:hover {
+.modal-compartir-btn:hover {
   background: #556b5d;
   color: white;
+  transform: translateY(-2px);
+}
+
+.modal-deseos-btn {
+  background: #556b5d;
+  color: white;
+}
+
+.modal-deseos-btn:hover {
+  background: #3f4f43;
+  border-color: #3f4f43;
   transform: translateY(-2px);
 }
 
@@ -1766,19 +1814,20 @@ h2 {
 }
 
 .modal-poster-img {
-  width: 170px;
-  height: 255px;
+  width: 118px;
+  height: 177px;
   object-fit: cover;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.20);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
   cursor: zoom-in;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: inline-block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .modal-poster-img:hover {
   transform: scale(1.04);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  box-shadow: 0 18px 36px rgba(0,0,0,0.4);
 }
 
 /* ══════════════════════════════════════
