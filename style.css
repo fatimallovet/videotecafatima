@@ -238,37 +238,25 @@ h2 {
 
 .modal-banner-rating {
   display: flex;
-  align-items: center;
-  gap: 9px;
+  align-items: baseline;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
-.modal-calif-stars {
-  position: relative;
-  display: inline-block;
+.modal-calif-star {
   font-size: 1.05rem;
-  letter-spacing: 3px;
-  line-height: 1;
-}
-
-.modal-calif-stars-base {
-  color: rgba(255, 255, 255, 0.22);
-}
-
-.modal-calif-stars-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  overflow: hidden;
-  white-space: nowrap;
-  color: #e0b256;
 }
 
 .modal-calif-num {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #f1ece2;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.modal-calif-max {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .modal-banner-sub {
