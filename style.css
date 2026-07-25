@@ -1948,61 +1948,105 @@ h2 {
 .support-icon-btn:hover { background: #f0ede6; }
 
 /* ══════════════════════════════════════
-   MOODS
+   COLECCIONES
    ══════════════════════════════════════ */
 .moods-intro {
   text-align: center;
-  padding: 24px 20px 8px;
-  font-size: 1.1rem;
-  color: #6b6b6b;
+  padding: 26px 20px 10px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #33332e;
 }
 
 .moods-grid {
-  max-width: 900px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 16px 20px 30px;
+  padding: 16px 20px 34px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 18px;
 }
 
 .mood-card {
-  background: white;
-  border-radius: 18px;
-  border: 1px solid #edeae3;
-  box-shadow: 0 4px 14px rgba(37,63,55,0.08);
-  padding: 28px 16px 22px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 26px 20px 22px;
+  min-height: 168px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-align: center;
+  text-align: left;
+  color: #ffffff;
+  isolation: isolate;
+  transition: transform 0.25s cubic-bezier(.2,.8,.3,1), box-shadow 0.25s ease;
+  box-shadow: 0 10px 24px -8px var(--mood-shadow, rgba(0,0,0,0.35));
+}
+
+/* Glow decorativo: un halo difuso que asoma por la esquina superior derecha */
+.mood-card::before {
+  content: "";
+  position: absolute;
+  top: -38px;
+  right: -38px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 70%);
+  z-index: -1;
+  transition: transform 0.4s ease;
 }
 
 .mood-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(37,63,55,0.14);
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 18px 34px -8px var(--mood-shadow, rgba(0,0,0,0.4));
+}
+
+.mood-card:hover::before {
+  transform: scale(1.25);
 }
 
 .mood-emoji {
-  font-size: 2.4rem;
+  font-size: 2.1rem;
   line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
 }
 
 .mood-nombre {
-  font-size: 0.95rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  color: #1f1f1f;
-  line-height: 1.3;
+  color: #ffffff;
+  line-height: 1.28;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .mood-count {
-  font-size: 0.75rem;
-  color: #9aab9e;
-  font-weight: 500;
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 3px 11px;
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
 }
+
+/* ── Identidad de color por colección ── */
+.mood-card--emocionar   { --mood-shadow: rgba(178,58,92,0.4);  background: linear-gradient(135deg, #e0577e 0%, #a83a5c 100%); }
+.mood-card--enganchar   { --mood-shadow: rgba(30,40,70,0.45);  background: linear-gradient(135deg, #3d4d75 0%, #1c2440 100%); }
+.mood-card--aventura    { --mood-shadow: rgba(160,60,20,0.4);  background: linear-gradient(135deg, #f07d3e 0%, #b8410f 100%); }
+.mood-card--desconectar { --mood-shadow: rgba(120,90,50,0.35); background: linear-gradient(135deg, #c9a877 0%, #8c6b3f 100%); }
+.mood-card--reir        { --mood-shadow: rgba(180,120,10,0.35);background: linear-gradient(135deg, #f8c545 0%, #dd9a1f 100%); }
+.mood-card--epoca       { --mood-shadow: rgba(90,25,35,0.45);  background: linear-gradient(135deg, #7d3140 0%, #431a22 100%); }
+.mood-card--pensar      { --mood-shadow: rgba(30,55,70,0.4);   background: linear-gradient(135deg, #4f7a8a 0%, #2a4152 100%); }
+.mood-card--inspirar    { --mood-shadow: rgba(190,90,10,0.4);  background: linear-gradient(135deg, #ffab5e 0%, #e0722a 100%); }
+.mood-card--lujo        { --mood-shadow: rgba(140,100,60,0.4); background: linear-gradient(135deg, #e3bd9a 0%, #a6795a 100%); }
+.mood-card--diferente   { --mood-shadow: rgba(100,30,110,0.42);background: linear-gradient(135deg, #9b4dca 0%, #5e2385 100%); }
 
 /* Resultados del mood */
 .mood-resultado {
@@ -2069,11 +2113,13 @@ h2 {
   }
 
   .mood-card {
-    padding: 22px 12px 18px;
+    padding: 20px 14px 16px;
+    min-height: 140px;
   }
 
-  .mood-emoji { font-size: 2rem; }
+  .mood-emoji { font-size: 1.8rem; }
   .mood-nombre { font-size: 0.85rem; }
+  .mood-count { font-size: 0.62rem; padding: 2px 9px; }
 
   .mood-barra-volver {
     top: 52px;

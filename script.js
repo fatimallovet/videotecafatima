@@ -697,14 +697,16 @@ function cerrarPosterGrande() {
    ══════════════════════════════════════ */
 
 var MOODS_DEF = {
-  emocionar:   { emoji: "❤️", nombre: "Para emocionarse" },
-  inspirar:    { emoji: "✨", nombre: "Para inspirarse" },
-  desconectar: { emoji: "☕", nombre: "Para desconectar" },
-  reir:        { emoji: "😂", nombre: "Para reír" },
-  enganchar:   { emoji: "🔎", nombre: "Para engancharse" },
-  aventura:    { emoji: "⚔️", nombre: "Para vivir una aventura" },
-  pensar:      { emoji: "🧠", nombre: "Para pensar" },
-  diferente:   { emoji: "🎭", nombre: "Algo diferente" }
+  emocionar:   { emoji: "❤️",  nombre: "Ten pañuelos cerca" },
+  enganchar:   { emoji: "🔎",  nombre: "No vas a poder parar" },
+  aventura:    { emoji: "⚔️",  nombre: "Sube la adrenalina" },
+  desconectar: { emoji: "☕",  nombre: "Apaga el cerebro un rato" },
+  reir:        { emoji: "😂",  nombre: "Carcajada garantizada" },
+  epoca:       { emoji: "🏛️", nombre: "Cine de época" },
+  pensar:      { emoji: "🧠",  nombre: "Te deja pensando" },
+  inspirar:    { emoji: "✨",  nombre: "Ganas de comerte el mundo" },
+  lujo:        { emoji: "🥂",  nombre: "Amor y lujo" },
+  diferente:   { emoji: "🎭",  nombre: "Fuera de serie" }
 };
 
 function clasificarMoodsBase(item) {
@@ -716,7 +718,7 @@ function clasificarMoodsBase(item) {
 
   var moods = [];
 
-  /* ── ❤️ EMOCIONARSE ─────────────────────────────
+  /* ── ❤️ TEN PAÑUELOS CERCA ───────────────────────
      Romance, o tono emotivo/tierno/nostálgico/desgarrador */
   if (m(genero, ["romance"]) ||
       m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental",
@@ -725,14 +727,25 @@ function clasificarMoodsBase(item) {
     moods.push("emocionar");
   }
 
-  /* ── ✨ INSPIRARSE ───────────────────────────────
-     Tono inspirador/heroico/optimista, o biografías/historias deportivas reales */
-  if (m(tono, ["inspirador","heroico","optimista"]) ||
-      m(genero, ["biografía","biográfica","deporte","deportivo","fútbol"])) {
-    moods.push("inspirar");
+  /* ── 🔎 NO VAS A PODER PARAR ─────────────────────
+     Misterio/suspenso/thriller/crimen/espionaje/intriga,
+     o tono intrigante/misterioso/tenso/intenso (aunque el género no sea policial) */
+  if (m(genero, ["misterio","suspenso","thriller","intriga","crimen","espionaje"]) ||
+      m(tono, ["intrigante","misterioso","tenso","intenso"])) {
+    moods.push("enganchar");
   }
 
-  /* ── ☕ DESCONECTAR ──────────────────────────────
+  /* ── ⚔️ SUBE LA ADRENALINA ───────────────────────
+     Acción/aventura/guerra/western/sci-fi/fantasía/deporte
+     + ritmo movido o tono épico/intenso/dinámico/tenso */
+  if (m(genero, ["acción","aventura","guerra","bélico","western","ciencia ficción",
+                 "sci-fi","fantasía","deporte","deportivo","fútbol"]) &&
+      (m(ritmo, ["rápido","ágil","dinámico","variado"]) ||
+       m(tono, ["épico","heroico","trepidante","intenso","dinámico","tenso"]))) {
+    moods.push("aventura");
+  }
+
+  /* ── ☕ APAGA EL CEREBRO UN RATO ──────────────────
      Tono ligero/cálido/entrañable/mágico, o géneros de "ver sin pensar":
      familiar, musical, culinario */
   if (m(tono, ["ligero","cálido","entrañable","tierno","mágico","optimista"]) ||
@@ -740,41 +753,45 @@ function clasificarMoodsBase(item) {
     moods.push("desconectar");
   }
 
-  /* ── 😂 REÍR ─────────────────────────────────────
+  /* ── 😂 CARCAJADA GARANTIZADA ─────────────────────
      Género comedia (incluye comedia negra), o tono cómico */
   if (m(genero, ["comedia"]) ||
       m(tono, ["ingenioso","sarcástico","absurdo","divertido"])) {
     moods.push("reir");
   }
 
-  /* ── 🔎 ENGANCHARSE ──────────────────────────────
-     Misterio/suspenso/thriller/crimen/espionaje/intriga,
-     o tono intrigante/misterioso aunque el género no sea de género policial */
-  if (m(genero, ["misterio","suspenso","thriller","intriga","crimen","espionaje"]) ||
-      m(tono, ["intrigante","misterioso"])) {
-    moods.push("enganchar");
+  /* ── 🏛️ CINE DE ÉPOCA ────────────────────────────
+     Ambientadas en el pasado: histórico/historia/drama de época/
+     k-drama/guerra/bélico. Es puramente por ambientación, no por tono. */
+  if (m(genero, ["histórico","historia","drama de época","k-drama","bélico","guerra"])) {
+    moods.push("epoca");
   }
 
-  /* ── ⚔️ VIVIR UNA AVENTURA ───────────────────────
-     Acción/aventura/guerra/western/sci-fi/fantasía
-     + ritmo movido o tono épico/intenso/dinámico/tenso */
-  if (m(genero, ["acción","aventura","guerra","bélico","western","ciencia ficción","sci-fi","fantasía"]) &&
-      (m(ritmo, ["rápido","ágil","dinámico","variado"]) ||
-       m(tono, ["épico","heroico","trepidante","intenso","dinámico","tenso"]))) {
-    moods.push("aventura");
-  }
-
-  /* ── 🧠 PENSAR ───────────────────────────────────
-     Tono serio/reflexivo/elegante/sofisticado/oscuro,
-     o géneros de peso: histórico, psicológico, crítica social, médico */
-  if (m(tono, ["serio","reflexivo","elegante","sofisticado","dramático","oscuro","melancólico"]) ||
-      m(genero, ["biografía","biográfica","historia","histórico","drama psicológico",
-                 "drama piscológico","crítica social","drama médico","drama de época",
-                 "drama histórico"])) {
+  /* ── 🧠 TE DEJA PENSANDO ──────────────────────────
+     SOLO por tono (serio/reflexivo/elegante/sofisticado/oscuro/histórico) —
+     el género por sí solo (ej. "Drama Histórico") ya NO cuenta, porque
+     ambientación no es lo mismo que profundidad (ver caso Sandokan) */
+  if (m(tono, ["serio","reflexivo","elegante","sofisticado","dramático","oscuro",
+               "melancólico","histórico"])) {
     moods.push("pensar");
   }
 
-  /* ── 🎭 ALGO DIFERENTE (regla explícita, sin contar la red de seguridad) ──
+  /* ── ✨ GANAS DE COMERTE EL MUNDO ─────────────────
+     SOLO por tono (inspirador/heroico/optimista) — igual que "pensar",
+     el género biografía/deporte ya no dispara esto por sí solo */
+  if (m(tono, ["inspirador","heroico","optimista"])) {
+    moods.push("inspirar");
+  }
+
+  /* ── 🥂 AMOR Y LUJO ───────────────────────────────
+     Romance + tono elegante/romántico/cálido/sofisticado/nostálgico:
+     el "coloquial" de películas bonitas, bien hechas, con feeling good */
+  if (m(genero, ["romance"]) &&
+      m(tono, ["elegante","romántico","cálido","sofisticado","nostálgico"])) {
+    moods.push("lujo");
+  }
+
+  /* ── 🎭 FUERA DE SERIE (regla explícita, sin contar la red de seguridad) ──
      Tono surrealista/teatral/absurdo, o musicales con toque mágico/nostálgico */
   if (m(tono, ["surrealista","teatral","absurdo"]) ||
       (m(genero, ["musical"]) && m(tono, ["mágico","nostálgico"]))) {
