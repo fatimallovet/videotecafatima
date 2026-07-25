@@ -697,97 +697,127 @@ function cerrarPosterGrande() {
    ══════════════════════════════════════ */
 
 var MOODS_DEF = {
-  llorar:     { emoji: "😭", nombre: "Necesito llorar" },
-  inspirar:   { emoji: "✨", nombre: "Quiero inspirarme" },
-  divertido:  { emoji: "😄", nombre: "Ligero y divertido" },
-  romantico:  { emoji: "💕", nombre: "Modo romántico" },
-  adrenalina: { emoji: "🔥", nombre: "Adrenalina pura" },
-  calidad:    { emoji: "🏆", nombre: "Cine de calidad" },
-  navidad:    { emoji: "🎄", nombre: "Navideñas" },
-  diferente:  { emoji: "🎭", nombre: "Algo diferente" }
+  emocionar:   { emoji: "❤️", nombre: "Para emocionarse" },
+  inspirar:    { emoji: "✨", nombre: "Para inspirarse" },
+  desconectar: { emoji: "☕", nombre: "Para desconectar" },
+  reir:        { emoji: "😂", nombre: "Para reír" },
+  enganchar:   { emoji: "🔎", nombre: "Para engancharse" },
+  aventura:    { emoji: "⚔️", nombre: "Para vivir una aventura" },
+  pensar:      { emoji: "🧠", nombre: "Para pensar" },
+  diferente:   { emoji: "🎭", nombre: "Algo diferente" }
 };
 
-function clasificarMoods(item, tipo) {
-  var titulo   = campo(item, ["Título","Titulo"]).toLowerCase();
-  var genero   = campo(item, ["Género","Genero"]).toLowerCase();
-  var tono     = campo(item, ["Tono"]).toLowerCase();
-  var ritmo    = campo(item, ["Ritmo"]).toLowerCase();
-  var califStr = campo(item, ["Calificación","Calificacion"]);
-  var calif    = parseFloat(califStr) || 0;
+function clasificarMoodsBase(item) {
+  var genero = campo(item, ["Género","Genero"]).toLowerCase();
+  var tono   = campo(item, ["Tono"]).toLowerCase();
+  var ritmo  = campo(item, ["Ritmo"]).toLowerCase();
 
   function m(txt, pp) { return pp.some(function(p){ return txt.indexOf(p) !== -1; }); }
 
   var moods = [];
 
-  /* ── NAVIDAD: exclusivo, no pasa a otros moods ── */
-  if (m(genero, ["navideña","navidad","christmas"]) ||
-      m(titulo,  ["navidad","angela","christmas"])) {
-    return ["navidad"];
+  /* ── ❤️ EMOCIONARSE ─────────────────────────────
+     Romance, o tono emotivo/tierno/nostálgico/desgarrador */
+  if (m(genero, ["romance"]) ||
+      m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental",
+               "emocional","tierno","entrañable","romántico","cálido","nostálgico",
+               "agridulce","dramático"])) {
+    moods.push("emocionar");
   }
 
-  /* ── 😭 LLORAR ──────────────────────────────────
-     Género: drama + tono emotivo/triste
-     También: drama médico, drama familiar, bélico/guerra con tono emotivo */
-  if (m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental","emocional","tierno","familiar"])) {
-    moods.push("llorar");
-  }
-
-  /* ── ✨ INSPIRAR ─────────────────────────────────
-     Tono inspirador/heroico/optimista, cualquier género */
-  if (m(tono, ["inspirador","heroico","optimista"])) {
+  /* ── ✨ INSPIRARSE ───────────────────────────────
+     Tono inspirador/heroico/optimista, o biografías/historias deportivas reales */
+  if (m(tono, ["inspirador","heroico","optimista"]) ||
+      m(genero, ["biografía","biográfica","deporte","deportivo","fútbol"])) {
     moods.push("inspirar");
   }
 
-  /* ── 😄 DIVERTIDO ───────────────────────────────
-     Comedia/tono ligero, PERO si tiene drama,
-     el tono debe ser explícitamente ligero/divertido para que entre */
-  var tieneDrama = m(genero, ["drama"]);
-  var tonoLigero = m(tono, ["ligero","divertido","ingenioso","sarcástico","teatral","dinámico","mágico","optimista"]);
-  if ((!tieneDrama && m(genero, ["comedia"])) ||
-      tonoLigero) {
-    moods.push("divertido");
+  /* ── ☕ DESCONECTAR ──────────────────────────────
+     Tono ligero/cálido/entrañable/mágico, o géneros de "ver sin pensar":
+     familiar, musical, culinario */
+  if (m(tono, ["ligero","cálido","entrañable","tierno","mágico","optimista"]) ||
+      m(genero, ["familia","familiar","musical","música","culinario"])) {
+    moods.push("desconectar");
   }
 
-  /* ── 💕 ROMÁNTICO ───────────────────────────────
-     Basta con tener "romance" en el género.
-     O tono romántico/cálido/nostálgico + drama/familiar,
-     PERO no si el género principal es musical/fantasía (esos van a diferente) */
-  var esMusicalFantasia = m(genero, ["musical","fantasía"]) && !m(genero, ["romance"]);
-  if (!esMusicalFantasia &&
-      (m(genero, ["romance"]) ||
-       (m(tono, ["romántico","cálido","nostálgico"]) && m(genero, ["drama","familiar"])))) {
-    moods.push("romantico");
+  /* ── 😂 REÍR ─────────────────────────────────────
+     Género comedia (incluye comedia negra), o tono cómico */
+  if (m(genero, ["comedia"]) ||
+      m(tono, ["ingenioso","sarcástico","absurdo","divertido"])) {
+    moods.push("reir");
   }
 
-  /* ── 🔥 ADRENALINA ──────────────────────────────
-     Géneros de acción/tensión + ritmo rápido o tono intenso
-     Incluye: thriller, suspenso, espionaje, crimen, sci-fi de acción */
-  if (m(genero, ["acción","thriller","suspenso","espionaje","crimen","intriga"]) &&
-      (m(ritmo, ["rápido","ágil","variado"]) || m(tono, ["tenso","intenso","trepidante","intrigante","crudo"]))) {
-    moods.push("adrenalina");
+  /* ── 🔎 ENGANCHARSE ──────────────────────────────
+     Misterio/suspenso/thriller/crimen/espionaje/intriga,
+     o tono intrigante/misterioso aunque el género no sea de género policial */
+  if (m(genero, ["misterio","suspenso","thriller","intriga","crimen","espionaje"]) ||
+      m(tono, ["intrigante","misterioso"])) {
+    moods.push("enganchar");
   }
 
-  /* ── 🏆 CALIDAD ─────────────────────────────────
-     Calificación ≥ 8 + tono que indica profundidad/elaboración
-     Incluye: histórico, épico, elegante, reflexivo, serio, surrealista */
-  if (calif >= 8 &&
-      m(tono, ["serio","reflexivo","elegante","sofisticado","histórico","épico",
-               "melancólico","surrealista","tenso","intrigante","dramático","oscuro"])) {
-    moods.push("calidad");
+  /* ── ⚔️ VIVIR UNA AVENTURA ───────────────────────
+     Acción/aventura/guerra/western/sci-fi/fantasía
+     + ritmo movido o tono épico/intenso/dinámico/tenso */
+  if (m(genero, ["acción","aventura","guerra","bélico","western","ciencia ficción","sci-fi","fantasía"]) &&
+      (m(ritmo, ["rápido","ágil","dinámico","variado"]) ||
+       m(tono, ["épico","heroico","trepidante","intenso","dinámico","tenso"]))) {
+    moods.push("aventura");
   }
 
-  /* ── 🎭 DIFERENTE ───────────────────────────────
-     Musical, fantástico-surrealista, tono teatral/agridulce
-     Títulos únicos que no encajan bien en otras categorías */
-  if (m(genero, ["musical","sci-fi","ciencia ficción","fantasía"]) &&
-      m(tono,   ["surrealista","teatral","agridulce","nostálgico","mágico","misterioso","dramático"]) ||
-      m(tono,   ["surrealista","teatral","agridulce"]) ||
-      m(titulo, ["jojo","cruella","w: entre","concierto","puñales","robot salvaje",
-                 "recuerdos","alquimia","sonido de la magia"])) {
+  /* ── 🧠 PENSAR ───────────────────────────────────
+     Tono serio/reflexivo/elegante/sofisticado/oscuro,
+     o géneros de peso: histórico, psicológico, crítica social, médico */
+  if (m(tono, ["serio","reflexivo","elegante","sofisticado","dramático","oscuro","melancólico"]) ||
+      m(genero, ["biografía","biográfica","historia","histórico","drama psicológico",
+                 "drama piscológico","crítica social","drama médico","drama de época",
+                 "drama histórico"])) {
+    moods.push("pensar");
+  }
+
+  /* ── 🎭 ALGO DIFERENTE (regla explícita, sin contar la red de seguridad) ──
+     Tono surrealista/teatral/absurdo, o musicales con toque mágico/nostálgico */
+  if (m(tono, ["surrealista","teatral","absurdo"]) ||
+      (m(genero, ["musical"]) && m(tono, ["mágico","nostálgico"]))) {
     moods.push("diferente");
   }
 
   return moods;
+}
+
+function clasificarMoods(item, tipo) {
+  var moods = clasificarMoodsBase(item);
+  /* Red de seguridad: si no matcheó ningún mood real, cae en "diferente"
+     para que ningún título se quede sin categoría */
+  if (moods.length === 0) moods.push("diferente");
+  return moods;
+}
+
+/* ── Revisión de cobertura de moods ──────────────────────────────
+   Corre automáticamente al cargar los datos y deja un reporte en la
+   consola del navegador (F12 → Console). Úsalo cada vez que agregues
+   títulos nuevos a tus Google Sheets: recarga el sitio, abre la consola
+   y revisa qué títulos cayeron solo por la red de seguridad — esos son
+   los que probablemente necesitan un ajuste de reglas o de Tono/Género. */
+function revisarCoberturaMoods() {
+  var todos = dataPeliculas.concat(dataSeries);
+  var sinMoodReal = [];
+
+  todos.forEach(function(item) {
+    var base = clasificarMoodsBase(item);
+    if (base.length === 0) {
+      sinMoodReal.push(campo(item, ["Título","Titulo"]) + "  [Género: " + campo(item,["Género","Genero"]) +
+        " | Tono: " + campo(item,["Tono"]) + " | Ritmo: " + campo(item,["Ritmo"]) + "]");
+    }
+  });
+
+  console.log("%c🎭 Revisión de cobertura de moods", "font-weight:bold;font-size:13px");
+  console.log("Total de títulos revisados: " + todos.length);
+  if (sinMoodReal.length === 0) {
+    console.log("✅ Todos los títulos matchean al menos un mood real. Nada cayó solo en la red de seguridad.");
+  } else {
+    console.warn("⚠️ " + sinMoodReal.length + " título(s) cayeron SOLO por la red de seguridad (mood 'Algo diferente' automático). Revisa si su Género/Tono necesita un ajuste, o si hace falta ampliar alguna regla:");
+    sinMoodReal.forEach(function(linea) { console.warn("  • " + linea); });
+  }
 }
 
 function actualizarContadoresMoods() {
@@ -848,5 +878,8 @@ function volverMoods() {
 var _moodsPendientes = 2; // espera pelis + series
 function checkMoodsReady() {
   _moodsPendientes--;
-  if (_moodsPendientes === 0) actualizarContadoresMoods();
+  if (_moodsPendientes === 0) {
+    actualizarContadoresMoods();
+    revisarCoberturaMoods();
+  }
 }
