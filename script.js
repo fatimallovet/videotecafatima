@@ -286,7 +286,7 @@ function mostrarModal(d) {
   document.getElementById("modal-anio").textContent         = d["Año"] || d["Anio"] || "";
 
   document.getElementById("modal-label-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula" ? "⏱ Minutos" : "⏱ Capítulos";
+    d["Tipo"] === "Pelicula" ? "⏱ Minutos:" : "⏱ Capítulos:";
   document.getElementById("modal-minutos-o-caps").textContent =
     d["Tipo"] === "Pelicula" ? (d["Minutos"] || "") : (d["Capítulos"] || d["Capitulos"] || "");
 
