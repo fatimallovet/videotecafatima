@@ -1028,6 +1028,16 @@ h2 {
   box-shadow: 0 14px 30px rgba(37,63,55,0.16);
 }
 
+/* ── Distinción sutil Película vs Serie ── */
+.pelicard--pelicula { border-left: 4px solid #556b5d; }
+.pelicard--serie     { border-left: 4px solid #2f7a94; }
+
+.pelicard--pelicula .pelicard-tipo { color: #556b5d; }
+.pelicard--serie     .pelicard-tipo { color: #2f7a94; }
+
+.pelicard--pelicula .pelicard-tipo::before { content: "🎬 "; }
+.pelicard--serie     .pelicard-tipo::before { content: "📺 "; }
+
 /* Banda de color superior por género */
 .pelicard-banda {
   height: 6px;

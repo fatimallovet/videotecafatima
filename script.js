@@ -180,7 +180,7 @@ function estrellas(calif) {
 
 function crearCard(item, tipo) {
   var card = document.createElement("div");
-  card.className = "pelicard";
+  card.className = "pelicard " + (tipo === "Serie" ? "pelicard--serie" : "pelicard--pelicula");
 
   var titulo    = campo(item, ["Título","Titulo"]);
   var anio      = campo(item, ["Año","Anio"]);
@@ -711,7 +711,7 @@ var MOODS_DEF = {
   deportivo:       { nombre: "Cine Deportivo" },
   lujo:            { nombre: "Amor y Lujo" },
   navidad:         { nombre: "Navideñas" },
-  diferente:       { nombre: "Fuera de Serie" }
+  diferente:       { nombre: "Algo diferente" }
 };
 
 function clasificarMoodsBase(item) {
@@ -797,7 +797,7 @@ function clasificarMoodsBase(item) {
     moods.push("lujo");
   }
 
-  /* ── Fuera de Serie: animación, tono surrealista/teatral/absurdo,
+  /* ── Algo diferente: animación, tono surrealista/teatral/absurdo,
      o red de seguridad para lo que no calzó en ninguna otra ── */
   if (m(genero, ["animación"]) || m(tono, ["surrealista","teatral","absurdo"])) {
     moods.push("diferente");
@@ -809,7 +809,7 @@ function clasificarMoodsBase(item) {
 function clasificarMoods(item, tipo) {
   var moods = clasificarMoodsBase(item);
   /* Red de seguridad: si no matcheó ninguna categoría real, cae en
-     "Fuera de Serie" para que ningún título se quede sin categoría */
+     "Algo diferente" para que ningún título se quede sin categoría */
   if (moods.length === 0) moods.push("diferente");
   return moods;
 }
