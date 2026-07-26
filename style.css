@@ -1170,15 +1170,16 @@ h2 {
   font-weight: 600;
   color: white;
   background: #556b5d; /* color por defecto si la plataforma no tiene regla propia */
+  border: 1px solid rgba(255,255,255,0.18); /* separa el pill de fondos oscuros como el banner */
 }
 
 .streaming-netflix       { background: #a83244; }
 .streaming-prime-video   { background: #2f7a94; }
 .streaming-disney        { background: #35509e; }
 .streaming-max           { background: #6a4c93; }
-.streaming-apple-tv      { background: #2b2b2b; }
+.streaming-apple-tv      { background: #e5e5ea; color: #1a1a1a; border-color: rgba(0,0,0,0.08); }
 .streaming-paramount     { background: #2b5fa8; }
-.streaming-star          { background: #2b2b2b; }
+.streaming-star          { background: #2d3452; }
 .streaming-crunchyroll   { background: #c9772e; }
 .streaming-claro-video   { background: #a8342b; }
 .streaming-vix           { background: #2f9c8f; }
@@ -1191,6 +1192,17 @@ h2 {
 
 .modal-streaming-wrap.sin-streaming {
   background: #f7f5f0;
+}
+
+/* Dentro del banner oscuro no queremos el parche claro de fondo;
+   el pill punteado ya se distingue solo */
+.modal-banner .modal-streaming-wrap.sin-streaming {
+  background: transparent;
+}
+
+.modal-banner .streaming-ninguna {
+  color: rgba(255,255,255,0.55);
+  border-color: rgba(255,255,255,0.3);
 }
 
 .modal-streaming-credito {
