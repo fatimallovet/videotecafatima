@@ -697,104 +697,109 @@ function cerrarPosterGrande() {
    ══════════════════════════════════════ */
 
 var MOODS_DEF = {
-  emocionar:   { emoji: "❤️",  nombre: "Ten pañuelos cerca" },
-  enganchar:   { emoji: "🔎",  nombre: "No vas a poder parar" },
-  aventura:    { emoji: "⚔️",  nombre: "Sube la adrenalina" },
-  desconectar: { emoji: "☕",  nombre: "Apaga el cerebro un rato" },
-  reir:        { emoji: "😂",  nombre: "Carcajada garantizada" },
-  epoca:       { emoji: "🏛️", nombre: "Cine de época" },
-  pensar:      { emoji: "🧠",  nombre: "Te deja pensando" },
-  inspirar:    { emoji: "✨",  nombre: "Ganas de comerte el mundo" },
-  lujo:        { emoji: "🥂",  nombre: "Amor y lujo" },
-  diferente:   { emoji: "🎭",  nombre: "Fuera de serie" }
+  accion_aventura: { nombre: "Acción y Aventura" },
+  dramas:          { nombre: "Dramas" },
+  crimen_suspenso: { nombre: "Crimen y Suspenso" },
+  comedia:         { nombre: "Comedia" },
+  biografias:      { nombre: "Biografías" },
+  scifi_fantasia:  { nombre: "Ciencia Ficción y Fantasía" },
+  romance:         { nombre: "Romance" },
+  epoca:           { nombre: "Cine de Época" },
+  kdrama:          { nombre: "K-dramas" },
+  familiares:      { nombre: "Familiares" },
+  musicales:       { nombre: "Musicales" },
+  deportivo:       { nombre: "Cine Deportivo" },
+  lujo:            { nombre: "Amor y Lujo" },
+  navidad:         { nombre: "Navideñas" },
+  diferente:       { nombre: "Fuera de Serie" }
 };
 
 function clasificarMoodsBase(item) {
   var genero = campo(item, ["Género","Genero"]).toLowerCase();
   var tono   = campo(item, ["Tono"]).toLowerCase();
-  var ritmo  = campo(item, ["Ritmo"]).toLowerCase();
+  var origen = campo(item, ["Origen"]).toLowerCase();
 
   function m(txt, pp) { return pp.some(function(p){ return txt.indexOf(p) !== -1; }); }
 
+  /* ── 🎄 NAVIDEÑAS: exclusivo, no entra a ninguna otra categoría ── */
+  if (m(genero, ["navideña","navideño"])) {
+    return ["navidad"];
+  }
+
   var moods = [];
 
-  /* ── ❤️ TEN PAÑUELOS CERCA ───────────────────────
-     Romance, o tono emotivo/tierno/nostálgico/desgarrador */
-  if (m(genero, ["romance"]) ||
-      m(tono, ["emotivo","desgarrador","conmovedor","melancólico","sentimental",
-               "emocional","tierno","entrañable","romántico","cálido","nostálgico",
-               "agridulce","dramático"])) {
-    moods.push("emocionar");
+  /* ── Acción y Aventura ── */
+  if (m(genero, ["acción","aventura","bélico","guerra","western"])) {
+    moods.push("accion_aventura");
   }
 
-  /* ── 🔎 NO VAS A PODER PARAR ─────────────────────
-     Misterio/suspenso/thriller/crimen/espionaje/intriga,
-     o tono intrigante/misterioso/tenso/intenso (aunque el género no sea policial) */
-  if (m(genero, ["misterio","suspenso","thriller","intriga","crimen","espionaje"]) ||
-      m(tono, ["intrigante","misterioso","tenso","intenso"])) {
-    moods.push("enganchar");
+  /* ── Comedia (incluye comedia negra) ── */
+  if (m(genero, ["comedia"])) {
+    moods.push("comedia");
   }
 
-  /* ── ⚔️ SUBE LA ADRENALINA ───────────────────────
-     Acción/aventura/guerra/western/sci-fi/fantasía/deporte
-     + ritmo movido o tono épico/intenso/dinámico/tenso */
-  if (m(genero, ["acción","aventura","guerra","bélico","western","ciencia ficción",
-                 "sci-fi","fantasía","deporte","deportivo","fútbol"]) &&
-      (m(ritmo, ["rápido","ágil","dinámico","variado"]) ||
-       m(tono, ["épico","heroico","trepidante","intenso","dinámico","tenso"]))) {
-    moods.push("aventura");
+  /* ── Romance ── */
+  if (m(genero, ["romance"])) {
+    moods.push("romance");
   }
 
-  /* ── ☕ APAGA EL CEREBRO UN RATO ──────────────────
-     Tono ligero/cálido/entrañable/mágico, o géneros de "ver sin pensar":
-     familiar, musical, culinario */
-  if (m(tono, ["ligero","cálido","entrañable","tierno","mágico","optimista"]) ||
-      m(genero, ["familia","familiar","musical","música","culinario"])) {
-    moods.push("desconectar");
+  /* ── Crimen y Suspenso ── */
+  if (m(genero, ["crimen","thriller","suspenso","misterio","intriga","espionaje"])) {
+    moods.push("crimen_suspenso");
   }
 
-  /* ── 😂 CARCAJADA GARANTIZADA ─────────────────────
-     Género comedia (incluye comedia negra), o tono cómico */
-  if (m(genero, ["comedia"]) ||
-      m(tono, ["ingenioso","sarcástico","absurdo","divertido"])) {
-    moods.push("reir");
+  /* ── Ciencia Ficción y Fantasía ── */
+  if (m(genero, ["ciencia ficción","sci-fi","fantasía"])) {
+    moods.push("scifi_fantasia");
   }
 
-  /* ── 🏛️ CINE DE ÉPOCA ────────────────────────────
-     Ambientadas en el pasado: histórico/historia/drama de época/
-     k-drama/guerra/bélico. Es puramente por ambientación, no por tono. */
-  if (m(genero, ["histórico","historia","drama de época","k-drama","bélico","guerra"])) {
+  /* ── Cine de Época (por ambientación, no por tono) ── */
+  if (m(genero, ["histórico","historia","drama de época","drama histórico"])) {
     moods.push("epoca");
   }
 
-  /* ── 🧠 TE DEJA PENSANDO ──────────────────────────
-     SOLO por tono (serio/reflexivo/elegante/sofisticado/oscuro/histórico) —
-     el género por sí solo (ej. "Drama Histórico") ya NO cuenta, porque
-     ambientación no es lo mismo que profundidad (ver caso Sandokan) */
-  if (m(tono, ["serio","reflexivo","elegante","sofisticado","dramático","oscuro",
-               "melancólico","histórico"])) {
-    moods.push("pensar");
+  /* ── Familiares ── */
+  if (m(genero, ["familiar","familia"])) {
+    moods.push("familiares");
   }
 
-  /* ── ✨ GANAS DE COMERTE EL MUNDO ─────────────────
-     SOLO por tono (inspirador/heroico/optimista) — igual que "pensar",
-     el género biografía/deporte ya no dispara esto por sí solo */
-  if (m(tono, ["inspirador","heroico","optimista"])) {
-    moods.push("inspirar");
+  /* ── Musicales ── */
+  if (m(genero, ["musical","música"])) {
+    moods.push("musicales");
   }
 
-  /* ── 🥂 AMOR Y LUJO ───────────────────────────────
-     Romance + tono elegante/romántico/cálido/sofisticado/nostálgico:
-     el "coloquial" de películas bonitas, bien hechas, con feeling good */
+  /* ── Biografías ── */
+  if (m(genero, ["biografía","biográfica"])) {
+    moods.push("biografias");
+  }
+
+  /* ── Cine Deportivo ── */
+  if (m(genero, ["deporte","deportivo","fútbol"])) {
+    moods.push("deportivo");
+  }
+
+  /* ── K-dramas (por Origen, no por género) ── */
+  if (m(origen, ["corea"])) {
+    moods.push("kdrama");
+  }
+
+  /* ── Dramas, depurado: solo si "drama" es realmente el género dominante.
+     Si además trae un género que le da otra identidad más fuerte
+     (comedia/acción/aventura/fantasía/sci-fi), ya no cuenta como "Drama" puro */
+  var contradiceDrama = ["comedia","acción","aventura","fantasía","ciencia ficción","sci-fi"];
+  if (m(genero, ["drama"]) && !m(genero, contradiceDrama)) {
+    moods.push("dramas");
+  }
+
+  /* ── Amor y Lujo: sub-selección especial dentro de Romance ── */
   if (m(genero, ["romance"]) &&
       m(tono, ["elegante","romántico","cálido","sofisticado","nostálgico"])) {
     moods.push("lujo");
   }
 
-  /* ── 🎭 FUERA DE SERIE (regla explícita, sin contar la red de seguridad) ──
-     Tono surrealista/teatral/absurdo, o musicales con toque mágico/nostálgico */
-  if (m(tono, ["surrealista","teatral","absurdo"]) ||
-      (m(genero, ["musical"]) && m(tono, ["mágico","nostálgico"]))) {
+  /* ── Fuera de Serie: animación, tono surrealista/teatral/absurdo,
+     o red de seguridad para lo que no calzó en ninguna otra ── */
+  if (m(genero, ["animación"]) || m(tono, ["surrealista","teatral","absurdo"])) {
     moods.push("diferente");
   }
 
@@ -803,8 +808,8 @@ function clasificarMoodsBase(item) {
 
 function clasificarMoods(item, tipo) {
   var moods = clasificarMoodsBase(item);
-  /* Red de seguridad: si no matcheó ningún mood real, cae en "diferente"
-     para que ningún título se quede sin categoría */
+  /* Red de seguridad: si no matcheó ninguna categoría real, cae en
+     "Fuera de Serie" para que ningún título se quede sin categoría */
   if (moods.length === 0) moods.push("diferente");
   return moods;
 }
@@ -873,8 +878,7 @@ function verMood(moodKey) {
 
   document.getElementById("moods-grid").style.display    = "none";
   document.getElementById("mood-resultado").style.display = "block";
-  document.getElementById("mood-resultado-titulo").textContent =
-    def.emoji + " " + def.nombre;
+  document.getElementById("mood-resultado-titulo").textContent = def.nombre;
   document.querySelector(".moods-intro").style.display = "none";
 
   var grid = document.getElementById("mood-cards");

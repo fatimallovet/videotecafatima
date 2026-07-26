@@ -1963,90 +1963,89 @@ h2 {
   margin: 0 auto;
   padding: 16px 20px 34px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 12px;
 }
 
 .mood-card {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
-  padding: 26px 20px 22px;
-  min-height: 168px;
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+  min-height: 84px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 14px;
+  gap: 10px;
   cursor: pointer;
   text-align: left;
   color: #ffffff;
   isolation: isolate;
-  transition: transform 0.25s cubic-bezier(.2,.8,.3,1), box-shadow 0.25s ease;
-  box-shadow: 0 10px 24px -8px var(--mood-shadow, rgba(0,0,0,0.35));
+  transition: transform 0.2s cubic-bezier(.2,.8,.3,1), box-shadow 0.2s ease;
+  box-shadow: 0 6px 14px -6px var(--mood-shadow, rgba(0,0,0,0.35));
 }
 
 /* Glow decorativo: un halo difuso que asoma por la esquina superior derecha */
 .mood-card::before {
   content: "";
   position: absolute;
-  top: -38px;
-  right: -38px;
-  width: 130px;
-  height: 130px;
+  top: -26px;
+  right: -26px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0) 70%);
   z-index: -1;
-  transition: transform 0.4s ease;
+  transition: transform 0.35s ease;
 }
 
 .mood-card:hover {
-  transform: translateY(-6px) scale(1.015);
-  box-shadow: 0 18px 34px -8px var(--mood-shadow, rgba(0,0,0,0.4));
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 12px 22px -6px var(--mood-shadow, rgba(0,0,0,0.4));
 }
 
 .mood-card:hover::before {
-  transform: scale(1.25);
-}
-
-.mood-emoji {
-  font-size: 2.1rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  transform: scale(1.3);
 }
 
 .mood-nombre {
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.28;
+  line-height: 1.22;
   text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .mood-count {
   align-self: flex-start;
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   color: rgba(255,255,255,0.92);
   background: rgba(255,255,255,0.2);
   border: 1px solid rgba(255,255,255,0.3);
-  padding: 3px 11px;
+  padding: 2px 9px;
   border-radius: 999px;
   backdrop-filter: blur(2px);
 }
 
 /* ── Identidad de color por colección ── */
-.mood-card--emocionar   { --mood-shadow: rgba(178,58,92,0.4);  background: linear-gradient(135deg, #e0577e 0%, #a83a5c 100%); }
-.mood-card--enganchar   { --mood-shadow: rgba(30,40,70,0.45);  background: linear-gradient(135deg, #3d4d75 0%, #1c2440 100%); }
-.mood-card--aventura    { --mood-shadow: rgba(160,60,20,0.4);  background: linear-gradient(135deg, #f07d3e 0%, #b8410f 100%); }
-.mood-card--desconectar { --mood-shadow: rgba(120,90,50,0.35); background: linear-gradient(135deg, #c9a877 0%, #8c6b3f 100%); }
-.mood-card--reir        { --mood-shadow: rgba(180,120,10,0.35);background: linear-gradient(135deg, #f8c545 0%, #dd9a1f 100%); }
-.mood-card--epoca       { --mood-shadow: rgba(90,25,35,0.45);  background: linear-gradient(135deg, #7d3140 0%, #431a22 100%); }
-.mood-card--pensar      { --mood-shadow: rgba(30,55,70,0.4);   background: linear-gradient(135deg, #4f7a8a 0%, #2a4152 100%); }
-.mood-card--inspirar    { --mood-shadow: rgba(190,90,10,0.4);  background: linear-gradient(135deg, #ffab5e 0%, #e0722a 100%); }
-.mood-card--lujo        { --mood-shadow: rgba(140,100,60,0.4); background: linear-gradient(135deg, #e3bd9a 0%, #a6795a 100%); }
-.mood-card--diferente   { --mood-shadow: rgba(100,30,110,0.42);background: linear-gradient(135deg, #9b4dca 0%, #5e2385 100%); }
+.mood-card--accion_aventura { --mood-shadow: rgba(160,60,20,0.4);   background: linear-gradient(135deg, #f07d3e 0%, #b8410f 100%); }
+.mood-card--dramas          { --mood-shadow: rgba(120,30,45,0.4);   background: linear-gradient(135deg, #b23a54 0%, #6e1f34 100%); }
+.mood-card--crimen_suspenso { --mood-shadow: rgba(30,40,70,0.45);   background: linear-gradient(135deg, #3d4d75 0%, #1c2440 100%); }
+.mood-card--comedia         { --mood-shadow: rgba(180,120,10,0.35); background: linear-gradient(135deg, #f8c545 0%, #dd9a1f 100%); }
+.mood-card--biografias      { --mood-shadow: rgba(20,70,60,0.4);    background: linear-gradient(135deg, #2f8a78 0%, #164a3f 100%); }
+.mood-card--scifi_fantasia  { --mood-shadow: rgba(80,40,140,0.4);   background: linear-gradient(135deg, #7c4dbd 0%, #452a75 100%); }
+.mood-card--romance         { --mood-shadow: rgba(178,58,92,0.4);   background: linear-gradient(135deg, #e0577e 0%, #a83a5c 100%); }
+.mood-card--epoca           { --mood-shadow: rgba(90,25,35,0.45);   background: linear-gradient(135deg, #7d3140 0%, #431a22 100%); }
+.mood-card--kdrama          { --mood-shadow: rgba(160,45,25,0.4);   background: linear-gradient(135deg, #ff6f5e 0%, #c1402e 100%); }
+.mood-card--familiares      { --mood-shadow: rgba(30,90,55,0.35);   background: linear-gradient(135deg, #6fae7a 0%, #3d7048 100%); }
+.mood-card--musicales       { --mood-shadow: rgba(140,30,100,0.4);  background: linear-gradient(135deg, #d6479e 0%, #93266b 100%); }
+.mood-card--deportivo       { --mood-shadow: rgba(20,70,110,0.4);   background: linear-gradient(135deg, #2f8fd1 0%, #175a8c 100%); }
+.mood-card--lujo            { --mood-shadow: rgba(140,100,60,0.4);  background: linear-gradient(135deg, #e3bd9a 0%, #a6795a 100%); }
+.mood-card--navidad         { --mood-shadow: rgba(120,25,25,0.4);   background: linear-gradient(135deg, #c23b3b 0%, #7a1f1f 100%); }
+.mood-card--diferente       { --mood-shadow: rgba(100,30,110,0.42); background: linear-gradient(135deg, #9b4dca 0%, #5e2385 100%); }
 
 /* Resultados del mood */
 .mood-resultado {
@@ -2113,13 +2112,12 @@ h2 {
   }
 
   .mood-card {
-    padding: 20px 14px 16px;
-    min-height: 140px;
+    padding: 14px 14px 12px;
+    min-height: 76px;
   }
 
-  .mood-emoji { font-size: 1.8rem; }
   .mood-nombre { font-size: 0.85rem; }
-  .mood-count { font-size: 0.62rem; padding: 2px 9px; }
+  .mood-count { font-size: 0.6rem; padding: 2px 9px; }
 
   .mood-barra-volver {
     top: 52px;
