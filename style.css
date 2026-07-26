@@ -465,37 +465,55 @@ h2 {
   }
 
   .modal-banner {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
     gap: 12px;
-    padding: 24px 20px;
+    padding: 16px 16px;
   }
 
   .modal-poster-img {
-    width: 110px;
-    height: 165px;
+    width: 72px;
+    height: 108px;
+    border-width: 2px;
   }
 
   #modal-titulo {
-    text-align: center;
-    font-size: 1.2rem;
+    text-align: left;
+    font-size: 1rem;
+    margin-bottom: 5px;
   }
 
   .modal-banner-sub {
-    text-align: center;
+    text-align: left;
+    font-size: 0.74rem;
   }
 
   .modal-banner-rating {
-    justify-content: center;
+    justify-content: flex-start;
+    margin-bottom: 5px;
   }
 
+  .modal-calif-num { font-size: 1rem; }
+  .modal-calif-star { font-size: 0.85rem; }
+
   .modal-banner .modal-streaming-wrap {
-    text-align: center;
+    text-align: left;
+    margin-top: 6px;
   }
 
   .modal-banner .modal-streaming-pills {
-    justify-content: center;
+    justify-content: flex-start;
+  }
+
+  .modal-banner .modal-streaming-label {
+    font-size: 0.7rem;
+  }
+
+  /* El crédito de JustWatch se omite aquí: en el espacio compacto
+     no aporta y le quita lugar a lo importante */
+  .modal-banner .modal-streaming-credito {
+    display: none;
   }
 
   .modal-meta-grid {
