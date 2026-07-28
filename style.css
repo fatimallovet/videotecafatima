@@ -1028,9 +1028,11 @@ h2 {
   box-shadow: 0 14px 30px rgba(37,63,55,0.16);
 }
 
-/* ── Distinción sutil Película vs Serie ── */
-.pelicard--pelicula { border-left: 4px solid #556b5d; }
-.pelicard--serie     { border-left: 4px solid #2f7a94; }
+/* ── Distinción sutil Película vs Serie ──
+   Un ligerísimo baño de color en la esquina que se desvanece a blanco,
+   sin bordes ni líneas duras */
+.pelicard--pelicula { background: linear-gradient(160deg, rgba(85,107,93,0.07) 0%, rgba(255,255,255,0) 42%), white; }
+.pelicard--serie     { background: linear-gradient(160deg, rgba(47,122,148,0.07) 0%, rgba(255,255,255,0) 42%), white; }
 
 .pelicard--pelicula .pelicard-tipo { color: #556b5d; }
 .pelicard--serie     .pelicard-tipo { color: #2f7a94; }
