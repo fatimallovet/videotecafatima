@@ -3,8 +3,9 @@
 /* ── NAVEGACIÓN ── */
 function openTab(tabId) { setTab(tabId); } // alias por compatibilidad
 
-function setTab(tabId) {
-  /* Secciones */
+/* Aplica el cambio visual de tab. No toca el historial del navegador;
+   eso lo maneja setTab()/aplicarHash() para que el botón "atrás" funcione. */
+function mostrarTab(tabId) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('visible'));
   var target = document.getElementById(tabId);
   if (target) target.classList.add('visible');
@@ -18,6 +19,14 @@ function setTab(tabId) {
   document.querySelectorAll('.bottom-btn').forEach(function(b) {
     b.classList.toggle('activo', b.dataset.tab === tabId);
   });
+}
+
+/* Cambia de tab y actualiza la URL (#peliculas, #series, etc.)
+   para que el usuario pueda usar el botón "atrás" del navegador. */
+function setTab(tabId) {
+  var nuevoHash = '#' + tabId;
+  if (location.hash === nuevoHash) { mostrarTab(tabId); return; }
+  location.hash = nuevoHash; // dispara "hashchange" → aplicarHash() hace el resto
 }
 
 /* ── URLS ── */
@@ -44,6 +53,7 @@ fetch(URL_PELIS)
     renderizar("Pelicula");
     activarBusqueda("busquedaPeliculas", "Pelicula");
     activarOrden("ordenPeliculas", "Pelicula");
+    checkMoodsReady();
   });
 
 fetch(URL_SERIES)
@@ -54,6 +64,7 @@ fetch(URL_SERIES)
     renderizar("Serie");
     activarBusqueda("busquedaSeries", "Serie");
     activarOrden("ordenSeries", "Serie");
+    checkMoodsReady();
   });
 
 /* info.html se separó del index para que se pueda editar sin tocar el resto del sitio */
@@ -859,8 +870,16 @@ function actualizarContadoresMoods() {
   });
 }
 
+/* Cambia a un mood y actualiza la URL (#moods/kdrama, etc.) */
 function verMood(moodKey) {
+  var nuevoHash = '#moods/' + moodKey;
+  if (location.hash === nuevoHash) { mostrarMoodResultado(moodKey); return; }
+  location.hash = nuevoHash;
+}
+
+function mostrarMoodResultado(moodKey) {
   var def   = MOODS_DEF[moodKey];
+  if (!def) return;
   var todos = dataPeliculas.concat(dataSeries);
 
   var filtrados = todos.filter(function(item) {
@@ -889,7 +908,14 @@ function verMood(moodKey) {
   });
 }
 
+/* Vuelve a la grilla de colecciones y actualiza la URL (#moods) */
 function volverMoods() {
+  var nuevoHash = '#moods';
+  if (location.hash === nuevoHash) { mostrarMoodGrid(); return; }
+  location.hash = nuevoHash;
+}
+
+function mostrarMoodGrid() {
   document.getElementById("moods-grid").style.display     = "grid";
   document.getElementById("mood-resultado").style.display = "none";
   document.querySelector(".moods-intro").style.display    = "block";
@@ -902,5 +928,45 @@ function checkMoodsReady() {
   if (_moodsPendientes === 0) {
     actualizarContadoresMoods();
     revisarCoberturaMoods();
+    /* Si la página se cargó con una URL tipo #moods/kdrama, la aplicamos
+       ahora que ya hay datos suficientes para filtrar el mood. */
+    if (_moodPendienteInicial) {
+      mostrarMoodResultado(_moodPendienteInicial);
+      _moodPendienteInicial = null;
+    }
   }
 }
+
+/* ══════════════════════════════════════
+   RUTAS (hash) — permite usar el botón "atrás" del navegador
+   para moverse entre Películas / Series / Colecciones / Info,
+   y entre la grilla de colecciones y un mood abierto.
+   ══════════════════════════════════════ */
+var TABS_VALIDOS = ["peliculas", "series", "moods", "como-funciona"];
+var _moodPendienteInicial = null;
+
+function aplicarHash() {
+  var hash   = location.hash.replace(/^#/, "");
+  var partes = hash.split("/");
+  var tab    = partes[0] || "peliculas";
+  if (TABS_VALIDOS.indexOf(tab) === -1) tab = "peliculas";
+
+  mostrarTab(tab);
+
+  if (tab === "moods") {
+    var moodKey = partes[1];
+    if (moodKey && MOODS_DEF[moodKey]) {
+      if (_moodsPendientes === 0) {
+        mostrarMoodResultado(moodKey);
+      } else {
+        /* Los datos (CSV) todavía no cargan; se aplica en checkMoodsReady() */
+        _moodPendienteInicial = moodKey;
+      }
+    } else {
+      mostrarMoodGrid();
+    }
+  }
+}
+
+window.addEventListener("hashchange", aplicarHash);
+aplicarHash(); // aplica el estado inicial según la URL con la que llegó el usuario
