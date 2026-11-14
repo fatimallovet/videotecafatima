@@ -12,11 +12,13 @@ function mostrarTab(tabId) {
   /* Tabs del header (desktop) */
   document.querySelectorAll('.tab-btn').forEach(function(b) {
     b.classList.toggle('activo', b.dataset.tab === tabId);
+    b.setAttribute('aria-current', b.dataset.tab === tabId ? 'page' : 'false');
   });
 
   /* Botones barra inferior (móvil) */
   document.querySelectorAll('.bottom-btn').forEach(function(b) {
     b.classList.toggle('activo', b.dataset.tab === tabId);
+    b.setAttribute('aria-current', b.dataset.tab === tabId ? 'page' : 'false');
   });
 }
 

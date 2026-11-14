@@ -458,50 +458,85 @@ h2 {
 }
 
 /* ══════════════════════════════════════
-   TOPBAR — nuevo diseño
+   TOPBAR Y NAVEGACIÓN
+   Breakpoints del sitio (solo dos):
+   · 1000px → menú compacto: las pestañas pasan a la barra inferior
+   · 600px → móvil: ajustes de tarjetas, textos y chips
    ══════════════════════════════════════ */
+:root { --topbar-h: 58px; }
+
+/* Icono de trazo reutilizable (hereda el color del texto) */
+.ico {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .topbar {
   position: sticky;
   top: 0;
   background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  z-index: 200;
+}
+
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: var(--topbar-h);
+  padding: 0 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  height: 58px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-  z-index: 200;
   gap: 16px;
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 700;
   font-size: 1.05rem;
   color: #556b5d;
   white-space: nowrap;
   flex-shrink: 0;
+  text-decoration: none;
 }
 
-/* Tabs centrales */
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Pestañas centrales */
 .tabs-center {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
   justify-content: center;
 }
 
 .tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: none;
   border: none;
-  padding: 8px 18px;
-  border-radius: 10px;
+  padding: 8px 16px;
+  border-radius: 999px;
   font-family: "Poppins", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
-  color: #888;
+  color: #6f6f6f;
   cursor: pointer;
   transition: 0.18s ease;
-  position: relative;
   white-space: nowrap;
 }
 
@@ -510,24 +545,13 @@ h2 {
   background: #f0ede6;
 }
 
+/* Activa: solo color + fondo suave (sin cambiar el peso, para que no se mueva el layout) */
 .tab-btn.activo {
   color: #556b5d;
-  font-weight: 700;
   background: #eef2ef;
 }
 
-.tab-btn.activo::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 18px;
-  right: 18px;
-  height: 2.5px;
-  background: #556b5d;
-  border-radius: 2px;
-}
-
-/* Acciones: iconos compactos */
+/* Acciones a la derecha: Biblioteca (salvia) y Apoyar (ámbar) */
 .top-actions {
   display: flex;
   align-items: center;
@@ -535,50 +559,38 @@ h2 {
   flex-shrink: 0;
 }
 
-.icon-btn {
-  display: flex;
+.top-chip {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(85,107,93,0.09);
   border: none;
-  padding: 7px 14px;
   border-radius: 999px;
+  padding: 7px 14px;
   font-family: "Poppins", sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: #556b5d;
-  cursor: pointer;
   white-space: nowrap;
+  cursor: pointer;
   transition: 0.18s;
 }
 
-.icon-btn:hover { background: rgba(85,107,93,0.18); }
+.top-chip .ico { width: 16px; height: 16px; }
 
-.btn-emoji { font-size: 1rem; line-height: 1; }
+.top-chip--biblioteca { background: rgba(85,107,93,0.09); color: #556b5d; }
+.top-chip--biblioteca:hover { background: rgba(85,107,93,0.18); }
 
-@media (max-width: 700px) {
-  .icon-btn, .support-icon-btn { padding: 7px 10px; }
-  .btn-label { display: none; }
-}
+.top-chip--cafe { background: rgba(224,160,90,0.18); color: #9a6423; }
+.top-chip--cafe:hover { background: rgba(224,160,90,0.3); }
 
-/* ══════════════════════════════════════
-   BARRA INFERIOR — SOLO MÓVIL
-   ══════════════════════════════════════ */
-.bottom-nav {
-  display: none;
-}
+/* Barra inferior: solo en menú compacto */
+.bottom-nav { display: none; }
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
+  :root { --topbar-h: 52px; }
 
-  /* Ocultar tabs del topbar en móvil */
   .tabs-center { display: none; }
+  .topbar-inner { padding: 0 16px; }
 
-  .topbar {
-    padding: 0 16px;
-    height: 52px;
-  }
-
-  /* Mostrar barra inferior */
   .bottom-nav {
     display: flex;
     position: fixed;
@@ -600,44 +612,49 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: 6px 14px;
-    border-radius: 12px;
+    gap: 3px;
+    min-width: 64px;
+    padding: 6px 8px;
     cursor: pointer;
-    color: #aaa;
+    color: #7a7a7a;
     transition: 0.18s;
     font-family: "Poppins", sans-serif;
   }
 
-  .bottom-btn.activo {
-    color: #556b5d;
-  }
-
   .bottom-icon {
-    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 28px;
+    border-radius: 14px;
+    font-size: 1.1rem;
     line-height: 1;
+    transition: 0.18s;
   }
+  .bottom-icon .ico { width: 22px; height: 22px; }
+
+  .bottom-btn.activo { color: #556b5d; }
+  .bottom-btn.activo .bottom-icon { background: #eef2ef; }
 
   .bottom-label {
-    font-size: 0.65rem;
+    font-size: 0.66rem;
     font-weight: 600;
     letter-spacing: 0.3px;
   }
 
   /* Padding extra al contenido para no quedar bajo la barra */
-  .tab.visible {
-    padding-bottom: 80px;
-  }
+  .tab.visible { padding-bottom: 80px; }
 
-  /* En móvil el FAB se reemplaza por el botón del bottom-nav */
-  .fab-deseos {
-    display: none !important;
-  }
+  /* Con la barra inferior, el FAB de la wishlist sobra */
+  .fab-deseos { display: none !important; }
 
-  /* Wishlist en bottom-nav */
-  #bottom-wishlist-btn.tiene-items {
-    color: #b05070;
-  }
+  #bottom-wishlist-btn.tiene-items { color: #b05070; }
+}
+
+@media (max-width: 600px) {
+  .top-chip { padding: 8px 10px; }
+  .top-chip-label { display: none; }
 }
 
 /* ── CONTROLES (buscador + toggle) ── */
@@ -1614,25 +1631,6 @@ h2 {
   transform: scale(1.1);
 }
 
-/* ── BOTÓN APOYAR — chip cálido tipo café ── */
-.support-icon-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(224,160,90,0.18);
-  border: none;
-  padding: 7px 14px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #9a6423;
-  cursor: pointer;
-  font-family: "Poppins", sans-serif;
-  white-space: nowrap;
-  transition: 0.18s;
-}
-.support-icon-btn:hover { background: rgba(224,160,90,0.3); }
-
 /* ══════════════════════════════════════
    COLECCIONES
    ══════════════════════════════════════ */
@@ -1743,7 +1741,7 @@ h2 {
 /* Barra sticky con botón volver + título */
 .mood-barra-volver {
   position: sticky;
-  top: 58px;
+  top: var(--topbar-h);
   background: #f4f1ea;
   z-index: 90;
   padding: 10px 0 8px;
@@ -1806,7 +1804,6 @@ h2 {
   .mood-count { font-size: 0.6rem; padding: 2px 9px; }
 
   .mood-barra-volver {
-    top: 52px;
     padding: 8px 0 6px;
   }
   .mood-resultado-titulo { font-size: 0.95rem; }
@@ -1891,7 +1888,7 @@ h2 {
 }
 .menu-compartir-cancelar:hover { background: #e8e3d8; }
 
-@media (min-width: 640px) {
+@media (min-width: 601px) {
   .menu-compartir-fondo { align-items: center; }
   .menu-compartir { border-radius: 18px; }
 }
