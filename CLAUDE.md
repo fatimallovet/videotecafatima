@@ -9,7 +9,7 @@ Proyecto hermano: **Biblioteca Fátima** (catálogo de libros, mismo estilo; chi
 - Hosting: **GitHub Pages** (lo que está en `main` es lo que está publicado).
 - Datos: **dos Google Sheets publicadas como CSV**, parseadas con **PapaParse**. Los datos se editan en la hoja, no en el repo.
 - `streaming.json`: lo genera un **GitHub Action semanal** que corre `update-streaming.js` (Node). Consulta la **TMDB API v3** con los IDs de IMDB y hace commit del resultado automáticamente. El frontend lo carga en paralelo con los CSV.
-- `info.html`: se carga con fetch y se inyecta como fragmento (sección «Cómo funciona» e instrucciones para instalar en iOS/Android).
+- `info.html`: se carga con fetch y se inyecta como fragmento (sección **Info**: presentación, «¿Cómo navegar?», lista de deseos, instalar en iOS/Android y tarjetas de Biblioteca, Apoyar y contacto). Usa el mismo ancho (`--ancho-contenido`), tarjetas e iconos de línea que el resto: sus iconos salen del sprite de `index.html` (`<use href="#i-...">`), así que un icono nuevo se agrega allí. **Sus instrucciones describen la navegación actual (barra lateral, «Mi lista», compartir): revísalas cada vez que cambie el menú.** Ya no se usa la fuente Cookie.
 - Analítica: GA4 (**solo en `index.html`**, porque `info.html` es un fragmento) + Cloudflare Web Analytics.
 
 ## Funcionalidades actuales
