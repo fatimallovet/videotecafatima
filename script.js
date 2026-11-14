@@ -120,7 +120,8 @@ function renderizar(tipo) {
   var inputId = esPeli ? "busquedaPeliculas" : "busquedaSeries";
   var ordenId = esPeli ? "ordenPeliculas" : "ordenSeries";
 
-  var texto    = (document.getElementById(inputId) || {value:""}).value.toLowerCase();
+  var campoBusq = document.getElementById(inputId) || {value:""};
+  var texto    = campoBusq.value.toLowerCase();
   var criterio = (document.getElementById(ordenId)  || {value:"recientes"}).value;
 
   var filtrados = data.filter(function(item) {
@@ -136,6 +137,23 @@ function renderizar(tipo) {
   });
 
   llenarCards(ordenarData(filtrados, criterio), gridId, tipo);
+  if (filtrados.length === 0 && texto.trim()) {
+    mostrarSinResultados(document.getElementById(gridId), campoBusq.value.trim());
+  }
+}
+
+/* Aviso cuando una búsqueda no encuentra nada (textContent: el texto del usuario no se interpreta como HTML) */
+function mostrarSinResultados(grid, texto) {
+  var caja = document.createElement("div");
+  caja.className = "sin-resultados";
+  var titulo = document.createElement("p");
+  titulo.className = "sin-resultados-titulo";
+  titulo.textContent = "No encontré nada para «" + texto + "»";
+  var ayuda = document.createElement("p");
+  ayuda.textContent = "Prueba con otro título, género o plataforma.";
+  caja.appendChild(titulo);
+  caja.appendChild(ayuda);
+  grid.appendChild(caja);
 }
 
 function activarBusqueda(inputId, tipo) {
