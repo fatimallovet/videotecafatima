@@ -1,7 +1,6 @@
 /* script.js — Videoteca Fátima */
 
 /* ── NAVEGACIÓN ── */
-function openTab(tabId) { setTab(tabId); } // alias por compatibilidad
 
 /* Aplica el cambio visual de tab. No toca el historial del navegador;
    eso lo maneja setTab()/aplicarHash() para que el botón "atrás" funcione. */
