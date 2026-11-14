@@ -487,45 +487,84 @@ function campo(d, nombres) {
   return "";
 }
 
-function fichaTexto(d) {
-  var esPeli    = d["Tipo"] === "Pelicula";
-  var tipo      = esPeli ? "Película" : "Serie";
-  var titulo    = campo(d, ["Título","Titulo"]);
-  var calif     = campo(d, ["Calificación","Calificacion"]);
-  var origen    = campo(d, ["Origen"]);
-  var anio      = campo(d, ["Año","Anio"]);
-  var durLabel  = esPeli ? "Minutos" : "Capítulos";
-  var durVal    = esPeli ? campo(d, ["Minutos"]) : campo(d, ["Capítulos","Capitulos"]);
-  var genero    = campo(d, ["Género","Genero"]);
-  var tono      = campo(d, ["Tono"]);
-  var ritmo     = campo(d, ["Ritmo"]);
-  var publico   = campo(d, ["Público","Publico"]);
-  var etiquetas = campo(d, ["Etiquetas"]);
-  var flags     = campo(d, ["Flags"]);
-  var resena    = campo(d, ["Reseña","Resena"]);
-  var imdb      = campo(d, ["IMDB"]);
-  var streaming = obtenerStreaming(d);
+/* ── Texto para compartir (pensado para WhatsApp: *negrita* y _cursiva_) ──
+   Breve y con gancho: título con año, datos clave, géneros, plataforma, un extracto
+   de la reseña y el enlace directo a la ficha. */
 
-  var lineas = [];
-  lineas.push("🎬 " + titulo + " (" + tipo + ")");
-  lineas.push("─────────────────────────");
-  if (calif)     lineas.push("⭐ Calificación: " + calif + " / 10");
-  if (anio)      lineas.push("Año: " + anio);
-  if (origen)    lineas.push("Origen: " + origen);
-  if (durVal)    lineas.push(durLabel + ": " + durVal);
-  if (genero)    lineas.push("Género: " + genero);
-  if (tono)      lineas.push("Tono: " + tono);
-  if (ritmo)     lineas.push("Ritmo: " + ritmo);
-  if (publico)   lineas.push("Público: " + publico);
-  if (etiquetas) lineas.push("Etiquetas: " + etiquetas);
-  if (flags)     lineas.push("⚠️ Flags: " + flags);
-  if (streaming && streaming.plataformas && streaming.plataformas.length > 0) {
-    lineas.push("📺 Disponible en: " + streaming.plataformas.join(", "));
+/* Quita los caracteres que WhatsApp interpretaría como formato dentro de un texto ajeno */
+function _waLimpio(t) { return String(t || "").replace(/[*_~`]/g, "").trim(); }
+
+/* Extracto de la reseña: hasta `max` caracteres, cortando en la última oración completa */
+function _extractoResena(resena, max) {
+  var t = resena.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  var oraciones = _oraciones(t), acum = "";
+  for (var i = 0; i < oraciones.length; i++) {
+    if ((acum + oraciones[i]).trim().length > max) break;
+    acum += oraciones[i];
   }
-  if (resena)    lineas.push("\nReseña: " + resena);
-  lineas.push("\n— Recomendada por: Fátima Llovet");
-  lineas.push(urlFicha(d));
-  return lineas.join("\n");
+  if (acum.trim()) return acum.trim() + " […]";
+  return t.slice(0, max).replace(/\s+\S*$/, "") + "…"; // la 1.ª oración ya excede el límite
+}
+
+/* Datos de la ficha ya listos para armar el texto */
+function _datosFichaWA(d) {
+  var esPeli = d["Tipo"] === "Pelicula";
+  var flags = campo(d, ["Flags"]).trim();
+  var streaming = obtenerStreaming(d);
+  return {
+    esPeli:   esPeli,
+    titulo:   _waLimpio(campo(d, ["Título","Titulo"])),
+    anio:     (campo(d, ["Año","Anio"]).match(/\d{4}/) || [""])[0],
+    calif:    campo(d, ["Calificación","Calificacion"]),
+    origen:   campo(d, ["Origen"]),
+    dur:      esPeli ? campo(d, ["Minutos"]) : campo(d, ["Capítulos","Capitulos"]),
+    genero:   campo(d, ["Género","Genero"]),
+    tono:     campo(d, ["Tono"]),
+    ritmo:    campo(d, ["Ritmo"]),
+    publico:  campo(d, ["Público","Publico"]),
+    flags:    /^ningun[ao]\.?$/i.test(flags) ? "" : flags, // "Ninguna" no es una advertencia
+    plataformas: (streaming && streaming.plataformas) ? streaming.plataformas : [],
+    resena:   _waLimpio(campo(d, ["Reseña","Resena"]))
+  };
+}
+
+/* Las dos primeras líneas: 🎬 *Título* (año) y ⭐ 7/10 · Película · EE.UU. · 102 min */
+function _cabeceraWA(x) {
+  var datos = [];
+  if (x.calif) datos.push("⭐ " + x.calif + "/10");
+  datos.push(x.esPeli ? "Película" : "Serie");
+  if (x.origen) datos.push(x.origen);
+  if (x.dur) datos.push(x.dur + (x.esPeli ? " min" : " caps"));
+  return [(x.esPeli ? "🎬" : "📺") + " *" + x.titulo + "*" + (x.anio ? " (" + x.anio + ")" : ""),
+          datos.join(" · ")];
+}
+
+function fichaTexto(d) {
+  var x = _datosFichaWA(d);
+  var l = _cabeceraWA(x);
+  if (x.genero) l.push("🎭 " + x.genero);
+  var vibra = [];
+  if (x.tono)    vibra.push("Tono: " + x.tono);
+  if (x.ritmo)   vibra.push("Ritmo: " + x.ritmo);
+  if (x.publico) vibra.push("Público: " + x.publico);
+  if (vibra.length) l.push("✨ " + vibra.join(" · "));
+  if (x.plataformas.length) l.push("▶️ Disponible en " + x.plataformas.join(", "));
+  if (x.flags) l.push("⚠️ " + x.flags);
+  if (x.resena) { l.push(""); l.push("_«" + _extractoResena(x.resena, 300) + "»_"); }
+  l.push("");
+  l.push("Mi reseña completa 👇");
+  l.push(urlFicha(d));
+  return l.join("\n");
+}
+
+/* Versión corta (sin reseña) para acompañar la imagen al compartir desde el celular */
+function fichaTextoCorto(d) {
+  var l = _cabeceraWA(_datosFichaWA(d));
+  l.push("");
+  l.push("Mi reseña completa 👇");
+  l.push(urlFicha(d));
+  return l.join("\n");
 }
 
 function compartirTitulo(e) {
@@ -1125,7 +1164,7 @@ function generarImagenLista() {
 
 function _compartirImagenFicha(d) {
   var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
-  var textoAlt = "🎬 " + campo(d, ["Título","Titulo"]) + " — Videoteca Fátima\n" + urlFicha(d);
+  var textoAlt = fichaTextoCorto(d);
   _compartirImagenDesdePromesa(generarImagenFicha(d), nombre, textoAlt);
 }
 
