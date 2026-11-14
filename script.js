@@ -78,10 +78,12 @@ fetch("info.html")
 
 /* streaming.json se genera solo cada semana vía GitHub Action.
    Si por algo no existe o falla, seguimos sin romper el resto del sitio. */
+var _streamingCargado = false;
 fetch("streaming.json")
   .then(function(r) { return r.ok ? r.json() : {}; })
   .then(function(json) { streamingData = json; })
-  .catch(function() { streamingData = {}; });
+  .catch(function() { streamingData = {}; })
+  .then(function() { _streamingCargado = true; checkFichaPendiente(); });
 
 /* ══════════════════════════════════════
    ORDENAR + FILTRAR → RENDERIZAR
@@ -263,7 +265,7 @@ function crearCard(item, tipo) {
   });
 
   card.addEventListener("click", function() {
-    mostrarModal(Object.assign({}, item, { Tipo: tipo }));
+    abrirFicha(Object.assign({}, item, { Tipo: tipo }));
   });
 
   return card;
@@ -364,8 +366,22 @@ function mostrarModal(d) {
   document.getElementById("modal").style.display = "flex";
 }
 
-function cerrarModal() {
+/* Oculta la ficha sin tocar el historial (lo usa el router al reaccionar a la URL) */
+function ocultarModal() {
   document.getElementById("modal").style.display = "none";
+  _modalConEntrada = false;
+}
+
+/* Cierra la ficha por acción del usuario (✖, clic fuera, Esc) y deja la URL en la pestaña.
+   Si la ficha se abrió desde el sitio, vuelve atrás en el historial; si se llegó con un
+   enlace directo, no hay "atrás" dentro del sitio, así que solo se reescribe la URL. */
+function cerrarModal() {
+  if (document.getElementById("modal").style.display !== "flex") return;
+  var conEntrada = _modalConEntrada;
+  ocultarModal();
+  if (!/^#(peliculas|series)\//.test(location.hash)) return;
+  if (conEntrada) history.back();
+  else history.replaceState(null, "", "#" + location.hash.slice(1).split("/")[0]);
 }
 function cerrarModalFuera(e) {
   if (e.target === document.getElementById("modal")) cerrarModal();
@@ -391,10 +407,66 @@ function obtenerStreaming(d) {
 }
 
 function claseStreaming(nombre) {
-  var slug = nombre.toLowerCase()
+  return "streaming-" + slugTitulo(nombre);
+}
+
+/* ══════════════════════════════════════
+   ENLACES DIRECTOS A UNA FICHA
+   #peliculas/toy-story-5  ·  #series/healer
+   ══════════════════════════════════════ */
+var URL_SITIO = "https://fatimallovet.github.io/videotecafatima/";
+
+/* "¡Qué bello es vivir!" → "que-bello-es-vivir" */
+function slugTitulo(texto) {
+  return String(texto || "").toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
     .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  return "streaming-" + slug;
+}
+
+/* Tabla slug ↔ ficha, por sección. Si dos títulos dieran el mismo slug, el segundo
+   lleva el año (y, si aún chocara, un número) para que cada enlace apunte a una sola ficha. */
+var _indiceSlugs = null;
+function _construirIndiceSlugs() {
+  var idx = { Pelicula: { porSlug: {}, porClave: {} }, Serie: { porSlug: {}, porClave: {} } };
+  [["Pelicula", dataPeliculas], ["Serie", dataSeries]].forEach(function(par) {
+    par[1].forEach(function(item) {
+      var titulo = campo(item, ["Título","Titulo"]);
+      var base = slugTitulo(titulo);
+      if (!base) return;
+      var anio = (campo(item, ["Año","Anio"]).match(/\d{4}/) || [""])[0];
+      var slug = base;
+      if (idx[par[0]].porSlug[slug] && anio) slug = base + "-" + anio;
+      for (var n = 2; idx[par[0]].porSlug[slug]; n++) slug = base + "-" + n;
+      idx[par[0]].porSlug[slug] = item;
+      idx[par[0]].porClave[titulo + "|" + anio] = slug;
+    });
+  });
+  return idx;
+}
+function _slugs() {
+  if (!_indiceSlugs && _moodsPendientes === 0) _indiceSlugs = _construirIndiceSlugs();
+  return _indiceSlugs;
+}
+
+/* Enlace directo a una ficha (d trae el campo Tipo). Si aún no hay datos, enlaza al inicio. */
+function urlFicha(d) {
+  var idx = _slugs();
+  var esPeli = d["Tipo"] === "Pelicula";
+  var anio = (campo(d, ["Año","Anio"]).match(/\d{4}/) || [""])[0];
+  var slug = idx && idx[esPeli ? "Pelicula" : "Serie"].porClave[campo(d, ["Título","Titulo"]) + "|" + anio];
+  return slug ? URL_SITIO + "#" + (esPeli ? "peliculas" : "series") + "/" + slug : URL_SITIO;
+}
+
+/* Abre una ficha por acción del usuario: la URL pasa a ser la de esa ficha
+   (así el botón "atrás" la cierra y la dirección de la barra ya es compartible). */
+var _modalConEntrada = false;
+function abrirFicha(d) {
+  mostrarModal(d);
+  var url = urlFicha(d);
+  if (url.indexOf("#") !== -1) {
+    history.pushState(null, "", url.slice(url.indexOf("#")));
+    _modalConEntrada = true;
+  }
 }
 
 function pillsStreaming(plataformas) {
@@ -452,7 +524,7 @@ function fichaTexto(d) {
   }
   if (resena)    lineas.push("\nReseña: " + resena);
   lineas.push("\n— Recomendada por: Fátima Llovet");
-  lineas.push("https://fatimallovet.github.io/videotecafatima/");
+  lineas.push(urlFicha(d));
   return lineas.join("\n");
 }
 
@@ -1053,13 +1125,13 @@ function generarImagenLista() {
 
 function _compartirImagenFicha(d) {
   var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
-  var textoAlt = "🎬 " + campo(d, ["Título","Titulo"]) + " — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var textoAlt = "🎬 " + campo(d, ["Título","Titulo"]) + " — Videoteca Fátima\n" + urlFicha(d);
   _compartirImagenDesdePromesa(generarImagenFicha(d), nombre, textoAlt);
 }
 
 function _compartirImagenLista() {
   if (_deseos.length === 0) return;
-  var textoAlt = "🎬 Mi lista de deseos — Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var textoAlt = "🎬 Mi lista de deseos — Videoteca Fátima\n" + URL_SITIO;
   _compartirImagenDesdePromesa(generarImagenLista(), "mi-lista-videoteca.png", textoAlt);
 }
 
@@ -1186,7 +1258,7 @@ function compartirItem(titulo, e) {
     d = Object.assign({}, encontrado, { Tipo: esPeli ? "Pelicula" : "Serie" });
   }
 
-  var textoFallback = "🎬 " + titulo + "\n— Videoteca Fátima\nhttps://fatimallovet.github.io/videotecafatima/";
+  var textoFallback = "🎬 " + titulo + "\n— Videoteca Fátima\n" + URL_SITIO;
   var anchor = e ? e.currentTarget : null;
 
   mostrarMenuCompartir(anchor, {
@@ -1213,7 +1285,7 @@ function compartirListaCompleta(e) {
       });
       var texto = "🎬 Mi lista de deseos — Videoteca Fátima\n\n" +
                   lineas.join("\n") +
-                  "\n\nhttps://fatimallovet.github.io/videotecafatima/";
+                  "\n\n" + URL_SITIO;
       _compartirTextoDirecto(texto);
     },
     imagen: function() { _compartirImagenLista(); }
@@ -1564,6 +1636,7 @@ function checkMoodsReady() {
       mostrarMoodResultado(_moodPendienteInicial);
       _moodPendienteInicial = null;
     }
+    checkFichaPendiente();
   }
 }
 
@@ -1574,6 +1647,33 @@ function checkMoodsReady() {
    ══════════════════════════════════════ */
 var TABS_VALIDOS = ["peliculas", "series", "moods", "como-funciona"];
 var _moodPendienteInicial = null;
+var _fichaPendienteInicial = null; // { tab, slug } si el enlace llegó antes que los datos
+
+/* Abre la ficha de un enlace tipo #peliculas/toy-story-5. Necesita los CSV y streaming.json
+   (para mostrar las plataformas); si aún no llegan, queda pendiente. */
+function abrirFichaDesdeHash(tab, slug) {
+  if (_moodsPendientes > 0 || !_streamingCargado) {
+    _fichaPendienteInicial = { tab: tab, slug: slug, hash: location.hash };
+    return;
+  }
+  var tipo = tab === "peliculas" ? "Pelicula" : "Serie";
+  var item = _slugs()[tipo].porSlug[slug];
+  if (!item) {
+    ocultarModal();
+    history.replaceState(null, "", "#" + tab);
+    mostrarToast("No encontré esa ficha 😕");
+    return;
+  }
+  mostrarModal(Object.assign({}, item, { Tipo: tipo }));
+}
+
+function checkFichaPendiente() {
+  if (!_fichaPendienteInicial || _moodsPendientes > 0 || !_streamingCargado) return;
+  var p = _fichaPendienteInicial;
+  _fichaPendienteInicial = null;
+  /* Si mientras tanto el usuario cambió de página, ya no hay nada que abrir */
+  if (location.hash === p.hash) abrirFichaDesdeHash(p.tab, p.slug);
+}
 
 function aplicarHash() {
   var hash   = location.hash.replace(/^#/, "");
@@ -1582,6 +1682,16 @@ function aplicarHash() {
   if (TABS_VALIDOS.indexOf(tab) === -1) tab = "peliculas";
 
   mostrarTab(tab);
+
+  /* #peliculas/slug · #series/slug → ficha abierta; cualquier otra ruta la cierra */
+  if ((tab === "peliculas" || tab === "series") && partes[1]) {
+    var slug = partes.slice(1).join("/");
+    try { slug = decodeURIComponent(slug); } catch (e) {}
+    abrirFichaDesdeHash(tab, slug.toLowerCase());
+    return;
+  }
+  _fichaPendienteInicial = null;
+  ocultarModal();
 
   if (tab === "moods") {
     var moodKey = partes[1];

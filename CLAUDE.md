@@ -17,15 +17,16 @@ Proyecto hermano: **Biblioteca Fátima** (catálogo de libros, mismo estilo; chi
 - Ficha (modal): hero fijo con degradado carbón oscuro (póster, título, estrellas, subtítulo) y un cuerpo con scroll (tarjetas de metadatos, reseña, flags, chips de género, tono, ritmo y público, píldoras de streaming).
 - Pestaña **Colecciones** (antes «Por mood»): 15 colecciones al estilo Netflix, con el género como criterio principal, un degradado por colección, orden alfabético, tarjetas compactas y **sin emoji**. La clasificación vive en JS; usa `revisarCoberturaMoods()` en la consola para revisar la cobertura.
 - **Wishlist** en localStorage, con FAB en escritorio e integración en la bottom-nav en móvil. `_enriquecerDeseo` completa el año y el póster faltantes a partir del catálogo al compartir.
-- Compartir: menú para elegir texto o imagen. Las imágenes se generan con canvas: ficha a 760px y wishlist a 720px.
-- Rutas por hash: `#peliculas`, `#series`, `#moods`, `#moods/[moodKey]`, `#como-funciona` (funciona el botón atrás).
-- Nav superior sticky + bottom-nav fija en móvil. Chips en forma de píldora (salvia = Biblioteca, ámbar = Apoyar/Buy Me a Coffee) que en pantallas angostas se reducen al emoji.
+- Compartir: menú para elegir texto o imagen. Las imágenes se generan con canvas: ficha en formato fijo 4:5 (1080×1350, reseña centrada; si no cabe se corta en la última oración completa con «[…]») y wishlist a 720px. El texto y la imagen de una ficha llevan el enlace directo a esa ficha.
+- Rutas por hash: `#peliculas`, `#series`, `#moods`, `#moods/[moodKey]`, `#como-funciona` y, para abrir una ficha, `#peliculas/[slug]` / `#series/[slug]` (slug = título sin acentos ni símbolos, ej. `#peliculas/que-bello-es-vivir`). Funciona el botón atrás.
+- Nav superior sticky con iconos de trazo (sprite SVG inline en `index.html`) + bottom-nav fija en el menú compacto. Chips en forma de píldora (salvia = Biblioteca, ámbar = Apoyar/Buy Me a Coffee) que en pantallas angostas se reducen al icono. **Solo hay dos breakpoints: 600px (móvil) y 1000px (menú compacto)**; no agregues otros.
 
 ## Gotchas (no volver a tropezar)
 - **TMDB: usar la API key v3, no el token JWT v4.** Va en el secret `TMDB_API_KEY` del repo. Nunca la pongas en el código ni en commits.
 - **Clipboard + canvas:** la `Promise` de la imagen se le pasa a `clipboard.write()` **en el mismo click**, antes de generar la imagen de forma asíncrona. Si se difiere, se pierde el permiso del gesto del usuario y falla en silencio en escritorio.
 - **CORS en canvas:** los pósters de TMDB pasan por el proxy `images.weserv.nl`; la URL directa queda solo como fallback.
 - **Clasificación de colecciones:** el género es el criterio principal (las keywords de mood clasificaban mal). «Navideñas» es exclusiva (return temprano). K-dramas = el campo Origen contiene «Corea». «Dramas» solo aplica si no hay un género que la contradiga. Un título puede estar en varias colecciones, por eso la lógica vive en el código y no en el CSV.
+- **Fichas por URL:** al abrir una ficha desde el sitio se usa `history.pushState` (no dispara `hashchange`, así la pestaña de fondo no cambia) y `cerrarModal()` hace `history.back()`; si se llegó por un enlace directo solo reescribe la URL con `replaceState`. El router (`aplicarHash`) solo usa `ocultarModal()`, que no toca el historial. Una ficha pedida por enlace espera a los CSV **y** a `streaming.json` antes de abrirse. El campo `Tipo` no viene de la hoja: la app lo agrega al abrir/compartir una ficha (`Object.assign(..., { Tipo })`); si pasas un registro crudo a las funciones de compartir saldrá como «Serie».
 - **Pósters manuales:** decidí no traerlos automáticamente de TMDB. Las URLs se capturan a mano en la hoja por precisión (títulos bilingües: título en español + original entre paréntesis). No lo propongas de nuevo.
 
 ## Cómo trabajo
