@@ -9,14 +9,8 @@ function mostrarTab(tabId) {
   var target = document.getElementById(tabId);
   if (target) target.classList.add('visible');
 
-  /* Tabs del header (desktop) */
-  document.querySelectorAll('.tab-btn').forEach(function(b) {
-    b.classList.toggle('activo', b.dataset.tab === tabId);
-    b.setAttribute('aria-current', b.dataset.tab === tabId ? 'page' : 'false');
-  });
-
-  /* Botones barra inferior (móvil) */
-  document.querySelectorAll('.bottom-btn').forEach(function(b) {
+  /* Barra lateral / cajón */
+  document.querySelectorAll('.nav-item[data-tab]').forEach(function(b) {
     b.classList.toggle('activo', b.dataset.tab === tabId);
     b.setAttribute('aria-current', b.dataset.tab === tabId ? 'page' : 'false');
   });
@@ -178,6 +172,7 @@ document.querySelectorAll(".clear-btn").forEach(function(btn) {
 document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") {
     cerrarModal();
+    cerrarMenu();
     document.querySelectorAll(".buscador").forEach(function(i) {
       if (i.value !== "") { i.value = ""; i.dispatchEvent(new Event("input")); }
     });
@@ -1194,7 +1189,7 @@ try { _deseos = JSON.parse(localStorage.getItem("videoteca_deseos") || "[]"); } 
 
 function guardarDeseos() {
   try { localStorage.setItem("videoteca_deseos", JSON.stringify(_deseos)); } catch(e) {}
-  actualizarFab();
+  actualizarContadorDeseos();
 }
 
 function estaEnDeseos(titulo) {
@@ -1250,24 +1245,12 @@ function sincronizarCardDeseo(titulo) {
   });
 }
 
-/* FAB */
-function actualizarFab() {
+/* Contador de la lista de deseos: barra lateral y cabecera móvil (se ocultan si es 0) */
+function actualizarContadorDeseos() {
   var n = _deseos.length;
-
-  /* FAB — visible en desktop */
-  var fab = document.getElementById("fab-deseos");
-  var cnt = document.getElementById("fab-count");
-  if (fab) { cnt.textContent = n; fab.style.display = n > 0 ? "flex" : "none"; }
-
-  /* Botón wishlist en bottom-nav — visible en móvil */
-  var botBtn = document.getElementById("bottom-wishlist-btn");
-  var botCnt = document.getElementById("bottom-wishlist-count");
-  if (botBtn) {
-    var mostrar = n > 0;
-    botBtn.style.display  = mostrar ? "flex" : "none";
-    botCnt.textContent    = mostrar ? n : "";
-    botBtn.classList.toggle("tiene-items", mostrar);
-  }
+  document.querySelectorAll(".js-deseos-n").forEach(function(el) {
+    el.textContent = n > 0 ? n : "";
+  });
 }
 
 /* Panel */
@@ -1423,7 +1406,7 @@ function vaciarDeseos() {
 }
 
 /* Init */
-document.addEventListener("DOMContentLoaded", function() { actualizarFab(); });
+document.addEventListener("DOMContentLoaded", function() { actualizarContadorDeseos(); });
 
 /* ══════════════════════════════════════
    LIGHTBOX PÓSTER
@@ -1677,6 +1660,9 @@ function mostrarMoodGrid() {
 /* Actualizar contadores cuando los datos estén listos */
 var _moodsPendientes = 2; // espera pelis + series
 function checkMoodsReady() {
+  var nP = document.getElementById("n-peliculas"), nS = document.getElementById("n-series");
+  if (nP && dataPeliculas.length) nP.textContent = dataPeliculas.length;
+  if (nS && dataSeries.length)    nS.textContent = dataSeries.length;
   _moodsPendientes--;
   if (_moodsPendientes === 0) {
     actualizarContadoresMoods();
@@ -1733,6 +1719,8 @@ function aplicarHash() {
   if (TABS_VALIDOS.indexOf(tab) === -1) tab = "peliculas";
 
   mostrarTab(tab);
+  cerrarMenu();
+  marcarColeccionActiva(tab === "moods" && MOODS_DEF[partes[1]] ? partes[1] : null);
 
   /* #peliculas/slug · #series/slug → ficha abierta; cualquier otra ruta la cierra */
   if ((tab === "peliculas" || tab === "series") && partes[1]) {
@@ -1758,6 +1746,47 @@ function aplicarHash() {
     }
   }
 }
+
+/* ══════════════════════════════════════
+   BARRA LATERAL: lista de colecciones y cajón (menú compacto)
+   ══════════════════════════════════════ */
+function construirListaColecciones() {
+  var cont = document.getElementById("cl-lista");
+  if (!cont) return;
+  var claves = Object.keys(MOODS_DEF).sort(function(a, b) {
+    return MOODS_DEF[a].nombre.localeCompare(MOODS_DEF[b].nombre, "es");
+  });
+  /* El punto reutiliza el degradado de la colección (.mood-card--clave) */
+  cont.innerHTML = claves.map(function(k) {
+    return '<a class="cl-item" href="#moods/' + k + '" data-mood="' + k + '">' +
+             '<i class="cl-dot mood-card--' + k + '"></i><span>' + MOODS_DEF[k].nombre + '</span></a>';
+  }).join("");
+}
+
+function marcarColeccionActiva(moodKey) {
+  document.querySelectorAll(".cl-item").forEach(function(el) {
+    el.classList.toggle("activo", el.dataset.mood === moodKey);
+  });
+}
+
+function cerrarMenu() {
+  document.body.classList.remove("menu-abierto");
+  var t = document.getElementById("menu-toggle");
+  if (t) { t.setAttribute("aria-expanded", "false"); t.setAttribute("aria-label", "Abrir menú"); }
+}
+function alternarMenu() {
+  var abierto = document.body.classList.toggle("menu-abierto");
+  var t = document.getElementById("menu-toggle");
+  if (t) { t.setAttribute("aria-expanded", abierto ? "true" : "false"); t.setAttribute("aria-label", abierto ? "Cerrar menú" : "Abrir menú"); }
+}
+construirListaColecciones();
+(function() {
+  var t = document.getElementById("menu-toggle"), sc = document.getElementById("sb-scrim"), sb = document.getElementById("sidebar");
+  if (t)  t.addEventListener("click", alternarMenu);
+  if (sc) sc.addEventListener("click", cerrarMenu);
+  /* Elegir cualquier opción cierra el cajón (en escritorio no hace nada) */
+  if (sb) sb.addEventListener("click", function(e) { if (e.target.closest("a, button")) cerrarMenu(); });
+})();
 
 window.addEventListener("hashchange", aplicarHash);
 aplicarHash(); // aplica el estado inicial según la URL con la que llegó el usuario
