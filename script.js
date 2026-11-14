@@ -205,53 +205,47 @@ function crearCard(item, tipo) {
   var anioCorto = (String(anio).match(/\d{4}/) || [""])[0];
   var enD       = estaEnDeseos(titulo);
   var bandaClass = claseBanda(genero);
+  var iconoTipo = tipo === "Serie" ? "i-tv" : "i-film";
 
-  /* Zona superior: póster si existe, banda de color si no */
-  var zonaTop;
+  /* Zona superior: el póster; si falta (o no carga), un bloque del color del género
+     con el icono del tipo. En ambos casos lleva encima la nota y el ♡. */
+  var wrap = document.createElement("div");
+  wrap.className = "pelicard-poster-wrap";
+  function sinPoster() {
+    wrap.classList.add("pelicard-poster-vacio", bandaClass);
+    wrap.insertAdjacentHTML("afterbegin",
+      '<svg class="ico pelicard-poster-ico" aria-hidden="true"><use href="#' + iconoTipo + '"/></svg>');
+  }
   if (poster) {
-    var wrap = document.createElement("div");
-    wrap.className = "pelicard-poster-wrap";
     var img = document.createElement("img");
     img.className = "pelicard-poster";
     img.src = poster;
     img.alt = titulo;
     img.loading = "lazy";
-    img.onerror = function() {
-      wrap.outerHTML = '<div class="pelicard-banda ' + bandaClass + '"></div>';
-    };
-    var overlay = document.createElement("div");
-    overlay.className = "pelicard-poster-overlay";
-    overlay.innerHTML =
-      '<span class="pelicard-estrellas-over">' + estrellas(calif) + '</span>' +
-      '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>';
+    img.onerror = function() { img.remove(); sinPoster(); };
     wrap.appendChild(img);
-    wrap.appendChild(overlay);
-    card.appendChild(wrap);
-    zonaTop = null; // ya añadido
   } else {
-    zonaTop = '<div class="pelicard-banda ' + bandaClass + '"></div>';
+    sinPoster();
   }
+  var overlay = document.createElement("div");
+  overlay.className = "pelicard-poster-overlay";
+  overlay.innerHTML =
+    '<span class="pelicard-estrellas-over">' + estrellas(calif) + '</span>' +
+    '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>';
+  wrap.appendChild(overlay);
+  card.appendChild(wrap);
 
-  /* Cuerpo de la card (siempre) */
+  /* Cuerpo: título + «año · primer género» (la lista completa de géneros está en la ficha) */
+  var primerGenero = genero.split(",")[0].trim();
+  var meta = [anioCorto, primerGenero].filter(Boolean).join(" · ");
   var body = document.createElement("div");
   body.className = "pelicard-body";
   body.innerHTML =
-    '<div class="pelicard-header">' +
-      '<span class="pelicard-tipo">' + label + '</span>' +
-      '<span class="pelicard-anio">' + anioCorto + '</span>' +
-    '</div>' +
     '<div class="pelicard-titulo">' + titulo + '</div>' +
-    '<div class="pelicard-genero">' + genero + '</div>' +
-    (poster ? '' :
-      '<div class="pelicard-footer">' +
-        '<span class="pelicard-estrellas">' + estrellas(calif) + '</span>' +
-        '<button class="card-deseo-btn' + (enD ? " activo" : "") + '" title="Guardar en lista">' + (enD ? "♥" : "♡") + '</button>' +
-      '</div>'
-    );
-
-  if (!poster) {
-    card.innerHTML = zonaTop;
-  }
+    '<div class="pelicard-meta">' +
+      '<svg class="ico pelicard-tipo-ico" role="img" aria-label="' + label + '"><use href="#' + iconoTipo + '"/></svg>' +
+      '<span>' + meta + '</span>' +
+    '</div>';
   card.appendChild(body);
 
   /* Botón ♡ — no abre modal */
