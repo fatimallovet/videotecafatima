@@ -32,48 +32,61 @@
     
 <body>
 
+<!-- Iconos del menú (trazo, 24x24). Se usan con <svg class="ico"><use href="#i-..."/></svg> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M3 7.5h4M3 12h18M3 16.5h4M17 3v18M17 7.5h4M17 16.5h4"/></symbol>
+  <symbol id="i-tv" viewBox="0 0 24 24"><rect width="20" height="15" x="2" y="7" rx="2"/><path d="m17 2-5 5-5-5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M10 2v2M14 2v2M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol>
+</svg>
+
 <header class="topbar">
+  <div class="topbar-inner">
 
-  <div class="logo" onclick="setTab('peliculas')" style="cursor:pointer">
-    🎬 Videoteca Fátima
+    <a class="logo" href="#peliculas" aria-label="Videoteca Fátima, ir a Películas">
+      <img class="logo-mark" src="favicon.svg" alt="" width="30" height="30">
+      <span>Videoteca Fátima</span>
+    </a>
+
+    <nav class="tabs-center" aria-label="Secciones">
+      <button class="tab-btn activo" data-tab="peliculas" onclick="setTab('peliculas')"><svg class="ico" aria-hidden="true"><use href="#i-film"/></svg>Películas</button>
+      <button class="tab-btn" data-tab="series" onclick="setTab('series')"><svg class="ico" aria-hidden="true"><use href="#i-tv"/></svg>Series</button>
+      <button class="tab-btn" data-tab="moods" onclick="setTab('moods')"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg>Colecciones</button>
+      <button class="tab-btn" data-tab="como-funciona" onclick="setTab('como-funciona')"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg>Info</button>
+    </nav>
+
+    <div class="top-actions">
+      <button class="top-chip top-chip--biblioteca" title="Ir a la Biblioteca" aria-label="Biblioteca"
+        onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
+        <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span class="top-chip-label">Biblioteca</span>
+      </button>
+      <button class="top-chip top-chip--cafe" title="Apoyar este proyecto" aria-label="Apoyar este proyecto"
+        onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
+        <svg class="ico" aria-hidden="true"><use href="#i-coffee"/></svg><span class="top-chip-label">Apoyar</span>
+      </button>
+    </div>
+
   </div>
-
-  <nav class="tabs-center">
-    <button class="tab-btn activo" data-tab="peliculas" onclick="setTab('peliculas')">🎬 Películas</button>
-    <button class="tab-btn" data-tab="series" onclick="setTab('series')">📺 Series</button>
-    <button class="tab-btn" data-tab="moods" onclick="setTab('moods')">🗂️ Colecciones</button>
-    <button class="tab-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">ℹ️ Info</button>
-  </nav>
-
-  <div class="top-actions">
-    <button class="icon-btn" title="Ir a la Biblioteca"
-      onclick="window.open('https://fatimallovet.github.io/bibliotecafa2/', '_blank')">
-      <span class="btn-emoji">📚</span><span class="btn-label">Biblioteca</span>
-    </button>
-    <button class="support-icon-btn" title="Apoyar este proyecto"
-      onclick="window.open('https://www.buymeacoffee.com/fatimallovet', '_blank')">
-      <span class="btn-emoji">☕</span><span class="btn-label">Apoyar</span>
-    </button>
-  </div>
-
 </header>
 
 <!-- BARRA DE NAVEGACIÓN MÓVIL (fija al pie) -->
-<nav class="bottom-nav">
+<nav class="bottom-nav" aria-label="Secciones">
   <button class="bottom-btn activo" data-tab="peliculas" onclick="setTab('peliculas')">
-    <span class="bottom-icon">🎬</span>
+    <span class="bottom-icon"><svg class="ico" aria-hidden="true"><use href="#i-film"/></svg></span>
     <span class="bottom-label">Películas</span>
   </button>
   <button class="bottom-btn" data-tab="series" onclick="setTab('series')">
-    <span class="bottom-icon">📺</span>
+    <span class="bottom-icon"><svg class="ico" aria-hidden="true"><use href="#i-tv"/></svg></span>
     <span class="bottom-label">Series</span>
   </button>
   <button class="bottom-btn" data-tab="moods" onclick="setTab('moods')">
-    <span class="bottom-icon">🗂️</span>
+    <span class="bottom-icon"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
     <span class="bottom-label">Colec.</span>
   </button>
   <button class="bottom-btn" data-tab="como-funciona" onclick="setTab('como-funciona')">
-    <span class="bottom-icon">ℹ️</span>
+    <span class="bottom-icon"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg></span>
     <span class="bottom-label">Info</span>
   </button>
   <button class="bottom-btn" id="bottom-wishlist-btn" onclick="abrirPanelDeseos()" style="display:none">
