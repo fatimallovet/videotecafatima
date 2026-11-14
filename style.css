@@ -421,7 +421,7 @@ h2 {
 }
 
 .buscador-wrapper {
-  max-width: 900px;   /* igual que la tabla */
+  max-width: var(--ancho-contenido);
   margin: 0 auto 14px auto;
   display: flex;
   align-items: center;
@@ -463,7 +463,10 @@ h2 {
    · 1000px → menú compacto: las pestañas pasan a la barra inferior
    · 600px → móvil: ajustes de tarjetas, textos y chips
    ══════════════════════════════════════ */
-:root { --topbar-h: 58px; }
+:root {
+  --topbar-h: 58px;
+  --ancho-contenido: 1200px; /* ancho común: menú, buscador y grillas */
+}
 
 /* Icono de trazo reutilizable (hereda el color del texto) */
 .ico {
@@ -486,10 +489,11 @@ h2 {
 }
 
 .topbar-inner {
-  max-width: 1200px;
+  box-sizing: border-box;
+  max-width: calc(var(--ancho-contenido) + 60px); /* 60 = margen de .tab, para alinear con la grilla */
   margin: 0 auto;
   height: var(--topbar-h);
-  padding: 0 28px;
+  padding: 0 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -589,7 +593,6 @@ h2 {
   :root { --topbar-h: 52px; }
 
   .tabs-center { display: none; }
-  .topbar-inner { padding: 0 16px; }
 
   .bottom-nav {
     display: flex;
@@ -653,19 +656,13 @@ h2 {
 }
 
 @media (max-width: 600px) {
+  .topbar-inner { padding: 0 16px; }
+  .tab { padding: 20px 16px; }
   .top-chip { padding: 8px 10px; }
   .top-chip-label { display: none; }
 }
 
-/* ── CONTROLES (buscador + toggle) ── */
-.controles-wrapper {
-  max-width: 900px;
-  margin: 0 auto 14px auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+/* ── CONTROLES (buscador + orden) ── */
 .controles-wrapper .buscador-wrapper {
   flex: 1;
   margin: 0;
@@ -674,11 +671,12 @@ h2 {
 
 /* ── CARDS GRID ── */
 .cards-grid {
-  max-width: 900px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  /* 158px: 4 columnas en tablet (768), 5 hasta ~1000 y 6 en 1200 */
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 18px;
 }
 
 /* ── CARD INDIVIDUAL ── */
@@ -705,86 +703,46 @@ h2 {
 .pelicard--pelicula { background: linear-gradient(160deg, rgba(85,107,93,0.07) 0%, rgba(255,255,255,0) 42%), white; }
 .pelicard--serie     { background: linear-gradient(160deg, rgba(47,122,148,0.07) 0%, rgba(255,255,255,0) 42%), white; }
 
-.pelicard--pelicula .pelicard-tipo { color: #556b5d; }
-.pelicard--serie     .pelicard-tipo { color: #2f7a94; }
-
-.pelicard--pelicula .pelicard-tipo::before { content: "🎬 "; }
-.pelicard--serie     .pelicard-tipo::before { content: "📺 "; }
-
-/* Banda de color superior por género */
-.pelicard-banda {
-  height: 6px;
-  width: 100%;
-  flex-shrink: 0;
-}
+/* Icono de tipo: solo donde se mezclan películas y series (resultados de una colección) */
+.pelicard-tipo-ico { display: none; width: 13px; height: 13px; }
+#mood-cards .pelicard-tipo-ico { display: inline-block; }
+.pelicard--pelicula .pelicard-tipo-ico { color: #556b5d; }
+.pelicard--serie     .pelicard-tipo-ico { color: #2f7a94; }
 
 /* Cuerpo de la card */
 .pelicard-body {
-  padding: 14px 16px 16px;
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
-}
-
-/* Fila tipo + año */
-.pelicard-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-.pelicard-tipo {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #9aab9e;
-}
-
-.pelicard-anio {
-  font-size: 0.72rem;
-  color: #b0b8b3;
 }
 
 /* Título */
 .pelicard-titulo {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 600;
   color: #1f1f1f;
-  line-height: 1.35;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-top: 2px;
 }
 
-/* Género */
-.pelicard-genero {
-  font-size: 0.72rem;
-  color: #7a8c85;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Separador y calificación */
-.pelicard-footer {
+/* Año · primer género (la lista completa de géneros está en la ficha) */
+.pelicard-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid #f0ede6;
+  gap: 5px;
+  font-size: 0.74rem;
+  color: #7a8c85;
 }
-
-.pelicard-estrellas {
-  font-size: 0.8rem;
-  color: #d4aa50;
-  letter-spacing: 1px;
+.pelicard-meta span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── COLORES POR GÉNERO ── */
@@ -1057,7 +1015,7 @@ h2 {
 /* ── RESPONSIVE CARDS ── */
 @media (max-width: 600px) {
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
     gap: 10px;
   }
 
@@ -1105,7 +1063,7 @@ h2 {
    CONTROLES: buscador corto + select
    ══════════════════════════════════════ */
 .controles-wrapper {
-  max-width: 900px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto 16px auto;
   display: flex;
   align-items: center;
@@ -1396,12 +1354,6 @@ h2 {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ── ESTRELLAS → calificación numérica ── */
-.pelicard-estrellas {
-  font-size: 0.82rem;
-  color: #d4aa50;
-}
-
 /* ── ACCIONES por ítem en lista de deseos ── */
 .deseo-acciones {
   display: flex;
@@ -1482,32 +1434,19 @@ h2 {
   transform: scale(1.04);
 }
 
-/* Overlay semitransparente con calificación y ♡ */
+/* Calificación y ♡ sobre el póster: siempre visibles (en pantallas táctiles no existe el hover) */
 .pelicard-poster-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0) 30%);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 10px 10px 8px;
-  opacity: 0;
-  transition: opacity 0.22s ease;
-}
-
-.pelicard:hover .pelicard-poster-overlay {
-  opacity: 1;
-}
-
-/* En móvil siempre visible */
-@media (max-width: 600px) {
-  .pelicard-poster-overlay {
-    opacity: 1;
-  }
+  padding: 10px 12px 8px;
 }
 
 .pelicard-estrellas-over {
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   color: #ffe082;
   font-weight: 600;
   text-shadow: 0 1px 3px rgba(0,0,0,0.6);
@@ -1517,7 +1456,9 @@ h2 {
 .pelicard-poster-wrap .card-deseo-btn {
   color: rgba(255,255,255,0.75);
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  padding: 8px;          /* zona táctil de ~36px sin mover el icono */
+  margin: -8px -8px -6px 0;
 }
 .pelicard-poster-wrap .card-deseo-btn:hover,
 .pelicard-poster-wrap .card-deseo-btn.activo {
@@ -1525,9 +1466,17 @@ h2 {
   transform: scale(1.2);
 }
 
-/* Card sin póster: el cuerpo ocupa todo */
-.pelicard:not(:has(.pelicard-poster-wrap)) .pelicard-body {
-  flex: 1;
+/* Sin póster (o si no carga): bloque del color del género (.banda-*) con el icono del tipo */
+.pelicard-poster-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pelicard-poster-ico {
+  width: 34%;
+  height: auto;
+  stroke: rgba(255,255,255,0.6);
+  stroke-width: 1.2;
 }
 
 /* ══════════════════════════════════════
@@ -1733,9 +1682,9 @@ h2 {
 
 /* Resultados del mood */
 .mood-resultado {
-  max-width: 960px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto;
-  padding: 0 20px 30px;
+  padding: 0 0 30px;
 }
 
 /* Barra sticky con botón volver + título */
@@ -1748,7 +1697,7 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 900px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto 16px;
 }
 
@@ -1783,7 +1732,7 @@ h2 {
 
 /* Cards del mood — hereda .cards-grid, solo ajuste de margen */
 #mood-cards {
-  max-width: 900px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto;
 }
 
@@ -1809,15 +1758,9 @@ h2 {
   .mood-resultado-titulo { font-size: 0.95rem; }
 
   #mood-cards {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)) !important;
     gap: 10px !important;
     padding: 0 !important;
-  }
-
-  /* Reducir padding lateral del tab moods en móvil */
-  #moods {
-    padding-left: 12px;
-    padding-right: 12px;
   }
 }
 
