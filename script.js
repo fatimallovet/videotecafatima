@@ -434,10 +434,12 @@ function mostrarModal(d) {
   document.getElementById("modal-origen").textContent       = d["Origen"] || "";
   document.getElementById("modal-anio").textContent         = d["Año"] || d["Anio"] || "";
 
-  document.getElementById("modal-label-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula" ? "⏱ Minutos:" : "⏱ Capítulos:";
-  document.getElementById("modal-minutos-o-caps").textContent =
-    d["Tipo"] === "Pelicula" ? (d["Minutos"] || "") : (d["Capítulos"] || d["Capitulos"] || "");
+  document.getElementById("modal-tipo").textContent = d["Tipo"] === "Pelicula" ? "Película" : "Serie";
+  var cantidad = d["Tipo"] === "Pelicula" ? (d["Minutos"] || "") : (d["Capítulos"] || d["Capitulos"] || "");
+  cantidad = String(cantidad).trim();
+  document.getElementById("modal-duracion").textContent =
+    cantidad ? cantidad + (d["Tipo"] === "Pelicula" ? " min" : " capítulos") : "";
+  document.getElementById("modal-sep-duracion").style.display = cantidad ? "" : "none";
 
   var genero    = d["Género"]    || d["Genero"]    || "";
   var tono      = d["Tono"]      || "";
@@ -447,20 +449,30 @@ function mostrarModal(d) {
   var flags     = d["Flags"]     || "";
   var resena    = d["Reseña"]    || d["Resena"]    || "";
 
-  document.getElementById("modal-genero").textContent    = genero;
+  var chipsGenero = document.getElementById("modal-genero");
+  chipsGenero.innerHTML = "";
+  genero.split(",").forEach(function(g) {
+    g = g.trim();
+    if (!g) return;
+    var chip = document.createElement("span");
+    chip.className = "modal-chip";
+    chip.textContent = g;
+    chipsGenero.appendChild(chip);
+  });
   document.getElementById("modal-tono").textContent      = tono;
   document.getElementById("modal-ritmo").textContent     = ritmo;
   document.getElementById("modal-publico").textContent   = publico;
   document.getElementById("modal-etiquetas").textContent = etiquetas;
-  document.getElementById("modal-flags").textContent     = flags;
   document.getElementById("modal-resena").textContent    = resena;
 
-  /* Oculta pills y secciones vacías para que la ficha no muestre huecos */
-  toggleModalBloque("modal-genero-pill", genero);
+  /* Oculta bloques vacíos para que la ficha no muestre huecos; «Ninguna» no es una advertencia */
+  if (/^ninguna?s?\.?$/i.test(flags.trim())) flags = "";
+  toggleModalBloque("modal-genero", genero);
   toggleModalBloque("modal-tono-pill", tono);
   toggleModalBloque("modal-ritmo-pill", ritmo);
   toggleModalBloque("modal-publico-pill", publico);
   toggleModalBloque("modal-etiquetas-wrap", etiquetas);
+  document.getElementById("modal-flags").textContent = flags;
   toggleModalBloque("modal-flags-wrap", flags);
   toggleModalBloque("modal-resena-wrap", resena);
 
@@ -1360,7 +1372,7 @@ function actualizarBtnDeseoModal() {
   var btn = document.getElementById("modal-deseos-btn");
   if (!btn) return;
   var enD = estaEnDeseos(_tituloActual);
-  btn.textContent = enD ? "♥ En mi lista" : "♡ Guardar";
+  btn.innerHTML = '<svg class="ico"><use href="#i-heart"/></svg>' + (enD ? "En mi lista" : "Guardar");
   btn.classList.toggle("activo", enD);
 }
 
@@ -1477,11 +1489,13 @@ function _copiarFallback(texto) {
   document.body.removeChild(ta);
 }
 
+var ICONO_PELICULA_VACIA = '<svg class="ico"><use href="#i-film"/></svg>';
+
 function renderPanelDeseos() {
   var lista = document.getElementById("deseos-lista");
   var cnt   = document.getElementById("deseos-count");
   if (!lista) return;
-  if (cnt) cnt.textContent = _deseos.length;
+  if (cnt) cnt.textContent = _deseos.length ? _deseos.length + " por ver" : "";
   lista.innerHTML = "";
 
   if (_deseos.length === 0) {
@@ -1490,18 +1504,49 @@ function renderPanelDeseos() {
   }
 
   _deseos.forEach(function(item) {
+    var datos = _enriquecerDeseo(item);
     var row = document.createElement("div");
     row.className = "deseo-item";
-    row.innerHTML =
-      '<div class="deseo-info">' +
-        '<span class="deseo-titulo">' + item.titulo + '</span>' +
-        '<span class="deseo-meta">' + (item.tipo || "") +
-          (item.genero ? " · " + item.genero.split(",")[0] : "") + '</span>' +
-      '</div>' +
-      '<div class="deseo-acciones">' +
-        '<button class="deseo-compartir-item" title="Compartir">↗</button>' +
-        '<button class="deseo-quitar" title="Quitar">✖</button>' +
-      '</div>';
+
+    var miniatura = document.createElement("div");
+    miniatura.className = "deseo-poster";
+    if (datos.poster) {
+      var img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      var urlMini = urlPosterTMDB(datos.poster, "w185");
+      img.src = urlMini;
+      img.addEventListener("error", function() {
+        if (urlMini !== datos.poster && !img.dataset.original) { img.dataset.original = "1"; img.src = datos.poster; }
+        else { img.remove(); miniatura.classList.add("deseo-poster--vacio"); miniatura.innerHTML = ICONO_PELICULA_VACIA; }
+      });
+      miniatura.appendChild(img);
+    } else {
+      miniatura.classList.add("deseo-poster--vacio");
+      miniatura.innerHTML = ICONO_PELICULA_VACIA;
+    }
+
+    var info = document.createElement("div");
+    info.className = "deseo-info";
+    var tit = document.createElement("span");
+    tit.className = "deseo-titulo";
+    tit.textContent = item.titulo;
+    var meta = document.createElement("span");
+    meta.className = "deseo-meta";
+    meta.textContent = [datos.tipo, datos.anio, datos.genero ? datos.genero.split(",")[0].trim() : ""]
+      .filter(Boolean).join(" · ");
+    info.appendChild(tit);
+    info.appendChild(meta);
+
+    var acciones = document.createElement("div");
+    acciones.className = "deseo-acciones";
+    acciones.innerHTML =
+      '<button type="button" class="deseo-compartir-item" aria-label="Compartir"><svg class="ico"><use href="#i-share"/></svg></button>' +
+      '<button type="button" class="deseo-quitar" aria-label="Quitar de mi lista"><svg class="ico"><use href="#i-x"/></svg></button>';
+
+    row.appendChild(miniatura);
+    row.appendChild(info);
+    row.appendChild(acciones);
 
     row.querySelector(".deseo-quitar").addEventListener("click", function() {
       _deseos = _deseos.filter(function(d) { return d.titulo !== item.titulo; });

@@ -36,25 +36,26 @@ h2 {
   margin-top: 10px;
 }
 
-/* MODAL */
+/* ══════════════════════════════════════
+   FICHA (modal) — papel crema; la reseña es la protagonista
+   ══════════════════════════════════════ */
 .modal {
   position: fixed;
-  inset: 0;                    /* top/right/bottom/left en 0 */
-  background: rgba(0,0,0,0.6);
+  inset: 0;
+  background: rgba(42, 38, 35, 0.55);
   z-index: 999;
   display: none;
   justify-content: center;
   align-items: center;
-  padding: 12px;               /* 🔑 margen real en móvil */
+  padding: 12px;
   box-sizing: border-box;
 }
 
-/* TARJETA / CONTENIDO */
 .modal-content {
-  background: white;
+  background: #f7f3ec;
   width: 100%;
-  max-width: 960px;
-  max-height: 85vh;
+  max-width: 720px;
+  max-height: 88vh;
   overflow: hidden;
   border-radius: 20px;
   box-sizing: border-box;
@@ -67,7 +68,7 @@ h2 {
 .modal-inner {
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 26px 40px 32px;
+  padding: 30px 34px 24px;
   flex: 1;
 }
 
@@ -76,337 +77,220 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-/* ── Botón cerrar: circulito flotante sobre el banner ── */
 .close-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 14px;
+  right: 14px;
   z-index: 3;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 0.95rem;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(4px);
-  transition: 0.2s;
+  color: #2a2623;
+  background: #ffffff;
+  border: 1px solid #e6dfd1;
+  transition: background 0.2s;
+}
+.close-btn .ico { width: 16px; height: 16px; }
+.close-btn:hover { background: #efe9dc; }
+
+/* Etiqueta pequeña en mayúsculas (Mi reseña, Disponible en, datos) */
+.modal-etiqueta {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a7060;
 }
 
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.32);
-}
-
-/* ── Banner: encabezado fijo con degradado, póster, título, rating y streaming ── */
-.modal-banner {
+/* Cabecera: póster + título + nota + géneros */
+.modal-cabecera {
   display: flex;
-  align-items: center;
-  gap: 22px;
-  padding: 26px 36px;
-  background: linear-gradient(135deg, #3a3833 0%, #1e1c19 100%);
-  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 24px;
+  padding-right: 30px;       /* deja libre el botón de cerrar */
 }
 
-.modal-banner-info {
+.modal-poster-wrap {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.modal-poster-img {
+  display: block;
+  width: 128px;
+  height: 192px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(42, 38, 35, 0.25);
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+.modal-poster-img:hover { transform: scale(1.03); }
+
+.modal-cabecera-info {
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
+}
+
+.modal-tipo {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b3f5c;
 }
 
 #modal-titulo {
-  margin: 0 0 8px 0;
-  font-family: "Poppins", sans-serif;
-  font-size: 1.55rem;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.25;
+  margin: 4px 0 6px;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #2a2623;
 }
 
-.modal-banner-rating {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.modal-calif-star {
-  font-size: 1.05rem;
-}
-
-.modal-calif-num {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.modal-calif-max {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.modal-banner-sub {
+.modal-sub {
   margin: 0;
-  font-size: 0.86rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  color: #7a7060;
 }
+.modal-sep { margin: 0 5px; opacity: 0.6; }
 
-.modal-banner-sep {
-  margin: 0 6px;
-  opacity: 0.55;
-}
-
-/* Streaming dentro del banner: mismo contenido, sin la caja clara */
-.modal-banner .modal-streaming-wrap {
-  margin: 12px 0 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-}
-
-.modal-banner .modal-streaming-label {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.modal-banner .modal-streaming-credito {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-/* ── Cuadrícula de Género / Tono / Ritmo / Público ── */
-.modal-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.modal-meta-item {
+.modal-nota {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 10px 12px;
-  background: #f4f1ea;
-  border: 1px solid #e7e2d5;
-  border-radius: 12px;
-  min-width: 0;
+  gap: 5px;
+  margin: 10px 0 12px;
+  color: #e0a05a;
+}
+.modal-nota .ico { width: 17px; height: 17px; fill: currentColor; stroke-width: 1.4; }
+.modal-nota-num {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #2a2623;
+}
+.modal-nota-max { font-size: 0.75rem; color: #7a7060; }
+
+.modal-generos { display: flex; flex-wrap: wrap; gap: 6px; }
+.modal-chip {
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e6dfd1;
+  font-size: 0.76rem;
+  color: #2a2623;
 }
 
-.modal-meta-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #556b5d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-}
-
-.modal-meta-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.modal-meta-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #a39c8c;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.modal-meta-valor {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1f1f1f;
-}
-
-/* ── Secciones de detalle: Reseña / Flags / Etiquetas ──
-   Misma forma y estructura para las tres; solo cambia el
-   color del ícono/avatar para poder distinguirlas. */
-.modal-detalle-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 12px;
-  padding: 14px 16px;
-  background: #f9f7f2;
-  border: 1px solid #ece7db;
+/* Reseña: lo más importante de la ficha */
+.modal-resena {
+  margin-top: 24px;
+  padding: 20px 24px 22px;
+  background: #ffffff;
+  border: 1px solid #e6dfd1;
   border-radius: 14px;
 }
-
-.modal-detalle-icon {
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  color: #ffffff;
-  background: #a39c8c;
-}
-
-.modal-detalle-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.modal-detalle-label {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #7a7060;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 5px;
-}
-
-.modal-detalle-texto {
+.modal-resena .modal-etiqueta { color: #9b3f5c; margin-bottom: 8px; }
+.modal-resena-texto {
   margin: 0;
-  font-size: 0.92rem;
-  color: #33332e;
-  line-height: 1.55;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: #2a2623;
 }
 
-.modal-resena-section .modal-detalle-icon {
-  background: #556b5d;
+/* Tono, ritmo, público, advertencias, etiquetas */
+.modal-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin: 22px 0 0;
 }
-
-.modal-resena-section .modal-detalle-label {
-  color: #556b5d;
+.modal-datos dt {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a7060;
+  margin-bottom: 3px;
 }
+.modal-datos dd { margin: 0; font-size: 0.9rem; color: #2a2623; }
+#modal-flags-wrap,
+#modal-etiquetas-wrap { flex-basis: 100%; }
 
-.modal-resena-section .modal-detalle-texto {
-  font-style: italic;
-}
-
-.modal-flags-section .modal-detalle-icon {
-  background: #a8523f;
-}
-
-.modal-flags-section .modal-detalle-label {
-  color: #a8523f;
-}
-
-.modal-etiquetas-section .modal-detalle-icon {
-  background: #a39c8c;
-}
-
-/* ── Enlace IMDB como botón discreto ── */
 .modal-imdb-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1.5px solid #556b5d;
+  gap: 4px;
+  margin-top: 18px;
+  font-size: 0.84rem;
+  font-weight: 500;
   color: #556b5d;
-  font-weight: 600;
-  font-size: 0.85rem;
   text-decoration: none;
-  transition: 0.2s;
+  border-bottom: 1px solid transparent;
+}
+.modal-imdb-link .ico { width: 14px; height: 14px; }
+.modal-imdb-link:hover { border-bottom-color: #556b5d; }
+
+/* Acciones fijas al pie: siempre a la mano aunque la ficha tenga scroll */
+.modal-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 34px;
+  background: #f7f3ec;
+  border-top: 1px solid #e6dfd1;
+  flex-shrink: 0;
 }
 
-.modal-imdb-link:hover {
-  background: #556b5d;
-  color: #ffffff;
+.modal-compartir-btn,
+.modal-deseos-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 20px;
+  height: 42px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  border: 1.5px solid #9b3f5c;
+  transition: background 0.2s, color 0.2s;
 }
+.modal-deseos-btn { background: #9b3f5c; color: #ffffff; }
+.modal-deseos-btn:hover { background: #82324c; border-color: #82324c; }
+.modal-deseos-btn.activo { background: #ffffff; color: #9b3f5c; }
+.modal-deseos-btn.activo .ico { fill: currentColor; }
+.modal-deseos-btn.activo:hover { background: #f3e4ea; }
+.modal-compartir-btn { background: transparent; color: #9b3f5c; }
+.modal-compartir-btn:hover { background: #f3e4ea; }
 
 @media (max-width: 600px) {
-
-  .modal {
-    padding: 10px;             /* margen cómodo */
-  }
-
-  .modal-content {
-    max-width: 100%;
-    font-size: 0.92rem;
-    line-height: 1.45;
-    border-radius: 16px;
-  }
-
-  .modal-inner {
-    padding: 18px;
-  }
-
-  .modal-content p {
-    margin: 8px 0;             /* menos aire vertical */
-  }
-
-  .modal-content strong {
-    font-weight: 600;
-  }
-
-  .close-btn {
-    font-size: 1rem;
-  }
-
-  .modal-banner {
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: left;
-    gap: 12px;
-    padding: 16px 16px;
-  }
-
-  .modal-poster-img {
-    width: 72px;
-    height: 108px;
-    border-width: 2px;
-  }
-
-  #modal-titulo {
-    text-align: left;
-    font-size: 1rem;
-    margin-bottom: 5px;
-  }
-
-  .modal-banner-sub {
-    text-align: left;
-    font-size: 0.74rem;
-  }
-
-  .modal-banner-rating {
-    justify-content: flex-start;
-    margin-bottom: 5px;
-  }
-
-  .modal-calif-num { font-size: 1rem; }
-  .modal-calif-star { font-size: 0.85rem; }
-
-  .modal-banner .modal-streaming-wrap {
-    text-align: left;
-    margin-top: 6px;
-  }
-
-  .modal-banner .modal-streaming-pills {
-    justify-content: flex-start;
-  }
-
-  .modal-banner .modal-streaming-label {
-    font-size: 0.7rem;
-  }
-
-  /* El crédito de JustWatch se omite aquí: en el espacio compacto
-     no aporta y le quita lugar a lo importante */
-  .modal-banner .modal-streaming-credito {
-    display: none;
-  }
-
-  .modal-meta-grid {
-    grid-template-columns: 1fr;
-  }
+  .modal { padding: 10px; }
+  .modal-content { border-radius: 16px; max-height: 90vh; }
+  .modal-inner { padding: 20px 18px 18px; }
+  .modal-cabecera { gap: 14px; padding-right: 26px; }
+  .modal-poster-img { width: 92px; height: 138px; }
+  #modal-titulo { font-size: 1.5rem; }
+  .modal-sub { font-size: 0.76rem; }
+  .modal-nota { margin: 8px 0 10px; }
+  .modal-resena { margin-top: 18px; padding: 16px 18px 18px; }
+  .modal-resena-texto { font-size: 1.22rem; }
+  .modal-datos { gap: 14px 24px; }
+  .modal-acciones { padding: 12px 16px; }
+  .modal-deseos-btn { flex: 1; }
 }
 
 /* ══════════════════════════════════════
@@ -724,27 +608,16 @@ body { padding-left: var(--sidebar-w); }
    STREAMING (modal)
    ══════════════════════════════════════ */
 .modal-streaming-wrap {
-  margin: 16px 0;
-  padding: 12px 14px;
-  background: #f4f1ea;
-  border: 1px solid #e3ddd0;
-  border-radius: 12px;
-}
-
-.modal-streaming-label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #7a7060;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  margin-bottom: 8px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e6dfd1;
 }
 
 .modal-streaming-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-top: 8px;
 }
 
 .streaming-pill {
@@ -756,7 +629,6 @@ body { padding-left: var(--sidebar-w); }
   font-weight: 600;
   color: white;
   background: #556b5d; /* color por defecto si la plataforma no tiene regla propia */
-  border: 1px solid rgba(255,255,255,0.18); /* separa el pill de fondos oscuros como el banner */
 }
 
 .streaming-netflix       { background: #a83244; }
@@ -774,21 +646,6 @@ body { padding-left: var(--sidebar-w); }
   background: transparent;
   color: #a39c8c;
   border: 1.5px dashed #cfc7b6;
-}
-
-.modal-streaming-wrap.sin-streaming {
-  background: #f7f5f0;
-}
-
-/* Dentro del banner oscuro no queremos el parche claro de fondo;
-   el pill punteado ya se distingue solo */
-.modal-banner .modal-streaming-wrap.sin-streaming {
-  background: transparent;
-}
-
-.modal-banner .streaming-ninguna {
-  color: rgba(255,255,255,0.55);
-  border-color: rgba(255,255,255,0.3);
 }
 
 .modal-streaming-credito {
@@ -1215,67 +1072,6 @@ body { padding-left: var(--sidebar-w); }
 }
 
 /* ══════════════════════════════════════
-   ACCIONES DEL MODAL (compartir + guardar)
-   ══════════════════════════════════════ */
-.modal-acciones {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #ece7db;
-  flex-wrap: wrap;
-}
-
-.modal-compartir-btn,
-.modal-deseos-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 20px;
-  height: 42px;           /* altura fija igual para ambos */
-  box-sizing: border-box;
-  border-radius: 12px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  transition: 0.2s ease;
-  font-family: "Poppins", sans-serif;
-  border: 1.5px solid #556b5d;
-  background: white;
-  color: #556b5d;
-}
-
-.modal-compartir-btn:hover {
-  background: #556b5d;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.modal-deseos-btn {
-  background: #556b5d;
-  color: white;
-}
-
-.modal-deseos-btn:hover {
-  background: #3f4f43;
-  border-color: #3f4f43;
-  transform: translateY(-2px);
-}
-
-.modal-deseos-btn.activo {
-  background: #ffe8ef;
-  color: #b05070;
-  border-color: #e8b0c0;
-}
-.modal-deseos-btn.activo:hover {
-  background: #b05070;
-  color: white;
-  border-color: #b05070;
-}
-
-/* ══════════════════════════════════════
    BOTÓN ♡ EN CARD
    ══════════════════════════════════════ */
 .card-deseo-btn {
@@ -1294,15 +1090,15 @@ body { padding-left: var(--sidebar-w); }
 .card-deseo-btn.activo { color: #b05070; }
 
 /* ══════════════════════════════════════
-   PANEL LISTA DE DESEOS
+   PANEL LISTA DE DESEOS — mismo papel crema y serif que la ficha
    ══════════════════════════════════════ */
 .panel-deseos {
   position: fixed;
   top: 0; right: -100%;
-  width: 340px;
+  width: 360px;
   max-width: 92vw;
   height: 100%;
-  background: white;
+  background: #f7f3ec;
   z-index: 800;
   box-shadow: -6px 0 30px rgba(0,0,0,0.18);
   display: flex;
@@ -1314,93 +1110,150 @@ body { padding-left: var(--sidebar-w); }
 .panel-deseos-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid #edeae3;
-  font-weight: 700;
-  font-size: 1rem;
-  color: #1f1f1f;
+  align-items: flex-start;
+  padding: 22px 20px 14px;
+  border-bottom: 1px solid #e6dfd1;
 }
-
+.panel-deseos-titulo {
+  display: block;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: #2a2623;
+}
 .deseos-count {
-  background: #556b5d;
-  color: white;
-  border-radius: 20px;
-  padding: 2px 9px;
-  font-size: 0.8rem;
-  font-weight: 700;
+  display: block;
+  margin-top: 5px;
+  font-size: 0.78rem;
+  color: #7a7060;
 }
+.deseos-count:empty { display: none; }
 
 .panel-close-btn {
-  background: none;
-  border: none;
-  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e6dfd1;
+  color: #2a2623;
   cursor: pointer;
-  color: #777;
+  transition: background 0.2s;
 }
+.panel-close-btn .ico { width: 16px; height: 16px; }
+.panel-close-btn:hover { background: #efe9dc; }
 
 .deseos-lista {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 16px;
+  padding: 4px 18px;
 }
 
 .deseo-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0ede6;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e6dfd1;
+}
+.deseo-item:last-child { border-bottom: none; }
+
+.deseo-poster {
+  flex-shrink: 0;
+  width: 46px;
+  height: 69px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #e6dfd1;
+}
+.deseo-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.deseo-poster--vacio {
+  background: #9aab9e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.deseo-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-
+.deseo-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .deseo-titulo {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #1f1f1f;
-  line-height: 1.3;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.15;
+  color: #2a2623;
 }
-.deseo-meta {
-  font-size: 0.74rem;
-  color: #8a9490;
-}
+.deseo-meta { font-size: 0.74rem; color: #7a7060; }
 
+.deseo-acciones { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.deseo-compartir-item,
 .deseo-quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   background: none;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  color: #b0b8b3;
-  font-size: 0.85rem;
-  padding: 4px;
-  flex-shrink: 0;
-  transition: color 0.15s;
+  color: #7a7060;
+  transition: color 0.15s, background 0.15s;
 }
-.deseo-quitar:hover { color: #b05070; }
+.deseo-compartir-item .ico,
+.deseo-quitar .ico { width: 16px; height: 16px; }
+.deseo-compartir-item:hover { color: #556b5d; background: #ece6d9; }
+.deseo-quitar:hover { color: #9b3f5c; background: #f3e4ea; }
 
 .deseos-vacia {
   text-align: center;
-  color: #aaa;
-  font-size: 0.88rem;
-  margin-top: 40px;
+  color: #7a7060;
+  font-size: 0.9rem;
+  margin-top: 48px;
   line-height: 1.7;
 }
 
-.deseos-vaciar-btn {
-  margin: 0;
-  padding: 14px;
-  background: #f9f6f1;
-  border: none;
-  border-top: 1px solid #edeae3;
-  width: 100%;
-  font-family: "Poppins", sans-serif;
-  font-size: 0.85rem;
-  color: #888;
-  cursor: pointer;
-  transition: 0.2s;
+.deseos-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid #e6dfd1;
 }
-.deseos-vaciar-btn:hover { background: #f0ede6; color: #b05070; }
+.deseos-compartir-lista-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid #9b3f5c;
+  background: #9b3f5c;
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.deseos-compartir-lista-btn:hover { background: #82324c; border-color: #82324c; }
+.deseos-vaciar-btn {
+  height: 42px;
+  padding: 0 12px;
+  background: none;
+  border: none;
+  border-radius: 12px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.84rem;
+  color: #7a7060;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.deseos-vaciar-btn:hover { color: #9b3f5c; background: #f3e4ea; }
 
 /* ══════════════════════════════════════
    TOAST
@@ -1426,63 +1279,6 @@ body { padding-left: var(--sidebar-w); }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-
-/* ── ACCIONES por ítem en lista de deseos ── */
-.deseo-acciones {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.deseo-compartir-item {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #9aab9e;
-  font-size: 0.95rem;
-  padding: 4px 6px;
-  border-radius: 8px;
-  transition: color 0.15s, background 0.15s;
-  line-height: 1;
-}
-.deseo-compartir-item:hover {
-  color: #556b5d;
-  background: #f0ede6;
-}
-
-/* ── Footer del panel: compartir lista + vaciar ── */
-.deseos-footer {
-  display: flex;
-  border-top: 1px solid #edeae3;
-}
-
-.deseos-compartir-lista-btn,
-.deseos-vaciar-btn {
-  flex: 1;
-  padding: 14px 10px;
-  background: #f9f6f1;
-  border: none;
-  font-family: "Poppins", sans-serif;
-  font-size: 0.84rem;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 0;
-  width: auto;
-}
-
-.deseos-compartir-lista-btn {
-  color: #556b5d;
-  border-right: 1px solid #edeae3;
-  font-weight: 600;
-}
-.deseos-compartir-lista-btn:hover { background: #eaf0ec; }
-
-.deseos-vaciar-btn {
-  color: #888;
-  border-top: none;  /* ya viene del footer */
-}
-.deseos-vaciar-btn:hover { background: #f0ede6; color: #b05070; }
 
 /* ══════════════════════════════════════
    PÓSTER EN CARD
@@ -1550,32 +1346,6 @@ body { padding-left: var(--sidebar-w); }
   height: auto;
   stroke: rgba(255,255,255,0.6);
   stroke-width: 1.2;
-}
-
-/* ══════════════════════════════════════
-   PÓSTER EN MODAL
-   ══════════════════════════════════════ */
-.modal-poster-wrap {
-  margin: 0;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.modal-poster-img {
-  width: 118px;
-  height: 177px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 3px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
-  cursor: zoom-in;
-  display: inline-block;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modal-poster-img:hover {
-  transform: scale(1.04);
-  box-shadow: 0 18px 36px rgba(0,0,0,0.4);
 }
 
 /* ══════════════════════════════════════
