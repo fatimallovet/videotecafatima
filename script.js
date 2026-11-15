@@ -9,6 +9,11 @@ function mostrarTab(tabId) {
   var target = document.getElementById(tabId);
   if (target) target.classList.add('visible');
 
+  /* Título de la cabecera móvil (ya no lleva el logo) */
+  var titulos = { "peliculas": "Películas", "series": "Series", "moods": "Colecciones", "como-funciona": "Info" };
+  var mbt = document.getElementById("mb-title");
+  if (mbt && titulos[tabId]) mbt.textContent = titulos[tabId];
+
   /* Barra lateral / cajón */
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b) {
     b.classList.toggle('activo', b.dataset.tab === tabId);

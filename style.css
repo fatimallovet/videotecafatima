@@ -450,23 +450,11 @@ body { padding-left: var(--sidebar-w); }
   z-index: 200;
 }
 
-.sb-logo {
-  display: block;
-  padding: 22px 24px 14px;
-  flex-shrink: 0;
-}
-.sb-logo img {
-  display: block;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-}
-
 .sb-scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 6px 12px 12px;
+  padding: 18px 12px 12px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -516,8 +504,10 @@ body { padding-left: var(--sidebar-w); }
 }
 .nav-n:empty { display: none; }
 
-.nav-cafe .ico { color: #c9873a; }
-.nav-cafe:hover { background: rgba(224,160,90,0.14); color: #9a6423; }
+/* Enlace externo (Biblioteca): separado y más discreto, con la flecha ↗ */
+.sb-sep { height: 1px; background: #efeae0; margin: 6px 8px; }
+.nav-ext { font-size: 0.84rem; color: #8a8a8a; }
+.nav-ext .nav-ext-ico { width: 14px; height: 14px; margin-left: auto; color: #b3ac9c; }
 
 /* Colecciones: acceso directo a cada una, con su color */
 .cl-lista {
@@ -582,7 +572,12 @@ body { padding-left: var(--sidebar-w); }
   }
   .mb-btn .ico { width: 22px; height: 22px; }
   .mb-btn:hover { background: #f6f3ec; }
-  .mb-logo img { display: block; width: 32px; height: 32px; border-radius: 9px; }
+  .mb-title {
+    padding-left: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #364a46;
+  }
   .mb-sp { flex: 1; }
 
   .sidebar {
