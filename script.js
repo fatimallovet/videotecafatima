@@ -500,6 +500,7 @@ function toggleModalBloque(id, valor) {
 function mostrarModal(d) {
   _itemActual   = d;
   _tituloActual = d["Título"] || d["Titulo"] || "";
+  precargarImagenFicha(d);
 
   document.getElementById("modal-titulo").textContent       = _tituloActual;
   document.getElementById("modal-calificacion").textContent = d["Calificación"] || d["Calificacion"] || "";
@@ -785,17 +786,45 @@ function _cabeceraWA(x) {
           datos.join(" · ")];
 }
 
-/* Texto que acompaña al enlace: solo el título con año (🎬 *Título* (año)) y «Mi reseña completa 👇».
-   La tarjeta de vista previa ya trae nota, géneros y un extracto de la reseña.
-   El enlace va aparte (navigator.share lo agrega) para que no salga duplicado. */
+/* Texto que acompaña a lo que se comparte. Lo puede enviar cualquiera (no solo la dueña del sitio),
+   así que habla en neutro: título con año y una invitación a abrir la ficha completa.
+   La nota, géneros y un extracto de la reseña ya van en la imagen (o en la tarjeta de vista previa). */
 function textoCompartir(d) {
-  return _cabeceraWA(_datosFichaWA(d))[0] + "\n\nMi reseña completa 👇";
+  return _cabeceraWA(_datosFichaWA(d))[0] + "\n\nReseña completa y dónde verla 👇";
 }
 
-/* Compartir una ficha = enviar su enlace directo. Abre el menú de compartir del sistema
-   (WhatsApp, Mensajes, Telegram…); si el navegador no lo tiene, copia el texto con el enlace.
-   navigator.share debe llamarse dentro del clic del usuario. */
-function compartirEnlace(d) {
+/* ¿Este dispositivo puede mandar una imagen junto con texto desde el menú del sistema?
+   (celulares: WhatsApp, Mensajes, Telegram…) En escritorio no: ahí se ofrece elegir. */
+function _puedeCompartirImagen() {
+  try {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !!navigator.canShare &&
+           navigator.canShare({ files: [new File(["x"], "a.png", { type: "image/png" })] });
+  } catch (e) { return false; }
+}
+
+/* La imagen de la ficha tarda un poco en generarse (carga el póster). Se prepara de antemano al
+   abrir la ficha, para que al tocar «Compartir» ya esté lista y el menú del sistema se abra al
+   instante (los navegadores exigen que se abra dentro del toque del usuario). Se guarda solo la última. */
+var _imgFicha = { clave: "", promesa: null };
+function _imagenFichaPromesa(d) {
+  var clave = d["Tipo"] + "|" + campo(d, ["Título","Titulo"]);
+  if (_imgFicha.clave !== clave || !_imgFicha.promesa) {
+    var p = generarImagenFicha(d);
+    p.catch(function() { if (_imgFicha.promesa === p) _imgFicha = { clave: "", promesa: null }; });
+    _imgFicha = { clave: clave, promesa: p };
+  }
+  return _imgFicha.promesa;
+}
+function precargarImagenFicha(d) {
+  if (!_puedeCompartirImagen()) return;
+  setTimeout(function() {
+    if (_itemActual === d) _imagenFichaPromesa(d).catch(function() {});
+  }, 500);
+}
+
+/* Solo el enlace: menú del sistema (título, texto y enlace por separado para que no salga duplicado)
+   o, si no existe, copia texto + enlace. */
+function _compartirSoloEnlace(d) {
   var url   = urlCompartirFicha(d);
   var texto = textoCompartir(d);
   function copiar() { _copiarAlPortapapeles(texto + "\n" + url, "¡Enlace copiado! Pégalo donde quieras 🔗"); }
@@ -808,6 +837,38 @@ function compartirEnlace(d) {
   }
 }
 
+/* Compartir una ficha:
+   · En el celular, UN toque: se abre el menú del sistema con la imagen de la ficha (lo esencial)
+     y, como texto, el título con el enlace que abre la ficha completa.
+   · En escritorio (no puede mandar imagen + texto a la vez): pregunta si se quiere el enlace o la imagen. */
+function compartirEnlace(d) {
+  if (_puedeCompartirImagen()) {
+    var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
+    var url    = urlCompartirFicha(d);
+    var listo  = _imgFicha.clave === d["Tipo"] + "|" + campo(d, ["Título","Titulo"]) && _imgFicha.promesa;
+    if (!listo) mostrarToast("Preparando la imagen… 🖼️");
+    _imagenFichaPromesa(d).then(function(blob) {
+      var file = new File([blob], nombre, { type: "image/png" });
+      /* El enlace va dentro del texto (no como `url`): con archivos, varias apps descartan el campo `url` */
+      var datos = { files: [file], title: _waLimpio(campo(d, ["Título","Titulo"])), text: textoCompartir(d) + "\n" + url };
+      if (!navigator.canShare(datos)) throw new Error("no-compartible");
+      return navigator.share(datos);
+    }).catch(function(err) {
+      if (err && err.name === "AbortError") return;   // cancelar el menú no es un error
+      _compartirSoloEnlace(d);
+    });
+    return;
+  }
+  mostrarMenuCompartir(null, {
+    etiquetas: { texto: "🔗 Como enlace", imagen: "🖼️ Como imagen" },
+    texto:  function() { _compartirSoloEnlace(d); },
+    imagen: function() {
+      var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
+      _compartirImagenDesdePromesa(_imagenFichaPromesa(d), nombre, textoCompartir(d) + "\n" + urlCompartirFicha(d));
+    }
+  });
+}
+
 function compartirTitulo() { compartirEnlace(_itemActual); }
 
 function mostrarToast(msg) {
@@ -818,7 +879,7 @@ function mostrarToast(msg) {
 }
 
 /* ══════════════════════════════════════
-   MENÚ "COMPARTIR" — texto o imagen (solo para la lista de deseos; las fichas comparten su enlace)
+   MENÚ "COMPARTIR" — dos opciones (lista de deseos: texto o imagen; ficha en escritorio: enlace o imagen)
    Overlay centrado (no depende de la posición de ningún botón,
    así siempre queda visible por encima del modal / panel de deseos).
    ══════════════════════════════════════ */
@@ -832,10 +893,11 @@ function mostrarMenuCompartir(anchorEl, handlers) {
 
   var menu = document.createElement("div");
   menu.className = "menu-compartir";
+  var et = handlers.etiquetas || { texto: "📝 Como texto", imagen: "🖼️ Como imagen" };
   menu.innerHTML =
     '<div class="menu-compartir-titulo">¿Cómo quieres compartir?</div>' +
-    '<button class="menu-compartir-op" data-op="texto">📝 Como texto</button>' +
-    '<button class="menu-compartir-op" data-op="imagen">🖼️ Como imagen</button>' +
+    '<button class="menu-compartir-op" data-op="texto">' + et.texto + '</button>' +
+    '<button class="menu-compartir-op" data-op="imagen">' + et.imagen + '</button>' +
     '<button class="menu-compartir-cancelar" data-op="cancelar">Cancelar</button>';
 
   fondo.appendChild(menu);
@@ -971,6 +1033,24 @@ function _cargarPoster(url, tam) {
   return intento.catch(function() { return _cargarImagen(url); });
 }
 
+/* Parte un texto en líneas que caben en maxWidth. No trunca: devuelve
+   todas las líneas necesarias para mostrar el texto completo. */
+function _partirLineas(ctx, texto, maxWidth) {
+  var palabras = String(texto).split(" ");
+  var linea = "", lineas = [];
+  for (var i = 0; i < palabras.length; i++) {
+    var prueba = linea + palabras[i] + " ";
+    if (ctx.measureText(prueba).width > maxWidth && linea !== "") {
+      lineas.push(linea.trim());
+      linea = palabras[i] + " ";
+    } else {
+      linea = prueba;
+    }
+  }
+  if (linea.trim()) lineas.push(linea.trim());
+  return lineas;
+}
+
 /* Trunca una sola línea con "…" si no cabe en maxWidth (para filas de una sola línea) */
 function _truncarLinea(ctx, texto, maxWidth) {
   if (!texto) return "";
@@ -995,6 +1075,267 @@ function _redondeado(ctx, x, y, w, h, r) {
 /* Divide un texto en oraciones (no corta en abreviaturas como "EE.UU." ni en "6.5") */
 function _oraciones(texto) {
   return texto.match(/[\s\S]+?[.!?…]+["”»)]*(?=\s|$)|[\s\S]+$/g) || [texto];
+}
+
+/* ── Ficha individual → imagen para compartir ──
+   Formato fijo 4:5 (1080×1350). Los chats muestran una imagen 4:5 completa y a todo el
+   ancho, así que el texto conserva siempre el mismo tamaño aparente, sin importar lo larga
+   que sea la reseña (antes el alto crecía sin límite y los chats la encogían).
+   Arriba: póster + datos. Debajo: reseña centrada. Si la reseña no cabe ni con la letra
+   más pequeña, se corta en la última oración completa que quepa y se marca con "[…]". */
+var IMG_FICHA = { W: 1080, H: 1350, pad: 72, footerH: 100, posterW: 300, posterH: 450 };
+
+/* Reseña ajustada al alto disponible: prueba tamaños de letra de mayor a menor y, si ni con
+   el mínimo cabe, la recorta por oraciones completas. Devuelve { lineas, size, lh }. */
+function _ajustarResena(ctx, texto, ancho, altoDisp) {
+  var tamanos = [36, 34, 32, 30], i, lh, lineas;
+  for (i = 0; i < tamanos.length; i++) {
+    ctx.font = "italic 400 " + tamanos[i] + "px Poppins, sans-serif";
+    lh = Math.round(tamanos[i] * 1.48);
+    lineas = _partirLineas(ctx, texto, ancho);
+    if (lineas.length * lh <= altoDisp) return { lineas: lineas, size: tamanos[i], lh: lh };
+  }
+  var size = tamanos[tamanos.length - 1];
+  ctx.font = "italic 400 " + size + "px Poppins, sans-serif";
+  lh = Math.round(size * 1.48);
+  var maxLineas = Math.max(1, Math.floor(altoDisp / lh));
+  var oraciones = _oraciones(texto), acumulado = "", mejor = null;
+  for (i = 0; i < oraciones.length; i++) {
+    var l = _partirLineas(ctx, (acumulado + oraciones[i]).trim() + " […]", ancho);
+    if (l.length > maxLineas) break;
+    acumulado += oraciones[i];
+    mejor = l;
+  }
+  if (!mejor) { // ni la primera oración cabe: se corta por palabras
+    var palabras = texto.split(" "), corte = "";
+    for (i = 0; i < palabras.length; i++) {
+      var p = (corte + " " + palabras[i]).trim();
+      if (_partirLineas(ctx, p + "…", ancho).length > maxLineas) break;
+      corte = p;
+    }
+    mejor = _partirLineas(ctx, corte + "…", ancho);
+  }
+  return { lineas: mejor, size: size, lh: lh };
+}
+
+function generarImagenFicha(d, forzarSinPoster) {
+  var W = IMG_FICHA.W, H = IMG_FICHA.H, pad = IMG_FICHA.pad, footerH = IMG_FICHA.footerH;
+  var cx = W / 2;
+  var colX = pad + IMG_FICHA.posterW + 44;   // columna de datos, a la derecha del póster
+  var colW = W - pad - colX;
+
+  var titulo   = campo(d, ["Título","Titulo"]);
+  var calif    = campo(d, ["Calificación","Calificacion"]);
+  var origen   = campo(d, ["Origen"]);
+  var anio     = campo(d, ["Año","Anio"]);
+  var esPeli   = d["Tipo"] === "Pelicula";
+  var durVal   = esPeli ? campo(d, ["Minutos"]) : campo(d, ["Capítulos","Capitulos"]);
+  var durLabel = esPeli ? "min" : "caps";
+  var genero   = campo(d, ["Género","Genero"]);
+  var tono     = campo(d, ["Tono"]);
+  var flags    = campo(d, ["Flags"]).trim();
+  if (/^ningun[ao]\.?$/i.test(flags)) flags = ""; // "Ninguna" no es una advertencia: no se dibuja el ⚠
+  var resena   = campo(d, ["Reseña","Resena"]).replace(/\s+/g, " ").trim();
+  var poster   = campo(d, ["Poster","poster","Póster","póster"]).trim();
+  var colorBanda = BANDA_COLORES[claseBanda(genero)] || "#9aab9e";
+  var streaming  = obtenerStreaming(d);
+  var plataformas = (streaming && streaming.plataformas) ? streaming.plataformas : [];
+
+  var cargaPoster = (poster && !forzarSinPoster)
+    ? _cargarPoster(poster).catch(function() { return null; })
+    : Promise.resolve(null);
+  var fontsListos = (document.fonts && document.fonts.ready) || Promise.resolve();
+
+  var cargaLogo = _cargarImagen("logo-claro.svg").catch(function() { return null; });
+
+  return Promise.all([cargaPoster, fontsListos, cargaLogo]).then(function(res) {
+    var imgPoster = res[0];
+    var imgLogo   = res[2];
+    var canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext("2d");
+    ctx.textBaseline = "top";
+
+    /* Fondo */
+    ctx.fillStyle = "#262424";
+    ctx.fillRect(0, 0, W, H);
+
+    /* Póster completo, a su propia proporción, dentro de una caja de 300×450 */
+    var pw = IMG_FICHA.posterW, ph = IMG_FICHA.posterH;
+    if (imgPoster) {
+      var esc = Math.min(pw / imgPoster.width, ph / imgPoster.height);
+      pw = Math.round(imgPoster.width * esc);
+      ph = Math.round(imgPoster.height * esc);
+    }
+    ctx.save();
+    _redondeado(ctx, pad, pad, pw, ph, 20);
+    ctx.clip();
+    if (imgPoster) {
+      ctx.drawImage(imgPoster, pad, pad, pw, ph);
+    } else {
+      ctx.fillStyle = colorBanda;
+      ctx.fillRect(pad, pad, pw, ph);
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.font = "120px sans-serif";
+      ctx.fillText(esPeli ? "🎬" : "📺", pad + pw / 2, pad + ph / 2 - 60);
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+
+    /* ── Columna de datos (alineada a la izquierda, junto al póster) ── */
+    ctx.textAlign = "left";
+    var cy = pad;
+
+    ctx.fillStyle = "#a39c8c";
+    ctx.font = "600 24px Poppins, sans-serif";
+    ctx.fillText(esPeli ? "PELÍCULA" : "SERIE", colX, cy);
+    cy += 44;
+
+    /* Título: el tamaño más grande que quepa en 3 líneas */
+    var tSizes = [60, 54, 48, 42], tSize = 42, lineasTitulo = [];
+    for (var s = 0; s < tSizes.length; s++) {
+      tSize = tSizes[s];
+      ctx.font = "700 " + tSize + "px Poppins, sans-serif";
+      lineasTitulo = _partirLineas(ctx, titulo, colW);
+      if (lineasTitulo.length <= 3) break;
+    }
+    if (lineasTitulo.length > 3) {
+      lineasTitulo = lineasTitulo.slice(0, 3);
+      lineasTitulo[2] = _truncarLinea(ctx, lineasTitulo[2] + "…", colW);
+    }
+    var tLh = Math.round(tSize * 1.18);
+    ctx.fillStyle = "#ffffff";
+    lineasTitulo.forEach(function(l, i) { ctx.fillText(l, colX, cy + i * tLh); });
+    cy += lineasTitulo.length * tLh + 16;
+
+    /* Calificación */
+    if (calif) {
+      ctx.fillStyle = "#f3c344";
+      ctx.font = "700 48px Poppins, sans-serif";
+      var txtCalif = "★ " + calif;
+      ctx.fillText(txtCalif, colX, cy);
+      var wCalif = ctx.measureText(txtCalif).width;
+      ctx.fillStyle = "#a39c8c";
+      ctx.font = "400 28px Poppins, sans-serif";
+      ctx.fillText(" / 10", colX + wCalif, cy + 16);
+      cy += 66;
+    }
+
+    /* Origen · año · duración */
+    var meta = [origen, anio, durVal ? (durVal + " " + durLabel) : ""].filter(Boolean).join("  ·  ");
+    if (meta) {
+      ctx.fillStyle = "#cfc9bb";
+      ctx.font = "400 28px Poppins, sans-serif";
+      ctx.fillText(_truncarLinea(ctx, meta, colW), colX, cy);
+      cy += 52;
+    }
+
+    /* Chips: hasta 3 géneros + el tono */
+    var chips = (genero ? genero.split(/\s*,\s*/) : []).filter(Boolean).slice(0, 3);
+    if (tono) chips.push(tono.split(/\s*,\s*/)[0]);
+    if (chips.length) {
+      ctx.font = "500 24px Poppins, sans-serif";
+      var chipX = colX, chipY = cy, chipH = 46, chipPad = 22;
+      chips.forEach(function(chip) {
+        var wChip = ctx.measureText(chip).width + chipPad * 2;
+        if (chipX + wChip > colX + colW && chipX > colX) { chipX = colX; chipY += chipH + 12; }
+        ctx.fillStyle = "#3b3636";
+        _redondeado(ctx, chipX, chipY, wChip, chipH, chipH / 2);
+        ctx.fill();
+        ctx.fillStyle = "#f4f1ea";
+        ctx.fillText(chip, chipX + chipPad, chipY + 10);
+        chipX += wChip + 12;
+      });
+      cy = chipY + chipH + 20;
+    }
+
+    /* Disponibilidad en streaming */
+    if (plataformas.length) {
+      var txtStr = "Disponible en " + plataformas.slice(0, 2).join(" · ") +
+                   (plataformas.length > 2 ? "  +" + (plataformas.length - 2) : "");
+      ctx.font = "600 24px Poppins, sans-serif";
+      txtStr = _truncarLinea(ctx, txtStr, colW - 44);
+      var wStr = ctx.measureText(txtStr).width + 44;
+      ctx.fillStyle = "#b05070";
+      _redondeado(ctx, colX, cy, wStr, 48, 24);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(txtStr, colX + 22, cy + 11);
+      cy += 48;
+    }
+
+    /* ── Reseña centrada ── */
+    var heroBottom = Math.max(pad + ph, cy);
+    var divY = heroBottom + 44;
+    ctx.fillStyle = "#4a4545";
+    ctx.fillRect(pad, divY, W - pad * 2, 2);
+
+    var footerTop = H - footerH;
+    var zonaTop = divY + 24, zonaBottom = footerTop - 28;
+    var zonaH = zonaBottom - zonaTop;
+    var ornH = 76;
+
+    ctx.font = "600 26px Poppins, sans-serif";
+    var lineasFlags = flags ? _partirLineas(ctx, "⚠️ " + flags, W - pad * 2) : [];
+    var flagsH = lineasFlags.length ? 20 + lineasFlags.length * 36 : 0;
+
+    var ajuste = resena
+      ? _ajustarResena(ctx, resena, W - pad * 2, zonaH - ornH - flagsH)
+      : { lineas: [], size: 34, lh: 50 };
+    var textoH = ajuste.lineas.length * ajuste.lh;
+    var bloqueH = (resena ? ornH + textoH : 0) + flagsH;
+    var y0 = zonaTop + Math.max(0, (zonaH - bloqueH) / 2);
+
+    ctx.textAlign = "center";
+    if (resena) {
+      ctx.fillStyle = "#b05070";
+      ctx.font = "700 150px Georgia, 'Times New Roman', serif";
+      ctx.fillText("“", cx, y0 - 24);
+      ctx.fillStyle = "#ece8de";
+      ctx.font = "italic 400 " + ajuste.size + "px Poppins, sans-serif";
+      ajuste.lineas.forEach(function(l, i) { ctx.fillText(l, cx, y0 + ornH + i * ajuste.lh); });
+    }
+    if (lineasFlags.length) {
+      ctx.fillStyle = "#e0a05a";
+      ctx.font = "600 26px Poppins, sans-serif";
+      var yFlags = y0 + (resena ? ornH + textoH : 0) + 20;
+      lineasFlags.forEach(function(l, i) { ctx.fillText(l, cx, yFlags + i * 36); });
+    }
+
+    /* ── Pie: marca (logo + nombre + enlace), centrado ── */
+    ctx.fillStyle = "#556b5d";
+    ctx.fillRect(0, footerTop, W, footerH);
+    ctx.textAlign = "left";
+    var sello = imgLogo ? 64 : 0, gap = imgLogo ? 18 : 0;
+    ctx.font = "600 28px Poppins, sans-serif";
+    var wNombre = ctx.measureText("Videoteca Fátima").width;
+    ctx.font = "400 20px Poppins, sans-serif";
+    var wUrl = ctx.measureText("fatimallovet.github.io/videotecafatima").width;
+    var grupoW = sello + gap + Math.max(wNombre, wUrl);
+    var gx = (W - grupoW) / 2, gy = footerTop + (footerH - 56) / 2; // 56 = alto del bloque de texto
+    if (imgLogo) ctx.drawImage(imgLogo, gx, footerTop + (footerH - sello) / 2, sello, sello);
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "600 28px Poppins, sans-serif";
+    ctx.fillText("Videoteca Fátima", gx + sello + gap, gy + 1);
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = "400 20px Poppins, sans-serif";
+    ctx.fillText("fatimallovet.github.io/videotecafatima", gx + sello + gap, gy + 33);
+
+    return new Promise(function(resolve, reject) {
+      try {
+        canvas.toBlob(function(blob) {
+          if (blob) resolve(blob); else reject(new Error("toBlob-vacio"));
+        }, "image/png");
+      } catch (err) { reject(err); }
+    });
+  }).catch(function(err) {
+    /* Si el póster deja el canvas "contaminado", reintenta sin él */
+    if (!forzarSinPoster) return generarImagenFicha(d, true);
+    throw err;
+  });
 }
 
 /* Lista de deseos → imagen (miniatura + título + tipo + año + género + calificación) */
