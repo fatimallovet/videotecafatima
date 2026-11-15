@@ -865,8 +865,11 @@ function generarImagenFicha(d, forzarSinPoster) {
     : Promise.resolve(null);
   var fontsListos = (document.fonts && document.fonts.ready) || Promise.resolve();
 
-  return Promise.all([cargaPoster, fontsListos]).then(function(res) {
+  var cargaLogo = _cargarImagen("logo-claro.svg").catch(function() { return null; });
+
+  return Promise.all([cargaPoster, fontsListos, cargaLogo]).then(function(res) {
     var imgPoster = res[0];
+    var imgLogo   = res[2];
     var canvas = document.createElement("canvas");
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext("2d");
@@ -1024,20 +1027,14 @@ function generarImagenFicha(d, forzarSinPoster) {
     ctx.fillStyle = "#556b5d";
     ctx.fillRect(0, footerTop, W, footerH);
     ctx.textAlign = "left";
-    var sello = 56, gap = 20;
+    var sello = imgLogo ? 64 : 0, gap = imgLogo ? 18 : 0;
     ctx.font = "600 28px Poppins, sans-serif";
     var wNombre = ctx.measureText("Videoteca Fátima").width;
     ctx.font = "400 20px Poppins, sans-serif";
     var wUrl = ctx.measureText("fatimallovet.github.io/videotecafatima").width;
     var grupoW = sello + gap + Math.max(wNombre, wUrl);
-    var gx = (W - grupoW) / 2, gy = footerTop + (footerH - sello) / 2;
-    ctx.fillStyle = "#262424";
-    _redondeado(ctx, gx, gy, sello, sello, 14);
-    ctx.fill();
-    ctx.fillStyle = "#b05070";
-    ctx.textAlign = "center";
-    ctx.font = "700 36px Poppins, sans-serif";
-    ctx.fillText("F", gx + sello / 2, gy + 9);
+    var gx = (W - grupoW) / 2, gy = footerTop + (footerH - 56) / 2; // 56 = alto del bloque de texto
+    if (imgLogo) ctx.drawImage(imgLogo, gx, footerTop + (footerH - sello) / 2, sello, sello);
     ctx.textAlign = "left";
     ctx.fillStyle = "#ffffff";
     ctx.font = "600 28px Poppins, sans-serif";
