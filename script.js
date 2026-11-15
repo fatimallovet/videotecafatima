@@ -534,7 +534,16 @@ function mostrarModal(d) {
   document.getElementById("modal-tono").textContent      = tono;
   document.getElementById("modal-ritmo").textContent     = ritmo;
   document.getElementById("modal-publico").textContent   = publico;
-  document.getElementById("modal-etiquetas").textContent = etiquetas;
+  var chipsTemas = document.getElementById("modal-etiquetas");
+  chipsTemas.innerHTML = "";
+  etiquetas.split(",").forEach(function(t) {
+    t = t.trim();
+    if (!t) return;
+    var chip = document.createElement("span");
+    chip.className = "modal-chip modal-chip--suave";
+    chip.textContent = t;
+    chipsTemas.appendChild(chip);
+  });
   document.getElementById("modal-resena").textContent    = resena;
 
   /* Oculta bloques vacíos para que la ficha no muestre huecos; «Ninguna» no es una advertencia */
@@ -543,6 +552,7 @@ function mostrarModal(d) {
   toggleModalBloque("modal-tono-pill", tono);
   toggleModalBloque("modal-ritmo-pill", ritmo);
   toggleModalBloque("modal-publico-pill", publico);
+  toggleModalBloque("modal-rasgos", [tono, ritmo, publico].join(""));
   toggleModalBloque("modal-etiquetas-wrap", etiquetas);
   document.getElementById("modal-flags").textContent = flags;
   toggleModalBloque("modal-flags-wrap", flags);
@@ -555,8 +565,9 @@ function mostrarModal(d) {
   /* Póster en modal */
   var poster = campo(d, ["Poster","poster","Póster","póster"]).trim();
   var modalPoster = document.getElementById("modal-poster-wrap");
+  document.getElementById("modal").classList.toggle("sin-poster", !poster);
   if (poster) {
-    var urlMini = urlPosterTMDB(poster, "w342");
+    var urlMini = urlPosterTMDB(poster, "w500");
     modalPoster.innerHTML =
       '<img id="modal-poster-img" class="modal-poster-img" src="' + urlMini + '" alt="' + (d["Título"]||d["Titulo"]||"") + '" title="Ver en grande">';
     modalPoster.style.display = "block";

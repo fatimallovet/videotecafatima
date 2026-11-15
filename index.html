@@ -44,6 +44,9 @@
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></symbol>
@@ -238,9 +241,17 @@
     <button type="button" class="close-btn" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
 
     <div class="modal-inner">
-      <div class="modal-cabecera">
+      <div class="modal-lado">
         <div id="modal-poster-wrap" class="modal-poster-wrap" style="display:none"></div>
 
+        <dl class="modal-rasgos" id="modal-rasgos">
+          <div id="modal-tono-pill"><dt><svg class="ico"><use href="#i-palette"/></svg>Tono</dt><dd id="modal-tono"></dd></div>
+          <div id="modal-ritmo-pill"><dt><svg class="ico"><use href="#i-gauge"/></svg>Ritmo</dt><dd id="modal-ritmo"></dd></div>
+          <div id="modal-publico-pill"><dt><svg class="ico"><use href="#i-users"/></svg>Público</dt><dd id="modal-publico"></dd></div>
+        </dl>
+      </div>
+
+      <div class="modal-principal">
         <div class="modal-cabecera-info">
           <span class="modal-tipo" id="modal-tipo"></span>
           <h3 id="modal-titulo"></h3>
@@ -258,28 +269,32 @@
           </div>
           <div class="modal-generos" id="modal-genero"></div>
         </div>
+
+        <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
+          <span class="modal-etiqueta">Disponible en</span>
+          <div id="modal-streaming" class="modal-streaming-pills"></div>
+          <small class="modal-streaming-credito">vía JustWatch</small>
+        </div>
+
+        <section class="modal-resena" id="modal-resena-wrap">
+          <span class="modal-etiqueta">Mi reseña</span>
+          <p class="modal-resena-texto" id="modal-resena"></p>
+        </section>
+
+        <div class="modal-extra">
+          <div class="modal-aviso" id="modal-flags-wrap">
+            <svg class="ico"><use href="#i-alert"/></svg>
+            <div><span class="modal-etiqueta">Advertencias</span><p id="modal-flags"></p></div>
+          </div>
+
+          <div class="modal-temas" id="modal-etiquetas-wrap">
+            <span class="modal-etiqueta">Etiquetas</span>
+            <div class="modal-chips" id="modal-etiquetas"></div>
+          </div>
+
+          <a id="modal-imdb" class="modal-imdb-link" href="" target="_blank" rel="noopener">Ver en IMDb <svg class="ico"><use href="#i-arrow-up-right"/></svg></a>
+        </div>
       </div>
-
-      <section class="modal-resena" id="modal-resena-wrap">
-        <span class="modal-etiqueta">Mi reseña</span>
-        <p class="modal-resena-texto" id="modal-resena"></p>
-      </section>
-
-      <dl class="modal-datos">
-        <div id="modal-tono-pill"><dt>Tono</dt><dd id="modal-tono"></dd></div>
-        <div id="modal-ritmo-pill"><dt>Ritmo</dt><dd id="modal-ritmo"></dd></div>
-        <div id="modal-publico-pill"><dt>Público</dt><dd id="modal-publico"></dd></div>
-        <div id="modal-flags-wrap"><dt>Advertencias</dt><dd id="modal-flags"></dd></div>
-        <div id="modal-etiquetas-wrap"><dt>Etiquetas</dt><dd id="modal-etiquetas"></dd></div>
-      </dl>
-
-      <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
-        <span class="modal-etiqueta">Disponible en</span>
-        <div id="modal-streaming" class="modal-streaming-pills"></div>
-        <small class="modal-streaming-credito">vía JustWatch</small>
-      </div>
-
-      <a id="modal-imdb" class="modal-imdb-link" href="" target="_blank" rel="noopener">Ver en IMDb <svg class="ico"><use href="#i-arrow-up-right"/></svg></a>
     </div>
 
     <div class="modal-acciones">
