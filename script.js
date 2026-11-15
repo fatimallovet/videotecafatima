@@ -164,15 +164,25 @@ function renderizar(tipo) {
 }
 
 /* ══════════════════════════════════════
-   PORTADA — la última agregada de cada sección
+   PORTADA — «Destacadas»: las mejor calificadas de cada sección, rotando
    ══════════════════════════════════════ */
-function construirHero(tipo) {
-  var esPeli = tipo === "Pelicula";
-  var data = esPeli ? dataPeliculas : dataSeries;
-  var el = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
-  if (!el || !data.length) return;
+var HERO_CUANTAS = 5;        // cuántas destacadas rotan
+var HERO_SEGUNDOS = 7;       // cuánto dura cada una
 
-  var item    = data.slice().sort(function(a, b) { return getNo(b) - getNo(a); })[0];
+/* Las mejor calificadas; si empatan, la más reciente (No. más alto) */
+function _destacadas(data) {
+  return ordenarData(data, "calificacion").slice(0, HERO_CUANTAS);
+}
+
+function _nodo(tag, clase, texto) {
+  var n = document.createElement(tag);
+  if (clase) n.className = clase;
+  if (texto !== undefined) n.textContent = texto;
+  return n;
+}
+
+function _crearSlideHero(item, tipo) {
+  var esPeli  = tipo === "Pelicula";
   var titulo  = campo(item, ["Título","Titulo"]);
   var calif   = campo(item, ["Calificación","Calificacion"]);
   var anio    = (campo(item, ["Año","Anio"]).match(/\d{4}/) || [""])[0];
@@ -183,33 +193,27 @@ function construirHero(tipo) {
   var plataformas = (streaming && streaming.plataformas) ? streaming.plataformas.slice(0, 2) : [];
   var generos = genero.split(/\s*,\s*/).filter(Boolean).slice(0, 3).join(", ");
   var meta = [calif ? "★ " + calif : "", anio, generos, plataformas.join(" · ")].filter(Boolean).join("  ·  ");
-  var extracto = resena ? _extractoResena(resena, 210).replace(/ \[…\]$/, "…") : "";
+  var extracto = resena ? _extractoResena(resena, 170).replace(/ \[…\]$/, "…") : "";
   var datos = Object.assign({}, item, { Tipo: tipo });
 
-  el.innerHTML = "";
-  el.dataset.listo = "1";
-  el.dataset.titulo = titulo;
-  function fondoHero(u) { el.style.setProperty("--hero-img", 'url("' + String(u).replace(/"/g, "%22") + '")'); }
-  if (poster) fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
-
-  function nodo(tag, clase, texto) {
-    var n = document.createElement(tag);
-    if (clase) n.className = clase;
-    if (texto !== undefined) n.textContent = texto;
-    return n;
+  var slide = _nodo("div", "hero-slide");
+  slide.dataset.titulo = titulo;
+  function fondoHero(u) { slide.style.setProperty("--hero-img", 'url("' + String(u).replace(/"/g, "%22") + '")'); }
+  if (poster) {
+    fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
+    slide.appendChild(_nodo("div", "hero-bg"));
   }
-  if (poster) el.appendChild(nodo("div", "hero-bg"));
 
-  var tx = nodo("div", "hero-texto");
-  tx.appendChild(nodo("div", "hero-kicker", "Recién agregada"));
-  tx.appendChild(nodo("h2", "hero-titulo", titulo));
-  if (meta) tx.appendChild(nodo("div", "hero-meta", meta));
-  if (extracto) tx.appendChild(nodo("p", "hero-resena", "“" + extracto + "”"));
-  var acc = nodo("div", "hero-acciones");
-  var ver = nodo("button", "hero-btn hero-btn--ver", "Ver ficha");
+  var tx = _nodo("div", "hero-texto");
+  tx.appendChild(_nodo("div", "hero-kicker", "Destacadas"));
+  tx.appendChild(_nodo("h2", "hero-titulo", titulo));
+  if (meta) tx.appendChild(_nodo("div", "hero-meta", meta));
+  if (extracto) tx.appendChild(_nodo("p", "hero-resena", "“" + extracto + "”"));
+  var acc = _nodo("div", "hero-acciones");
+  var ver = _nodo("button", "hero-btn hero-btn--ver", "Ver ficha");
   ver.type = "button";
   ver.addEventListener("click", function() { abrirFicha(datos); });
-  var guardar = nodo("button", "hero-btn hero-btn--guardar");
+  var guardar = _nodo("button", "hero-btn hero-btn--guardar");
   guardar.type = "button";
   guardar.addEventListener("click", function() {
     toggleDeseoItem({ titulo: titulo, tipo: esPeli ? "Película" : "Serie", genero: genero, calif: calif, anio: anio, poster: poster });
@@ -218,10 +222,10 @@ function construirHero(tipo) {
   acc.appendChild(ver);
   acc.appendChild(guardar);
   tx.appendChild(acc);
-  el.appendChild(tx);
+  slide.appendChild(tx);
 
   if (poster) {
-    var img = nodo("img", "hero-poster");
+    var img = _nodo("img", "hero-poster");
     var urlHero = urlPosterTMDB(poster, "w500");
     img.src = urlHero;
     img.alt = titulo;
@@ -230,17 +234,85 @@ function construirHero(tipo) {
       if (urlHero !== poster && !img.dataset.original) { img.dataset.original = "1"; img.src = poster; fondoHero(poster); }
       else img.remove();
     });
-    el.appendChild(img);
+    slide.appendChild(img);
   }
+  return slide;
+}
+
+function construirHero(tipo) {
+  var esPeli = tipo === "Pelicula";
+  var data = esPeli ? dataPeliculas : dataSeries;
+  var el = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
+  if (!el || !data.length) return;
+
+  var items = _destacadas(data);
+  var actual = Math.min(Number(el.dataset.actual || 0), items.length - 1);
+  clearInterval(el._timer);
+
+  el.innerHTML = "";
+  el.dataset.listo = "1";
+  var slides = items.map(function(item) { return _crearSlideHero(item, tipo); });
+  var caja = _nodo("div", "hero-slides");
+  slides.forEach(function(sl) { caja.appendChild(sl); });
+  el.appendChild(caja);
+
+  var puntos = [];
+  if (items.length > 1) {
+    var nav = _nodo("div", "hero-puntos");
+    items.forEach(function(item, i) {
+      var b = _nodo("button", "hero-punto");
+      b.type = "button";
+      b.setAttribute("aria-label", "Destacada " + (i + 1) + " de " + items.length);
+      b.addEventListener("click", function() { mostrar(i); programar(); });
+      nav.appendChild(b);
+      puntos.push(b);
+    });
+    el.appendChild(nav);
+  }
+
+  function mostrar(i) {
+    actual = (i + slides.length) % slides.length;
+    el.dataset.actual = actual;
+    slides.forEach(function(sl, k) {
+      sl.classList.toggle("activo", k === actual);
+      sl.setAttribute("aria-hidden", k === actual ? "false" : "true");
+      sl.querySelectorAll("button, img").forEach(function(x) { x.tabIndex = k === actual ? 0 : -1; });
+    });
+    puntos.forEach(function(b, k) { b.classList.toggle("activo", k === actual); });
+  }
+
+  /* Rota sola, salvo que haya movimiento reducido, la persona esté encima o la sección no se vea */
+  function programar() {
+    clearInterval(el._timer);
+    if (slides.length < 2 || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+    el._timer = setInterval(function() {
+      if (document.hidden || el.hidden || el.offsetParent === null) return;
+      if (el.matches(":hover") || el.contains(document.activeElement)) return;
+      mostrar(actual + 1);
+    }, HERO_SEGUNDOS * 1000);
+  }
+
+  /* En el teléfono, deslizar cambia de destacada */
+  var x0 = null;
+  caja.addEventListener("touchstart", function(e) { x0 = e.touches[0].clientX; }, { passive: true });
+  caja.addEventListener("touchend", function(e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    x0 = null;
+    if (Math.abs(dx) > 50) { mostrar(actual + (dx < 0 ? 1 : -1)); programar(); }
+  }, { passive: true });
+
+  mostrar(actual);
+  programar();
   actualizarBotonesHero();
 }
 
 /* «Guardar» / «En mi lista» según el estado de la lista de deseos */
 function actualizarBotonesHero() {
-  document.querySelectorAll(".hero").forEach(function(el) {
-    var b = el.querySelector(".hero-btn--guardar");
-    if (!b || !el.dataset.titulo) return;
-    var enD = estaEnDeseos(el.dataset.titulo);
+  document.querySelectorAll(".hero-slide").forEach(function(sl) {
+    var b = sl.querySelector(".hero-btn--guardar");
+    if (!b || !sl.dataset.titulo) return;
+    var enD = estaEnDeseos(sl.dataset.titulo);
     b.textContent = enD ? "♥ En mi lista" : "♡ Guardar";
     b.classList.toggle("activo", enD);
   });
