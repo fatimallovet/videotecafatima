@@ -82,7 +82,14 @@ fetch("streaming.json")
   .then(function(r) { return r.ok ? r.json() : {}; })
   .then(function(json) { streamingData = json; })
   .catch(function() { streamingData = {}; })
-  .then(function() { _streamingCargado = true; checkFichaPendiente(); });
+  .then(function() {
+    _streamingCargado = true;
+    ["Pelicula", "Serie"].forEach(function(t) {
+      var hero = document.getElementById(t === "Pelicula" ? "hero-peliculas" : "hero-series");
+      if (hero && hero.dataset.listo) { var oculto = hero.hidden; construirHero(t); hero.hidden = oculto; }
+    });
+    checkFichaPendiente();
+  });
 
 /* ══════════════════════════════════════
    ORDENAR + FILTRAR → RENDERIZAR
@@ -139,6 +146,99 @@ function renderizar(tipo) {
   if (filtrados.length === 0 && texto.trim()) {
     mostrarSinResultados(document.getElementById(gridId), campoBusq.value.trim());
   }
+
+  /* Contador junto a los controles */
+  var ct = document.getElementById(esPeli ? "ct-peliculas" : "ct-series");
+  if (ct) {
+    ct.textContent = texto.trim()
+      ? filtrados.length + (filtrados.length === 1 ? " resultado" : " resultados")
+      : data.length + (esPeli ? " películas" : " series");
+  }
+
+  /* La portada solo se ve mientras no se está buscando */
+  var hero = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
+  if (hero) {
+    if (!hero.dataset.listo) construirHero(tipo);
+    hero.hidden = !hero.dataset.listo || !!texto.trim();
+  }
+}
+
+/* ══════════════════════════════════════
+   PORTADA — la última agregada de cada sección
+   ══════════════════════════════════════ */
+function construirHero(tipo) {
+  var esPeli = tipo === "Pelicula";
+  var data = esPeli ? dataPeliculas : dataSeries;
+  var el = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
+  if (!el || !data.length) return;
+
+  var item    = data.slice().sort(function(a, b) { return getNo(b) - getNo(a); })[0];
+  var titulo  = campo(item, ["Título","Titulo"]);
+  var calif   = campo(item, ["Calificación","Calificacion"]);
+  var anio    = (campo(item, ["Año","Anio"]).match(/\d{4}/) || [""])[0];
+  var genero  = campo(item, ["Género","Genero"]);
+  var poster  = campo(item, ["Poster","poster","Póster","póster"]).trim();
+  var resena  = campo(item, ["Reseña","Resena"]).replace(/\s+/g, " ").trim();
+  var streaming = obtenerStreaming(item);
+  var plataformas = (streaming && streaming.plataformas) ? streaming.plataformas.slice(0, 2) : [];
+  var generos = genero.split(/\s*,\s*/).filter(Boolean).slice(0, 3).join(", ");
+  var meta = [calif ? "★ " + calif : "", anio, generos, plataformas.join(" · ")].filter(Boolean).join("  ·  ");
+  var extracto = resena ? _extractoResena(resena, 210).replace(/ \[…\]$/, "…") : "";
+  var datos = Object.assign({}, item, { Tipo: tipo });
+
+  el.innerHTML = "";
+  el.dataset.listo = "1";
+  el.dataset.titulo = titulo;
+  if (poster) el.style.setProperty("--hero-img", 'url("' + poster.replace(/"/g, "%22") + '")');
+
+  function nodo(tag, clase, texto) {
+    var n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  }
+  if (poster) el.appendChild(nodo("div", "hero-bg"));
+
+  var tx = nodo("div", "hero-texto");
+  tx.appendChild(nodo("div", "hero-kicker", "Recién agregada"));
+  tx.appendChild(nodo("h2", "hero-titulo", titulo));
+  if (meta) tx.appendChild(nodo("div", "hero-meta", meta));
+  if (extracto) tx.appendChild(nodo("p", "hero-resena", "“" + extracto + "”"));
+  var acc = nodo("div", "hero-acciones");
+  var ver = nodo("button", "hero-btn hero-btn--ver", "Ver ficha");
+  ver.type = "button";
+  ver.addEventListener("click", function() { abrirFicha(datos); });
+  var guardar = nodo("button", "hero-btn hero-btn--guardar");
+  guardar.type = "button";
+  guardar.addEventListener("click", function() {
+    toggleDeseoItem({ titulo: titulo, tipo: esPeli ? "Película" : "Serie", genero: genero, calif: calif, anio: anio, poster: poster });
+    sincronizarCardDeseo(titulo);
+  });
+  acc.appendChild(ver);
+  acc.appendChild(guardar);
+  tx.appendChild(acc);
+  el.appendChild(tx);
+
+  if (poster) {
+    var img = nodo("img", "hero-poster");
+    img.src = poster;
+    img.alt = titulo;
+    img.addEventListener("click", function() { abrirFicha(datos); });
+    img.addEventListener("error", function() { img.remove(); });
+    el.appendChild(img);
+  }
+  actualizarBotonesHero();
+}
+
+/* «Guardar» / «En mi lista» según el estado de la lista de deseos */
+function actualizarBotonesHero() {
+  document.querySelectorAll(".hero").forEach(function(el) {
+    var b = el.querySelector(".hero-btn--guardar");
+    if (!b || !el.dataset.titulo) return;
+    var enD = estaEnDeseos(el.dataset.titulo);
+    b.textContent = enD ? "♥ En mi lista" : "♡ Guardar";
+    b.classList.toggle("activo", enD);
+  });
 }
 
 /* Aviso cuando una búsqueda no encuentra nada (textContent: el texto del usuario no se interpreta como HTML) */
@@ -1253,6 +1353,7 @@ function actualizarContadorDeseos() {
   document.querySelectorAll(".js-deseos-n").forEach(function(el) {
     el.textContent = n > 0 ? n : "";
   });
+  actualizarBotonesHero();
 }
 
 /* Panel */
