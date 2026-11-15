@@ -232,103 +232,59 @@
 </section>
 
 
-<!-- MODAL -->
+<!-- MODAL (ficha) -->
 <div id="modal" class="modal" onclick="cerrarModalFuera(event)">
-  <div class="modal-content">
-    <span class="close-btn" onclick="cerrarModal()">✖</span>
-
-    <div class="modal-banner">
-      <div id="modal-poster-wrap" class="modal-poster-wrap" style="display:none"></div>
-
-      <div class="modal-banner-info">
-        <h3 id="modal-titulo"></h3>
-
-        <div class="modal-banner-rating">
-          <span class="modal-calif-star">⭐</span>
-          <span class="modal-calif-num" id="modal-calificacion"></span>
-          <span class="modal-calif-max">/10</span>
-        </div>
-
-        <p class="modal-banner-sub">
-          <span id="modal-origen"></span>
-          <span class="modal-banner-sep">·</span>
-          <span id="modal-anio"></span>
-          <span class="modal-banner-sep">·</span>
-          <span id="modal-label-minutos-o-caps"></span>
-          <span id="modal-minutos-o-caps"></span>
-        </p>
-
-        <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
-          <span class="modal-streaming-label">📺 Disponible en</span>
-          <div id="modal-streaming" class="modal-streaming-pills"></div>
-          <small class="modal-streaming-credito">vía JustWatch</small>
-        </div>
-      </div>
-    </div>
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <button type="button" class="close-btn" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
 
     <div class="modal-inner">
+      <div class="modal-cabecera">
+        <div id="modal-poster-wrap" class="modal-poster-wrap" style="display:none"></div>
 
-      <div class="modal-meta-grid">
-        <div class="modal-meta-item" id="modal-genero-pill">
-          <span class="modal-meta-icon">🎭</span>
-          <span class="modal-meta-text">
-            <span class="modal-meta-label">Género</span>
-            <span class="modal-meta-valor" id="modal-genero"></span>
-          </span>
-        </div>
-        <div class="modal-meta-item" id="modal-tono-pill">
-          <span class="modal-meta-icon">🎨</span>
-          <span class="modal-meta-text">
-            <span class="modal-meta-label">Tono</span>
-            <span class="modal-meta-valor" id="modal-tono"></span>
-          </span>
-        </div>
-        <div class="modal-meta-item" id="modal-ritmo-pill">
-          <span class="modal-meta-icon">⏩</span>
-          <span class="modal-meta-text">
-            <span class="modal-meta-label">Ritmo</span>
-            <span class="modal-meta-valor" id="modal-ritmo"></span>
-          </span>
-        </div>
-        <div class="modal-meta-item" id="modal-publico-pill">
-          <span class="modal-meta-icon">👥</span>
-          <span class="modal-meta-text">
-            <span class="modal-meta-label">Público</span>
-            <span class="modal-meta-valor" id="modal-publico"></span>
-          </span>
+        <div class="modal-cabecera-info">
+          <span class="modal-tipo" id="modal-tipo"></span>
+          <h3 id="modal-titulo"></h3>
+          <p class="modal-sub">
+            <span id="modal-origen"></span>
+            <span class="modal-sep">·</span>
+            <span id="modal-anio"></span>
+            <span class="modal-sep" id="modal-sep-duracion">·</span>
+            <span id="modal-duracion"></span>
+          </p>
+          <div class="modal-nota">
+            <svg class="ico"><use href="#i-star"/></svg>
+            <span class="modal-nota-num" id="modal-calificacion"></span>
+            <span class="modal-nota-max">/10</span>
+          </div>
+          <div class="modal-generos" id="modal-genero"></div>
         </div>
       </div>
 
-      <div class="modal-detalle-section modal-resena-section" id="modal-resena-wrap">
-        <span class="modal-detalle-icon">📝</span>
-        <div class="modal-detalle-body">
-          <span class="modal-detalle-label">Reseña</span>
-          <p class="modal-detalle-texto" id="modal-resena"></p>
-        </div>
+      <section class="modal-resena" id="modal-resena-wrap">
+        <span class="modal-etiqueta">Mi reseña</span>
+        <p class="modal-resena-texto" id="modal-resena"></p>
+      </section>
+
+      <dl class="modal-datos">
+        <div id="modal-tono-pill"><dt>Tono</dt><dd id="modal-tono"></dd></div>
+        <div id="modal-ritmo-pill"><dt>Ritmo</dt><dd id="modal-ritmo"></dd></div>
+        <div id="modal-publico-pill"><dt>Público</dt><dd id="modal-publico"></dd></div>
+        <div id="modal-flags-wrap"><dt>Advertencias</dt><dd id="modal-flags"></dd></div>
+        <div id="modal-etiquetas-wrap"><dt>Etiquetas</dt><dd id="modal-etiquetas"></dd></div>
+      </dl>
+
+      <div id="modal-streaming-wrap" class="modal-streaming-wrap" style="display:none">
+        <span class="modal-etiqueta">Disponible en</span>
+        <div id="modal-streaming" class="modal-streaming-pills"></div>
+        <small class="modal-streaming-credito">vía JustWatch</small>
       </div>
 
-      <div class="modal-detalle-section modal-flags-section" id="modal-flags-wrap">
-        <span class="modal-detalle-icon">⚠️</span>
-        <div class="modal-detalle-body">
-          <span class="modal-detalle-label">Flags</span>
-          <p class="modal-detalle-texto" id="modal-flags"></p>
-        </div>
-      </div>
+      <a id="modal-imdb" class="modal-imdb-link" href="" target="_blank" rel="noopener">Ver en IMDb <svg class="ico"><use href="#i-arrow-up-right"/></svg></a>
+    </div>
 
-      <div class="modal-detalle-section modal-etiquetas-section" id="modal-etiquetas-wrap">
-        <span class="modal-detalle-icon">🏷️</span>
-        <div class="modal-detalle-body">
-          <span class="modal-detalle-label">Etiquetas</span>
-          <p class="modal-detalle-texto" id="modal-etiquetas"></p>
-        </div>
-      </div>
-
-      <a id="modal-imdb" class="modal-imdb-link" href="" target="_blank">🎞️ Ver ficha en IMDB</a>
-
-      <div class="modal-acciones">
-        <button class="modal-compartir-btn" onclick="compartirTitulo(event)">🔗 Compartir</button>
-        <button class="modal-deseos-btn" id="modal-deseos-btn" onclick="toggleDeseo()">♡ Guardar</button>
-      </div>
+    <div class="modal-acciones">
+      <button type="button" class="modal-deseos-btn" id="modal-deseos-btn" onclick="toggleDeseo()"></button>
+      <button type="button" class="modal-compartir-btn" onclick="compartirTitulo(event)"><svg class="ico"><use href="#i-share"/></svg>Compartir</button>
     </div>
   </div>
 </div>
@@ -339,16 +295,16 @@
 <!-- PANEL LISTA DE DESEOS -->
 <div id="panel-deseos" class="panel-deseos">
   <div class="panel-deseos-header">
-    <span>🎬 Mi lista de deseos</span>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span id="deseos-count" class="deseos-count">0</span>
-      <button onclick="cerrarPanelDeseos()" class="panel-close-btn">✖</button>
+    <div>
+      <span class="panel-deseos-titulo">Mi lista</span>
+      <span id="deseos-count" class="deseos-count"></span>
     </div>
+    <button type="button" onclick="cerrarPanelDeseos()" class="panel-close-btn" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
   </div>
   <div id="deseos-lista" class="deseos-lista"></div>
   <div class="deseos-footer">
-    <button class="deseos-compartir-lista-btn" onclick="compartirListaCompleta(event)">↗ Compartir lista</button>
-    <button class="deseos-vaciar-btn" onclick="vaciarDeseos()">🗑 Vaciar</button>
+    <button type="button" class="deseos-compartir-lista-btn" onclick="compartirListaCompleta(event)"><svg class="ico"><use href="#i-share"/></svg>Compartir lista</button>
+    <button type="button" class="deseos-vaciar-btn" onclick="vaciarDeseos()">Vaciar</button>
   </div>
 </div>
 
