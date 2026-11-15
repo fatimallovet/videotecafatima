@@ -189,7 +189,8 @@ function construirHero(tipo) {
   el.innerHTML = "";
   el.dataset.listo = "1";
   el.dataset.titulo = titulo;
-  if (poster) el.style.setProperty("--hero-img", 'url("' + poster.replace(/"/g, "%22") + '")');
+  function fondoHero(u) { el.style.setProperty("--hero-img", 'url("' + String(u).replace(/"/g, "%22") + '")'); }
+  if (poster) fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
 
   function nodo(tag, clase, texto) {
     var n = document.createElement(tag);
@@ -221,10 +222,14 @@ function construirHero(tipo) {
 
   if (poster) {
     var img = nodo("img", "hero-poster");
-    img.src = poster;
+    var urlHero = urlPosterTMDB(poster, "w500");
+    img.src = urlHero;
     img.alt = titulo;
     img.addEventListener("click", function() { abrirFicha(datos); });
-    img.addEventListener("error", function() { img.remove(); });
+    img.addEventListener("error", function() {
+      if (urlHero !== poster && !img.dataset.original) { img.dataset.original = "1"; img.src = poster; fondoHero(poster); }
+      else img.remove();
+    });
     el.appendChild(img);
   }
   actualizarBotonesHero();
@@ -310,6 +315,18 @@ function estrellas(calif) {
   return "⭐ " + n.toFixed(1).replace(".0","");
 }
 
+/* ── PÓSTERS DE TMDB ──
+   La hoja guarda los pósters en tamaño grande (w1280 u original, ~580 KB cada uno), pero una
+   tarjeta mide ~170px. TMDB sirve el mismo archivo en otros tamaños (/t/p/w342/<archivo>), así
+   que para mostrar se pide uno chico (~44 KB). La hoja no cambia y el visor «en grande» sigue
+   usando el original. Solo se reescriben los tamaños estándar (original, wNNN): los recortes
+   especiales de TMDB (p. ej. w600_and_h900_face) conservan su encuadre y ya son pequeños. Si la
+   URL no es de TMDB, se devuelve tal cual. */
+function urlPosterTMDB(url, tam) {
+  var m = String(url || "").match(/^https?:\/\/(?:[\w.-]*themoviedb\.org|image\.tmdb\.org)\/t\/p\/(?:original|w\d+)\/([^\/?#]+\.(?:jpe?g|png|webp))(?:[?#].*)?$/i);
+  return m ? "https://image.tmdb.org/t/p/" + tam + "/" + m[1] : url;
+}
+
 function crearCard(item, tipo) {
   var card = document.createElement("div");
   card.className = "pelicard " + (tipo === "Serie" ? "pelicard--serie" : "pelicard--pelicula");
@@ -337,10 +354,16 @@ function crearCard(item, tipo) {
   if (poster) {
     var img = document.createElement("img");
     img.className = "pelicard-poster";
-    img.src = poster;
+    var urlChico = urlPosterTMDB(poster, "w342");
+    img.src = urlChico;
     img.alt = titulo;
     img.loading = "lazy";
-    img.onerror = function() { img.remove(); sinPoster(); };
+    img.decoding = "async";
+    /* Si el tamaño chico fallara, se prueba el original antes de mostrar el bloque de color */
+    img.onerror = function() {
+      if (urlChico !== poster && !img.dataset.original) { img.dataset.original = "1"; img.src = poster; }
+      else { img.remove(); sinPoster(); }
+    };
     wrap.appendChild(img);
   } else {
     sinPoster();
@@ -449,10 +472,15 @@ function mostrarModal(d) {
   var poster = campo(d, ["Poster","poster","Póster","póster"]).trim();
   var modalPoster = document.getElementById("modal-poster-wrap");
   if (poster) {
+    var urlMini = urlPosterTMDB(poster, "w342");
     modalPoster.innerHTML =
-      '<img id="modal-poster-img" class="modal-poster-img" src="' + poster + '" alt="' + (d["Título"]||d["Titulo"]||"") + '" title="Ver en grande">';
+      '<img id="modal-poster-img" class="modal-poster-img" src="' + urlMini + '" alt="' + (d["Título"]||d["Titulo"]||"") + '" title="Ver en grande">';
     modalPoster.style.display = "block";
-    document.getElementById("modal-poster-img").addEventListener("click", function() {
+    var imgMini = document.getElementById("modal-poster-img");
+    imgMini.addEventListener("error", function() {
+      if (urlMini !== poster && !imgMini.dataset.original) { imgMini.dataset.original = "1"; imgMini.src = poster; }
+    });
+    imgMini.addEventListener("click", function() {
       abrirPosterGrande(poster, d["Título"]||d["Titulo"]||"");
     });
   } else {
@@ -841,10 +869,11 @@ function _urlProxyCORS(url) {
   return "https://images.weserv.nl/?url=" + encodeURIComponent(sinProtocolo);
 }
 
-function _cargarPoster(url) {
-  return _cargarImagen(_urlProxyCORS(url)).catch(function() {
-    return _cargarImagen(url);
-  });
+function _cargarPoster(url, tam) {
+  var chico = urlPosterTMDB(url, tam || "w500");
+  var intento = _cargarImagen(_urlProxyCORS(chico));
+  if (chico !== url) intento = intento.catch(function() { return _cargarImagen(_urlProxyCORS(url)); });
+  return intento.catch(function() { return _cargarImagen(url); });
 }
 
 /* Parte un texto en líneas que caben en maxWidth. No trunca: devuelve
@@ -1171,7 +1200,7 @@ function generarImagenLista() {
 
   var fontsListos = (document.fonts && document.fonts.ready) || Promise.resolve();
   var cargaPosters = Promise.all(deseos.map(function(item) {
-    return item.poster ? _cargarPoster(item.poster).catch(function() { return null; }) : Promise.resolve(null);
+    return item.poster ? _cargarPoster(item.poster, "w185").catch(function() { return null; }) : Promise.resolve(null);
   }));
 
   return Promise.all([cargaPosters, fontsListos]).then(function(res) {
