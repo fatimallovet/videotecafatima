@@ -221,8 +221,8 @@ h2 {
 .modal-resena .modal-etiqueta { color: #9b3f5c; margin-bottom: 8px; }
 .modal-resena-texto {
   margin: 0;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.12rem;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 1.08rem;
   line-height: 1.5;
   color: #2a2623;
 }
@@ -261,8 +261,9 @@ h2 {
 .modal-rasgos dt .ico { width: 14px; height: 14px; color: #9b3f5c; }
 .modal-rasgos dd {
   margin: 5px 0 0;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.25rem;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 1.12rem;
+  font-weight: 500;
   line-height: 1.2;
   color: #2a2623;
 }
@@ -346,7 +347,7 @@ h2 {
   .modal-nota { margin: 8px 0 10px; }
   .modal-streaming-wrap { margin-top: 14px; }
   .modal-resena { margin-top: 14px; padding: 14px 16px 16px; }
-  .modal-resena-texto { font-size: 1.04rem; line-height: 1.48; }
+  .modal-resena-texto { font-size: 1rem; line-height: 1.5; }
   .modal-acciones { padding: 10px 16px; }
   .modal-acciones > button { flex: 1; }
 }
@@ -370,7 +371,7 @@ h2 {
   .modal-cabecera-info { padding-top: 0; }
   #modal-titulo { font-size: 2.1rem; }
   .modal-resena { margin-top: 20px; padding: 22px 28px 26px; }
-  .modal-resena-texto { font-size: 1.22rem; line-height: 1.52; }
+  .modal-resena-texto { font-size: 1.16rem; line-height: 1.55; }
   .modal-acciones { padding: 14px 48px; }
 }
 
@@ -969,9 +970,9 @@ body { padding-left: var(--sidebar-w); }
 }
 .hero-resena {
   margin: 0 0 12px;
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: "Newsreader", Georgia, serif;
   font-style: italic;
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.32;
   color: #3a342b;
   display: -webkit-box;

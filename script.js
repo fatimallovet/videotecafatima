@@ -1077,6 +1077,11 @@ function _oraciones(texto) {
   return texto.match(/[\s\S]+?[.!?…]+["”»)]*(?=\s|$)|[\s\S]+$/g) || [texto];
 }
 
+/* Divide un texto en oraciones (no corta en abreviaturas como "EE.UU." ni en "6.5") */
+function _oraciones(texto) {
+  return texto.match(/[\s\S]+?[.!?…]+["”»)]*(?=\s|$)|[\s\S]+$/g) || [texto];
+}
+
 /* ── Ficha individual → imagen para compartir ──
    Formato fijo 4:5 (1080×1350). Los chats muestran una imagen 4:5 completa y a todo el
    ancho, así que el texto conserva siempre el mismo tamaño aparente, sin importar lo larga
@@ -1085,21 +1090,29 @@ function _oraciones(texto) {
    más pequeña, se corta en la última oración completa que quepa y se marca con "[…]". */
 var IMG_FICHA = { W: 1080, H: 1350, pad: 72, footerH: 100, posterW: 300, posterH: 450 };
 
-/* Reseña ajustada al alto disponible: prueba tamaños de letra de mayor a menor y, si ni con
-   el mínimo cabe, la recorta por oraciones completas. Devuelve { lineas, size, lh }. */
-function _ajustarResena(ctx, texto, ancho, altoDisp) {
-  var tamanos = [36, 34, 32, 30], i, lh, lineas;
-  for (i = 0; i < tamanos.length; i++) {
-    ctx.font = "italic 400 " + tamanos[i] + "px Poppins, sans-serif";
-    lh = Math.round(tamanos[i] * 1.48);
-    lineas = _partirLineas(ctx, texto, ancho);
-    if (lineas.length * lh <= altoDisp) return { lineas: lineas, size: tamanos[i], lh: lh };
-  }
-  var size = tamanos[tamanos.length - 1];
-  ctx.font = "italic 400 " + size + "px Poppins, sans-serif";
-  lh = Math.round(size * 1.48);
-  var maxLineas = Math.max(1, Math.floor(altoDisp / lh));
-  var oraciones = _oraciones(texto), acumulado = "", mejor = null;
+/* ── Ficha individual → imagen para compartir ──
+   Formato fijo 4:5 (1080×1350): los chats la muestran completa y a todo el ancho, así el texto
+   conserva siempre el mismo tamaño aparente. Para no desperdiciar espacio, el diseño se ADAPTA:
+   prueba combinaciones de alto de póster y tamaño de letra de la reseña y se queda con la que
+   deja el póster y el texto más grandes sin pasarse (una reseña corta → letra grande; una larga →
+   póster algo menor). Si ni así cabe, la reseña se corta en la última oración completa con «[…]».
+   Letras: Instrument Serif (título), FUENTE_LECTURA (reseña) y Poppins (datos). */
+var FUENTE_LECTURA = "Newsreader";
+var IMG_FICHA = { W: 1080, H: 1350, pad: 64, footerH: 108 };
+
+/* Reseña en bloque de lectura (sin cursiva), a la izquierda. Devuelve { lineas, size, lh } o null si no cabe. */
+function _resenaEnTamano(ctx, texto, ancho, altoDisp, size) {
+  ctx.font = "400 " + size + "px " + FUENTE_LECTURA + ", Georgia, serif";
+  var lh = Math.round(size * 1.46);
+  var lineas = _partirLineas(ctx, texto, ancho);
+  return lineas.length * lh <= altoDisp ? { lineas: lineas, size: size, lh: lh } : null;
+}
+
+/* Último recurso: corta la reseña por oraciones completas para que quepa con la letra mínima */
+function _cortarResena(ctx, texto, ancho, altoDisp, size) {
+  ctx.font = "400 " + size + "px " + FUENTE_LECTURA + ", Georgia, serif";
+  var lh = Math.round(size * 1.46), maxLineas = Math.max(1, Math.floor(altoDisp / lh));
+  var oraciones = _oraciones(texto), acumulado = "", mejor = null, i;
   for (i = 0; i < oraciones.length; i++) {
     var l = _partirLineas(ctx, (acumulado + oraciones[i]).trim() + " […]", ancho);
     if (l.length > maxLineas) break;
@@ -1121,8 +1134,6 @@ function _ajustarResena(ctx, texto, ancho, altoDisp) {
 function generarImagenFicha(d, forzarSinPoster) {
   var W = IMG_FICHA.W, H = IMG_FICHA.H, pad = IMG_FICHA.pad, footerH = IMG_FICHA.footerH;
   var cx = W / 2;
-  var colX = pad + IMG_FICHA.posterW + 44;   // columna de datos, a la derecha del póster
-  var colW = W - pad - colX;
 
   var titulo   = campo(d, ["Título","Titulo"]);
   var calif    = campo(d, ["Calificación","Calificacion"]);
@@ -1144,8 +1155,13 @@ function generarImagenFicha(d, forzarSinPoster) {
   var cargaPoster = (poster && !forzarSinPoster)
     ? _cargarPoster(poster).catch(function() { return null; })
     : Promise.resolve(null);
-  var fontsListos = (document.fonts && document.fonts.ready) || Promise.resolve();
-
+  /* Las letras deben estar cargadas ANTES de medir y dibujar en el canvas */
+  var fontsListos = Promise.all([
+    document.fonts && document.fonts.load ? document.fonts.load('400 80px "Instrument Serif"') : 0,
+    document.fonts && document.fonts.load ? document.fonts.load('400 40px "' + FUENTE_LECTURA + '"') : 0,
+    document.fonts && document.fonts.load ? document.fonts.load('600 26px Poppins') : 0,
+    document.fonts && document.fonts.load ? document.fonts.load('400 26px Poppins') : 0
+  ]).catch(function() {});
   var cargaLogo = _cargarImagen("logo-claro.svg").catch(function() { return null; });
 
   return Promise.all([cargaPoster, fontsListos, cargaLogo]).then(function(res) {
@@ -1155,174 +1171,189 @@ function generarImagenFicha(d, forzarSinPoster) {
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext("2d");
     ctx.textBaseline = "top";
+    var SERIF = '"Instrument Serif", Georgia, serif';
 
-    /* Fondo */
+    var ratio = imgPoster ? imgPoster.width / imgPoster.height : 2 / 3;
+    var chips = (genero ? genero.split(/\s*,\s*/) : []).filter(Boolean).slice(0, 3);
+    if (tono) chips.push(tono.split(/\s*,\s*/)[0]);
+    var txtStr = plataformas.length
+      ? "Disponible en " + plataformas.slice(0, 2).join(" · ") + (plataformas.length > 2 ? "  +" + (plataformas.length - 2) : "")
+      : "";
+    var meta = [origen, anio, durVal ? (durVal + " " + durLabel) : ""].filter(Boolean).join("  ·  ");
+
+    /* ── Columna de datos: se mide como una lista de bloques (alto + cómo dibujarlo) ── */
+    function bloquesDatos(colW) {
+      var bl = [], GAP = 22;
+      bl.push({ h: 30, draw: function(x, y) {
+        ctx.fillStyle = "#a39c8c"; ctx.font = "600 24px Poppins, sans-serif";
+        ctx.fillText(esPeli ? "PELÍCULA" : "SERIE", x, y);
+      }});
+      var tSizes = [92, 84, 76, 68, 60, 52], tSize = 52, lineasTitulo = [], s;
+      for (s = 0; s < tSizes.length; s++) {
+        tSize = tSizes[s];
+        ctx.font = "400 " + tSize + "px " + SERIF;
+        lineasTitulo = _partirLineas(ctx, titulo, colW);
+        if (lineasTitulo.length <= 3) break;
+      }
+      if (lineasTitulo.length > 3) {
+        lineasTitulo = lineasTitulo.slice(0, 3);
+        lineasTitulo[2] = _truncarLinea(ctx, lineasTitulo[2] + "…", colW);
+      }
+      var tLh = Math.round(tSize * 1.04);
+      bl.push({ h: lineasTitulo.length * tLh, draw: function(x, y) {
+        ctx.fillStyle = "#ffffff"; ctx.font = "400 " + tSize + "px " + SERIF;
+        lineasTitulo.forEach(function(l, i) { ctx.fillText(l, x, y + i * tLh); });
+      }});
+      if (calif) bl.push({ h: 58, draw: function(x, y) {
+        ctx.fillStyle = "#f3c344"; ctx.font = "700 46px Poppins, sans-serif";
+        var t = "★ " + calif; ctx.fillText(t, x, y);
+        var w = ctx.measureText(t).width;
+        ctx.fillStyle = "#a39c8c"; ctx.font = "400 28px Poppins, sans-serif";
+        ctx.fillText(" / 10", x + w, y + 15);
+      }});
+      if (meta) bl.push({ h: 34, draw: function(x, y) {
+        ctx.fillStyle = "#cfc9bb"; ctx.font = "400 27px Poppins, sans-serif";
+        ctx.fillText(_truncarLinea(ctx, meta, colW), x, y);
+      }});
+      if (chips.length) {
+        ctx.font = "500 24px Poppins, sans-serif";
+        var pos = [], cxp = 0, cyp = 0, chipH = 46, chipPad = 22;
+        chips.forEach(function(chip) {
+          var wChip = ctx.measureText(chip).width + chipPad * 2;
+          if (cxp + wChip > colW && cxp > 0) { cxp = 0; cyp += chipH + 12; }
+          pos.push({ t: chip, x: cxp, y: cyp, w: wChip });
+          cxp += wChip + 12;
+        });
+        bl.push({ h: cyp + chipH, draw: function(x, y) {
+          ctx.font = "500 24px Poppins, sans-serif";
+          pos.forEach(function(p) {
+            ctx.fillStyle = "#3b3636";
+            _redondeado(ctx, x + p.x, y + p.y, p.w, chipH, chipH / 2); ctx.fill();
+            ctx.fillStyle = "#f4f1ea"; ctx.fillText(p.t, x + p.x + chipPad, y + p.y + 10);
+          });
+        }});
+      }
+      if (txtStr) {
+        ctx.font = "600 24px Poppins, sans-serif";
+        var ts = _truncarLinea(ctx, txtStr, colW - 44), wStr = ctx.measureText(ts).width + 44;
+        bl.push({ h: 48, draw: function(x, y) {
+          ctx.fillStyle = "#b05070"; _redondeado(ctx, x, y, wStr, 48, 24); ctx.fill();
+          ctx.fillStyle = "#ffffff"; ctx.font = "600 24px Poppins, sans-serif";
+          ctx.fillText(ts, x + 22, y + 11);
+        }});
+      }
+      var total = bl.reduce(function(a, b) { return a + b.h; }, 0) + GAP * (bl.length - 1);
+      return { bloques: bl, gap: GAP, alto: total };
+    }
+
+    /* ── Medidas de la reseña (zona de lectura) ── */
+    ctx.font = "600 26px Poppins, sans-serif";
+    var lineasFlags = flags ? _partirLineas(ctx, "⚠️ " + flags, W - pad * 2) : [];
+    var flagsH = lineasFlags.length ? 20 + lineasFlags.length * 36 : 0;
+    var ornH = 64, anchoTxt = W - pad * 2, footerTop = H - footerH;
+
+    function medir(ph) {
+      var pw = Math.min(Math.round(ph * ratio), 460);
+      ph = Math.round(pw / ratio);
+      var colX = pad + pw + 48, colW = W - pad - colX;
+      var datos = bloquesDatos(colW);
+      var heroH = Math.max(ph, datos.alto);
+      var divY = pad + heroH + 40;
+      var zonaTop = divY + 30, zonaH = (footerTop - 34) - zonaTop;
+      return { pw: pw, ph: ph, colX: colX, colW: colW, datos: datos, heroH: heroH, divY: divY, zonaTop: zonaTop, zonaH: zonaH };
+    }
+
+    /* Elegir la combinación póster + letra que mejor aproveche el espacio */
+    var mejor = null, ph, fs, M, R, score;
+    var tamanos = [44, 42, 40, 38, 36, 34, 32, 30];
+    if (resena) {
+      for (ph = 620; ph >= 450; ph -= 20) {
+        M = medir(ph);
+        for (var k = 0; k < tamanos.length; k++) {
+          fs = tamanos[k];
+          R = _resenaEnTamano(ctx, resena, anchoTxt, M.zonaH - ornH - flagsH, fs);
+          if (!R) continue;
+          score = fs / 40 + ph / 620 * 0.85;
+          if (!mejor || score > mejor.score) mejor = { score: score, M: M, R: R };
+          break; // con este póster, la letra más grande que cabe ya es la mejor
+        }
+      }
+    }
+    if (!mejor) {
+      M = medir(450);
+      R = resena ? _cortarResena(ctx, resena, anchoTxt, M.zonaH - ornH - flagsH, 30) : { lineas: [], size: 34, lh: 50 };
+      mejor = { M: M, R: R };
+    }
+    M = mejor.M; R = mejor.R;
+
+    /* ── Dibujo ── */
     ctx.fillStyle = "#262424";
     ctx.fillRect(0, 0, W, H);
 
-    /* Póster completo, a su propia proporción, dentro de una caja de 300×450 */
-    var pw = IMG_FICHA.posterW, ph = IMG_FICHA.posterH;
-    if (imgPoster) {
-      var esc = Math.min(pw / imgPoster.width, ph / imgPoster.height);
-      pw = Math.round(imgPoster.width * esc);
-      ph = Math.round(imgPoster.height * esc);
-    }
+    /* Póster completo, a su propia proporción */
     ctx.save();
-    _redondeado(ctx, pad, pad, pw, ph, 20);
+    _redondeado(ctx, pad, pad, M.pw, M.ph, 22);
     ctx.clip();
     if (imgPoster) {
-      ctx.drawImage(imgPoster, pad, pad, pw, ph);
+      ctx.drawImage(imgPoster, pad, pad, M.pw, M.ph);
     } else {
       ctx.fillStyle = colorBanda;
-      ctx.fillRect(pad, pad, pw, ph);
+      ctx.fillRect(pad, pad, M.pw, M.ph);
       ctx.globalAlpha = 0.5;
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.font = "120px sans-serif";
-      ctx.fillText(esPeli ? "🎬" : "📺", pad + pw / 2, pad + ph / 2 - 60);
+      ctx.fillText(esPeli ? "🎬" : "📺", pad + M.pw / 2, pad + M.ph / 2 - 60);
       ctx.globalAlpha = 1;
     }
     ctx.restore();
 
-    /* ── Columna de datos (alineada a la izquierda, junto al póster) ── */
+    /* Datos, centrados en vertical junto al póster */
     ctx.textAlign = "left";
-    var cy = pad;
+    var yy = pad + Math.max(0, (M.heroH - M.datos.alto) / 2);
+    M.datos.bloques.forEach(function(b) { b.draw(M.colX, yy); yy += b.h + M.datos.gap; });
 
-    ctx.fillStyle = "#a39c8c";
-    ctx.font = "600 24px Poppins, sans-serif";
-    ctx.fillText(esPeli ? "PELÍCULA" : "SERIE", colX, cy);
-    cy += 44;
-
-    /* Título: el tamaño más grande que quepa en 3 líneas */
-    var tSizes = [60, 54, 48, 42], tSize = 42, lineasTitulo = [];
-    for (var s = 0; s < tSizes.length; s++) {
-      tSize = tSizes[s];
-      ctx.font = "700 " + tSize + "px Poppins, sans-serif";
-      lineasTitulo = _partirLineas(ctx, titulo, colW);
-      if (lineasTitulo.length <= 3) break;
-    }
-    if (lineasTitulo.length > 3) {
-      lineasTitulo = lineasTitulo.slice(0, 3);
-      lineasTitulo[2] = _truncarLinea(ctx, lineasTitulo[2] + "…", colW);
-    }
-    var tLh = Math.round(tSize * 1.18);
-    ctx.fillStyle = "#ffffff";
-    lineasTitulo.forEach(function(l, i) { ctx.fillText(l, colX, cy + i * tLh); });
-    cy += lineasTitulo.length * tLh + 16;
-
-    /* Calificación */
-    if (calif) {
-      ctx.fillStyle = "#f3c344";
-      ctx.font = "700 48px Poppins, sans-serif";
-      var txtCalif = "★ " + calif;
-      ctx.fillText(txtCalif, colX, cy);
-      var wCalif = ctx.measureText(txtCalif).width;
-      ctx.fillStyle = "#a39c8c";
-      ctx.font = "400 28px Poppins, sans-serif";
-      ctx.fillText(" / 10", colX + wCalif, cy + 16);
-      cy += 66;
-    }
-
-    /* Origen · año · duración */
-    var meta = [origen, anio, durVal ? (durVal + " " + durLabel) : ""].filter(Boolean).join("  ·  ");
-    if (meta) {
-      ctx.fillStyle = "#cfc9bb";
-      ctx.font = "400 28px Poppins, sans-serif";
-      ctx.fillText(_truncarLinea(ctx, meta, colW), colX, cy);
-      cy += 52;
-    }
-
-    /* Chips: hasta 3 géneros + el tono */
-    var chips = (genero ? genero.split(/\s*,\s*/) : []).filter(Boolean).slice(0, 3);
-    if (tono) chips.push(tono.split(/\s*,\s*/)[0]);
-    if (chips.length) {
-      ctx.font = "500 24px Poppins, sans-serif";
-      var chipX = colX, chipY = cy, chipH = 46, chipPad = 22;
-      chips.forEach(function(chip) {
-        var wChip = ctx.measureText(chip).width + chipPad * 2;
-        if (chipX + wChip > colX + colW && chipX > colX) { chipX = colX; chipY += chipH + 12; }
-        ctx.fillStyle = "#3b3636";
-        _redondeado(ctx, chipX, chipY, wChip, chipH, chipH / 2);
-        ctx.fill();
-        ctx.fillStyle = "#f4f1ea";
-        ctx.fillText(chip, chipX + chipPad, chipY + 10);
-        chipX += wChip + 12;
-      });
-      cy = chipY + chipH + 20;
-    }
-
-    /* Disponibilidad en streaming */
-    if (plataformas.length) {
-      var txtStr = "Disponible en " + plataformas.slice(0, 2).join(" · ") +
-                   (plataformas.length > 2 ? "  +" + (plataformas.length - 2) : "");
-      ctx.font = "600 24px Poppins, sans-serif";
-      txtStr = _truncarLinea(ctx, txtStr, colW - 44);
-      var wStr = ctx.measureText(txtStr).width + 44;
-      ctx.fillStyle = "#b05070";
-      _redondeado(ctx, colX, cy, wStr, 48, 24);
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(txtStr, colX + 22, cy + 11);
-      cy += 48;
-    }
-
-    /* ── Reseña centrada ── */
-    var heroBottom = Math.max(pad + ph, cy);
-    var divY = heroBottom + 44;
+    /* Línea divisoria */
     ctx.fillStyle = "#4a4545";
-    ctx.fillRect(pad, divY, W - pad * 2, 2);
+    ctx.fillRect(pad, M.divY, W - pad * 2, 2);
 
-    var footerTop = H - footerH;
-    var zonaTop = divY + 24, zonaBottom = footerTop - 28;
-    var zonaH = zonaBottom - zonaTop;
-    var ornH = 76;
-
-    ctx.font = "600 26px Poppins, sans-serif";
-    var lineasFlags = flags ? _partirLineas(ctx, "⚠️ " + flags, W - pad * 2) : [];
-    var flagsH = lineasFlags.length ? 20 + lineasFlags.length * 36 : 0;
-
-    var ajuste = resena
-      ? _ajustarResena(ctx, resena, W - pad * 2, zonaH - ornH - flagsH)
-      : { lineas: [], size: 34, lh: 50 };
-    var textoH = ajuste.lineas.length * ajuste.lh;
+    /* Reseña: comillas, texto a la izquierda y advertencias; el bloque se centra en su zona */
+    var textoH = R.lineas.length * R.lh;
     var bloqueH = (resena ? ornH + textoH : 0) + flagsH;
-    var y0 = zonaTop + Math.max(0, (zonaH - bloqueH) / 2);
-
-    ctx.textAlign = "center";
+    var y0 = M.zonaTop + Math.max(0, (M.zonaH - bloqueH) / 2);
+    ctx.textAlign = "left";
     if (resena) {
       ctx.fillStyle = "#b05070";
-      ctx.font = "700 150px Georgia, 'Times New Roman', serif";
-      ctx.fillText("“", cx, y0 - 24);
+      ctx.font = "700 130px Georgia, 'Times New Roman', serif";
+      ctx.fillText("“", pad - 4, y0 - 22);
       ctx.fillStyle = "#ece8de";
-      ctx.font = "italic 400 " + ajuste.size + "px Poppins, sans-serif";
-      ajuste.lineas.forEach(function(l, i) { ctx.fillText(l, cx, y0 + ornH + i * ajuste.lh); });
+      ctx.font = "400 " + R.size + "px " + FUENTE_LECTURA + ", Georgia, serif";
+      R.lineas.forEach(function(l, i) { ctx.fillText(l, pad, y0 + ornH + i * R.lh); });
     }
     if (lineasFlags.length) {
       ctx.fillStyle = "#e0a05a";
       ctx.font = "600 26px Poppins, sans-serif";
       var yFlags = y0 + (resena ? ornH + textoH : 0) + 20;
-      lineasFlags.forEach(function(l, i) { ctx.fillText(l, cx, yFlags + i * 36); });
+      lineasFlags.forEach(function(l, i) { ctx.fillText(l, pad, yFlags + i * 36); });
     }
 
     /* ── Pie: marca (logo + nombre + enlace), centrado ── */
     ctx.fillStyle = "#556b5d";
     ctx.fillRect(0, footerTop, W, footerH);
-    ctx.textAlign = "left";
-    var sello = imgLogo ? 64 : 0, gap = imgLogo ? 18 : 0;
-    ctx.font = "600 28px Poppins, sans-serif";
+    var sello = imgLogo ? 66 : 0, gap = imgLogo ? 18 : 0;
+    ctx.font = "600 30px Poppins, sans-serif";
     var wNombre = ctx.measureText("Videoteca Fátima").width;
-    ctx.font = "400 20px Poppins, sans-serif";
+    ctx.font = "400 21px Poppins, sans-serif";
     var wUrl = ctx.measureText("fatimallovet.github.io/videotecafatima").width;
     var grupoW = sello + gap + Math.max(wNombre, wUrl);
-    var gx = (W - grupoW) / 2, gy = footerTop + (footerH - 56) / 2; // 56 = alto del bloque de texto
+    var gx = (W - grupoW) / 2, gy = footerTop + (footerH - 58) / 2; // 58 = alto del bloque de texto
     if (imgLogo) ctx.drawImage(imgLogo, gx, footerTop + (footerH - sello) / 2, sello, sello);
-    ctx.textAlign = "left";
     ctx.fillStyle = "#ffffff";
-    ctx.font = "600 28px Poppins, sans-serif";
-    ctx.fillText("Videoteca Fátima", gx + sello + gap, gy + 1);
+    ctx.font = "600 30px Poppins, sans-serif";
+    ctx.fillText("Videoteca Fátima", gx + sello + gap, gy);
     ctx.fillStyle = "rgba(255,255,255,0.85)";
-    ctx.font = "400 20px Poppins, sans-serif";
-    ctx.fillText("fatimallovet.github.io/videotecafatima", gx + sello + gap, gy + 33);
+    ctx.font = "400 21px Poppins, sans-serif";
+    ctx.fillText("fatimallovet.github.io/videotecafatima", gx + sello + gap, gy + 36);
 
     return new Promise(function(resolve, reject) {
       try {
