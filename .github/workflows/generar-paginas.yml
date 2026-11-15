@@ -1,0 +1,49 @@
+name: Generar páginas de vista previa
+
+# Crea p/peliculas/<slug>/ y p/series/<slug>/ con las etiquetas Open Graph (póster, título,
+# descripción) para que al compartir el enlace de una ficha salga la tarjeta con imagen.
+# Lee las hojas de Google Sheets, así que corre solo cada día para incluir los títulos nuevos;
+# también se puede lanzar a mano desde la pestaña "Actions".
+on:
+  schedule:
+    - cron: "30 9 * * *"   # todos los días a las 09:30 UTC (~03:30 hora de CDMX)
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - generar-paginas.js
+      - .github/workflows/generar-paginas.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generar-paginas
+  cancel-in-progress: false
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependencias
+        run: npm install papaparse
+
+      - name: Generar páginas
+        run: node generar-paginas.js
+
+      - name: Subir cambios si hay
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add p
+          git diff --staged --quiet || git commit -m "Actualizar páginas de vista previa"
+          git pull --rebase
+          git push

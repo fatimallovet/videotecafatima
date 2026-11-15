@@ -681,6 +681,16 @@ function urlFicha(d) {
   return slug ? URL_SITIO + "#" + (esPeli ? "peliculas" : "series") + "/" + slug : URL_SITIO;
 }
 
+/* Enlace para COMPARTIR una ficha: apunta a su página de vista previa (p/peliculas/<slug>/),
+   que lleva el póster y la descripción para la tarjeta de WhatsApp y luego redirige a la ficha.
+   (Las apps de mensajería no ejecutan JavaScript: con #peliculas/<slug> solo verían el sitio genérico.)
+   Si esa página aún no existe, 404.html redirige a la ficha igual. */
+function urlCompartirFicha(d) {
+  var url = urlFicha(d);
+  var m = url.match(/#(peliculas|series)\/(.+)$/);
+  return m ? URL_SITIO + "p/" + m[1] + "/" + m[2] + "/" : url;
+}
+
 /* Abre una ficha por acción del usuario: la URL pasa a ser la de esa ficha
    (así el botón "atrás" la cierra y la dirección de la barra ya es compartible). */
 var _modalConEntrada = false;
@@ -764,20 +774,18 @@ function _cabeceraWA(x) {
           datos.join(" · ")];
 }
 
-/* Texto que acompaña al enlace: título con año, datos clave y «Mi reseña completa 👇».
+/* Texto que acompaña al enlace: solo el título con año (🎬 *Título* (año)) y «Mi reseña completa 👇».
+   La tarjeta de vista previa ya trae nota, géneros y un extracto de la reseña.
    El enlace va aparte (navigator.share lo agrega) para que no salga duplicado. */
 function textoCompartir(d) {
-  var l = _cabeceraWA(_datosFichaWA(d));
-  l.push("");
-  l.push("Mi reseña completa 👇");
-  return l.join("\n");
+  return _cabeceraWA(_datosFichaWA(d))[0] + "\n\nMi reseña completa 👇";
 }
 
 /* Compartir una ficha = enviar su enlace directo. Abre el menú de compartir del sistema
    (WhatsApp, Mensajes, Telegram…); si el navegador no lo tiene, copia el texto con el enlace.
    navigator.share debe llamarse dentro del clic del usuario. */
 function compartirEnlace(d) {
-  var url   = urlFicha(d);
+  var url   = urlCompartirFicha(d);
   var texto = textoCompartir(d);
   function copiar() { _copiarAlPortapapeles(texto + "\n" + url, "¡Enlace copiado! Pégalo donde quieras 🔗"); }
   if (navigator.share) {
