@@ -805,177 +805,178 @@ body { padding-left: var(--sidebar-w); }
 
 /* ══════════════════════════════════════
    SECCIÓN INFO (info.html)
+   Mismo ancho, tarjetas e iconos que el resto del sitio.
    ══════════════════════════════════════ */
 .info-page {
-  max-width: 680px;
-  margin: 32px auto 60px;
-  padding: 0 20px;
+  max-width: var(--ancho-contenido);
+  margin: 0 auto 40px;
   color: #3f3a32;
 }
 
-.info-hero {
-  text-align: center;
-  margin-bottom: 32px;
+/* Encabezado + introducción (se apilan solos cuando no caben) */
+.info-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 40px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.info-hero { flex: 1 1 260px; max-width: 340px; }
+.info-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  margin-bottom: 18px;
 }
 .info-hero h2 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-size: 1.7rem;
-  color: #3f3a32;
   margin: 0 0 6px;
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #1f1f1f;
 }
 .info-tagline {
-  font-family: "Cookie", cursive;
-  font-size: 1.6rem;
-  color: #556b5d;
   margin: 0;
+  font-size: 0.95rem;
+  color: #7a8c85;
+}
+.info-intro { flex: 3 1 380px; }
+
+/* Tarjetas: las secciones largas se reparten solas en dos columnas */
+.info-cols {
+  columns: 2 380px;
+  column-gap: 20px;
+}
+.info-cols .info-card {
+  break-inside: avoid;
+  margin-bottom: 20px;
 }
 
-.info-block {
-  background: #fbfaf6;
-  border: 1px solid #eae4d6;
+.info-card {
+  background: white;
+  border: 1px solid #e8e3d8;
   border-radius: 16px;
   padding: 24px 26px;
-  line-height: 1.6;
 }
-.info-block p { margin: 0 0 12px; }
-.info-block p:last-child { margin-bottom: 0; }
-.info-block h3 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 1.15rem;
-  color: #556b5d;
+.info-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0 0 14px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #364a46;
 }
+.info-card h3 .ico { width: 20px; height: 20px; color: #556b5d; }
+.info-card p {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #4a463e;
+}
+.info-card p:last-child { margin-bottom: 0; }
 
-/* Divisor estilo boleto de cine: línea punteada con muescas a los lados */
-.info-divider {
-  position: relative;
-  height: 24px;
-  margin: 4px 0;
-}
-.info-divider::before {
-  content: "";
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 50%;
-  border-top: 2px dashed #d8d0bc;
-}
-.info-divider::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  background: #d8d0bc;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Lista "¿Cómo navegar?" */
+/* Lista con icono */
 .info-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 12px;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.info-list li {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
+.info-list:last-child { margin-bottom: 0; }
+.info-list li { display: flex; gap: 14px; }
 .info-ico {
-  flex: 0 0 auto;
   width: 34px;
   height: 34px;
+  border-radius: 10px;
+  background: #eef2ef;
+  color: #556b5d;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef1ec;
-  border-radius: 10px;
-  font-size: 1.05rem;
+  flex-shrink: 0;
 }
+.info-ico .ico { width: 18px; height: 18px; }
 .info-list strong {
   display: block;
-  font-size: 0.96rem;
-  color: #3f3a32;
   margin-bottom: 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f1f1f;
 }
-.info-list p {
-  margin: 0;
-  font-size: 0.92rem;
-  color: #6b6455;
-}
+.info-list p { margin: 0; font-size: 0.86rem; line-height: 1.55; color: #5a554b; }
 
-/* Bloque de lista de deseos: pasos numerados */
-.info-callout {
-  background: #fff8f9;
-  border-color: #f2dde3;
-}
-.info-callout h3 { color: #b05070; }
+/* Lista de deseos: pasos numerados con el acento vino del ♡ */
+.info-wish h3 .ico { color: #b05070; }
 .info-steps {
-  list-style: none;
   counter-reset: paso;
-  margin: 16px 0 0;
+  list-style: none;
+  margin: 14px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 .info-steps li {
   counter-increment: paso;
-  position: relative;
-  padding-left: 34px;
-  font-size: 0.92rem;
-  color: #5a5347;
+  display: flex;
+  gap: 12px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #5a554b;
 }
 .info-steps li::before {
   content: counter(paso);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 22px;
-  height: 22px;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #b05070;
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 700;
+  background: #f5e6eb;
+  color: #b05070;
+  font-size: 0.78rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.info-steps strong { color: #1f1f1f; font-weight: 600; }
 
-/* Bloque de contacto */
-.info-contact {
-  text-align: center;
+/* Enlaces: Biblioteca (externo), Apoyar y contacto */
+.info-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
 }
-.info-contact-btn {
+.info-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.info-link:hover { border-color: #cfc8b8; transform: translateY(-2px); }
+.info-link .info-ico { margin-bottom: 10px; }
+.info-link h3 { margin: 0; }
+.info-link p { flex: 1; }
+.info-cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 12px 22px;
-  border-radius: 12px;
-  background: #556b5d;
-  color: white !important;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.86rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: 0.2s ease;
+  color: #556b5d;
 }
-.info-contact-btn:hover {
-  background: #3f5346;
-  transform: translateY(-2px);
-}
+.info-cta .ico { width: 15px; height: 15px; }
+.info-link--cafe .info-ico { background: rgba(224,160,90,0.18); color: #9a6423; }
+.info-link--cafe .info-cta { color: #9a6423; }
 
 @media (max-width: 600px) {
-  .info-block { padding: 20px 18px; }
-  .info-hero h2 { font-size: 1.4rem; }
+  .info-card { padding: 20px 18px; }
+  .info-hero h2 { font-size: 1.45rem; }
 }
 
 /* ── RESPONSIVE CARDS ── */

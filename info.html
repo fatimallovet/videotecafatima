@@ -1,100 +1,116 @@
 <div class="info-page">
 
-  <header class="info-hero">
-    <h2>Sobre este proyecto</h2>
-    <p class="info-tagline">cine y series, vistos y curados por mí</p>
-  </header>
+  <div class="info-top">
+    <header class="info-hero">
+      <img class="info-logo" src="favicon.svg" alt="" width="64" height="64">
+      <h2>Sobre este proyecto</h2>
+      <p class="info-tagline">Cine y series, vistos y curados por mí</p>
+    </header>
 
-  <section class="info-block">
-    <p>
-      Este proyecto nació como una forma personal de ordenar y compartir películas y series que
-      <strong>yo he visto completa y conscientemente</strong>. No hay listas copiadas ni recomendaciones
-      al azar: todo lo que aparece aquí pasó primero por mis propios ojos.
-    </p>
-    <p>
-      La idea es ofrecer una guía donde puedas descubrir pelis y series para todo tipo de gustos.
-      Trato de poner las que pienso que valen la pena o pueden gustar a la mayoría... y avisar cuando
-      hay contenido que puede molestar a alguien.
-    </p>
-  </section>
+    <section class="info-card info-intro">
+      <p>
+        Este proyecto nació como una forma personal de ordenar y compartir películas y series que
+        <strong>yo he visto completa y conscientemente</strong>. No hay listas copiadas ni recomendaciones
+        al azar: todo lo que aparece aquí pasó primero por mis propios ojos.
+      </p>
+      <p>
+        La idea es ofrecer una guía donde puedas descubrir pelis y series para todo tipo de gustos.
+        Trato de poner las que pienso que valen la pena o pueden gustar a la mayoría... y avisar cuando
+        hay contenido que puede molestar a alguien.
+      </p>
+    </section>
+  </div>
 
-  <div class="info-divider" aria-hidden="true"></div>
+  <div class="info-cols">
 
-  <section class="info-block">
-    <h3>¿Cómo navegar?</h3>
-    <ul class="info-list">
-      <li>
-        <span class="info-ico">📋</span>
-        <div><strong>Orden</strong><p>Las listas están ordenadas de más reciente a más antiguo por defecto, pero puedes cambiar el orden por calificación o año usando el selector.</p></div>
-      </li>
-      <li>
-        <span class="info-ico">🔍</span>
-        <div><strong>Buscador</strong><p>Filtra por título, género, tono, ritmo y etiquetas al mismo tiempo. También puedes buscar por plataforma de streaming.</p></div>
-      </li>
-      <li>
-        <span class="info-ico">⭐</span>
-        <div><strong>Calificación</strong><p>Es personal y totalmente subjetiva, en escala del 1 al 10 — aunque obvio no recomiendo contenido con calificaciones bajas, por lo que no verás ninguna por debajo del 6.</p></div>
-      </li>
-      <li>
-        <span class="info-ico">🖱️</span>
-        <div><strong>Ficha completa</strong><p>Al tocar cualquier tarjeta se abre su ficha completa con todos los detalles.</p></div>
-      </li>
-      <li>
-        <span class="info-ico">⚠️</span>
-        <div><strong>Flags</strong><p>Avisa de contenido sensible o temas a considerar antes de ver.</p></div>
-      </li>
-      <li>
-        <span class="info-ico">📚</span>
-        <div><strong>Biblioteca</strong><p>El botón Biblioteca en la barra superior te lleva a mi proyecto de libros.</p></div>
-      </li>
-    </ul>
-  </section>
+    <section class="info-card">
+      <h3><svg class="ico" aria-hidden="true"><use href="#i-pointer"/></svg>¿Cómo navegar?</h3>
+      <ul class="info-list">
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+          <div><strong>Colecciones</strong><p>En la barra lateral (en el celular, en el menú ☰) puedes entrar a cada colección por tema: Comedia, Dramas, K-dramas, Navideñas… Un mismo título puede aparecer en varias.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></span>
+          <div><strong>Buscador</strong><p>Busca por título, género, tono, ritmo, etiquetas, reseña o plataforma de streaming. La lista se filtra mientras escribes.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-list"/></svg></span>
+          <div><strong>Orden</strong><p>Por defecto verás primero lo último que agregué. Con el selector también puedes ordenar por calificación o por año.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg></span>
+          <div><strong>Calificación</strong><p>Es personal y totalmente subjetiva, en escala del 1 al 10 — aunque obvio no recomiendo contenido con calificaciones bajas, por lo que no verás ninguna por debajo del 6. La nota aparece sobre cada póster.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-film"/></svg></span>
+          <div><strong>Ficha completa</strong><p>Toca cualquier tarjeta para abrir su ficha con todos los detalles: reseña, tono, ritmo, público y dónde verla. Cada ficha tiene su propio enlace.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-tv"/></svg></span>
+          <div><strong>Dónde verla</strong><p>La disponibilidad en plataformas de streaming es para México y se actualiza cada semana.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg></span>
+          <div><strong>Flags</strong><p>Avisan de contenido sensible o temas a considerar antes de ver. Si no hay nada que advertir, dice «Ninguna».</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-share"/></svg></span>
+          <div><strong>Compartir</strong><p>Desde la ficha puedes compartir como texto (pensado para WhatsApp) o como imagen. Los dos llevan el enlace directo a esa ficha.</p></div>
+        </li>
+      </ul>
+    </section>
 
-  <div class="info-divider" aria-hidden="true"></div>
+    <section class="info-card info-wish">
+      <h3><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>Lista de deseos</h3>
+      <p>Puedes ir marcando las películas y series que te llamen la atención para no perderlas de vista. Así funciona:</p>
+      <ol class="info-steps">
+        <li><span><strong>Guardar un título:</strong> toca el corazón ♡ sobre el póster (sin abrir la ficha) o el botón <em>Guardar</em> dentro de la ficha. El corazón se rellena ♥ para confirmar que quedó guardado.</span></li>
+        <li><span><strong>Ver tu lista:</strong> toca <em>Mi lista</em> en la barra lateral (en el celular, el corazón de arriba a la derecha). El número indica cuántos títulos llevas.</span></li>
+        <li><span><strong>Compartir un título:</strong> dentro de tu lista, cada título tiene un botón ↗ que comparte su ficha, como texto o como imagen, con su enlace.</span></li>
+        <li><span><strong>Compartir toda la lista:</strong> al pie del panel, <em>Compartir lista</em> genera un mensaje (o una imagen) con todos tus títulos guardados de una sola vez.</span></li>
+        <li><span><strong>Quitar o vaciar:</strong> quita títulos uno por uno con la ✖ de cada uno, o vacía toda la lista con el botón del pie.</span></li>
+        <li><span><strong>Se guarda sola:</strong> la lista se queda en este navegador, aunque lo cierres. Si abres la Videoteca en otro dispositivo u otro navegador, empezará vacía.</span></li>
+      </ol>
+    </section>
 
-  <section class="info-block info-callout">
-    <h3>♡ Lista de deseos</h3>
-    <p>Puedes ir marcando las películas y series que te llamen la atención para no perderlas de vista. Así funciona:</p>
-    <ol class="info-steps">
-      <li><strong>Guardar un título:</strong> toca el corazón ♡ en cualquier tarjeta (sin abrir la ficha) o el botón <em>Guardar</em> dentro de la ficha. El corazón se pone rojo ♥ para confirmar que quedó guardado.</li>
-      <li><strong>Ver tu lista:</strong> cuando tengas al menos un título guardado, aparece el botón ♡ en la esquina inferior derecha (en computadora) o en la barra de navegación de abajo (en celular). Tócalo para ver todo lo que tienes guardado.</li>
-      <li><strong>Compartir un título:</strong> dentro de la lista de deseos, cada registro tiene un botón ↗ que comparte la ficha completa — calificación, género, reseña y el link a la videoteca — por WhatsApp, portapapeles o como prefieras.</li>
-      <li><strong>Compartir toda la lista:</strong> al pie del panel hay un botón <em>Compartir lista</em> que genera un mensaje con todos tus títulos guardados de una sola vez.</li>
-      <li><strong>Quitar o vaciar:</strong> elimina títulos uno por uno con la ✖ de cada registro, o vacía toda la lista con el botón correspondiente.</li>
-      <li><strong>Se guarda automáticamente:</strong> la lista persiste aunque cierres el navegador, así que no tienes que volver a marcar todo cada vez que entres.</li>
-    </ol>
-  </section>
+    <section class="info-card">
+      <h3><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>Instalar en tu celular</h3>
+      <p>Puedes agregar la Videoteca a tu pantalla de inicio para abrirla como si fuera una app, sin pasar por el navegador cada vez.</p>
+      <ul class="info-list">
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></span>
+          <div><strong>iPhone (Safari)</strong><p>Abre la Videoteca en Safari · toca el botón <em>Compartir</em> (el cuadro con la flecha hacia arriba, en la barra inferior) · elige <em>"Agregar a inicio"</em> · confirma tocando <em>"Agregar"</em>. En iPhone se recomienda usar Safari.</p></div>
+        </li>
+        <li>
+          <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></span>
+          <div><strong>Android (Chrome)</strong><p>Abre la Videoteca en Chrome · toca los tres puntos ⋮ (arriba a la derecha) · elige <em>"Agregar a pantalla de inicio"</em> o <em>"Instalar app"</em> · confirma tocando <em>"Agregar"</em> o <em>"Instalar"</em>.</p></div>
+        </li>
+      </ul>
+      <p>Listo — aparecerá un ícono de la Videoteca en tu pantalla de inicio, y se abrirá a pantalla completa como una app.</p>
+    </section>
 
-  <div class="info-divider" aria-hidden="true"></div>
+  </div>
 
-  <section class="info-block">
-    <h3>📲 Instalar en tu celular</h3>
-    <p>Puedes agregar la Videoteca a tu pantalla de inicio para abrirla como si fuera una app, sin pasar por el navegador cada vez.</p>
-    <ul class="info-list">
-      <li>
-        <span class="info-ico">🍎</span>
-        <div>
-          <strong>iPhone (Safari)</strong>
-          <p>Abre la Videoteca en Safari · toca el botón <em>Compartir</em> (el cuadro con la flecha hacia arriba, en la barra inferior) · elige <em>"Agregar a inicio"</em> · confirma tocando <em>"Agregar"</em>. Nota: en iPhone esto solo funciona desde Safari, no desde Chrome.</p>
-        </div>
-      </li>
-      <li>
-        <span class="info-ico">🤖</span>
-        <div>
-          <strong>Android (Chrome)</strong>
-          <p>Abre la Videoteca en Chrome · toca los tres puntos ⋮ (arriba a la derecha) · elige <em>"Agregar a pantalla de inicio"</em> o <em>"Instalar app"</em> · confirma tocando <em>"Agregar"</em> o <em>"Instalar"</em>.</p>
-        </div>
-      </li>
-    </ul>
-    <p>Listo — aparecerá un ícono de la Videoteca en tu pantalla de inicio, y se abrirá a pantalla completa como una app.</p>
-  </section>
-
-  <div class="info-divider" aria-hidden="true"></div>
-
-  <section class="info-block info-contact">
-    <h3>¿Tienes sugerencias?</h3>
-    <p>Si quieres sugerir títulos, o tienes cualquier otro comentario, estaré feliz de que me contactes.</p>
-    <a class="info-contact-btn" href="mailto:videotecafatima@gmail.com">✉️ videotecafatima@gmail.com</a>
-  </section>
+  <div class="info-links">
+    <a class="info-card info-link" href="https://fatimallovet.github.io/bibliotecafa2/" target="_blank" rel="noopener">
+      <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>
+      <h3>Biblioteca Fátima</h3>
+      <p>Mi otro proyecto: el catálogo de libros que he leído, con el mismo estilo que esta Videoteca.</p>
+      <span class="info-cta">Abrir la Biblioteca <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+    </a>
+    <a class="info-card info-link info-link--cafe" href="https://www.buymeacoffee.com/fatimallovet" target="_blank" rel="noopener">
+      <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-coffee"/></svg></span>
+      <h3>Apoya este proyecto</h3>
+      <p>La Videoteca es gratuita. Si te ha servido una recomendación, puedes invitarme un café.</p>
+      <span class="info-cta">Invitar un café <svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+    </a>
+    <a class="info-card info-link" href="mailto:videotecafatima@gmail.com">
+      <span class="info-ico"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg></span>
+      <h3>¿Tienes sugerencias?</h3>
+      <p>Si quieres sugerir títulos, o tienes cualquier otro comentario, estaré feliz de que me contactes.</p>
+      <span class="info-cta">videotecafatima@gmail.com</span>
+    </a>
+  </div>
 
 </div>
