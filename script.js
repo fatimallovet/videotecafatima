@@ -1711,11 +1711,14 @@ var MOODS_DEF = {
 };
 
 function clasificarMoodsBase(item) {
-  var genero = campo(item, ["Género","Genero"]).toLowerCase();
-  var tono   = campo(item, ["Tono"]).toLowerCase();
-  var origen = campo(item, ["Origen"]).toLowerCase();
+  /* Todo se compara en minúsculas y SIN acentos: la hoja se escribe a mano y trae variantes
+     («Histórica», «Biográfico», «Ciencia Ficción», «cine de época»…); así una sola regla las cubre. */
+  function plano(t) { return String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  var genero = plano(campo(item, ["Género","Genero"]));
+  var tono   = plano(campo(item, ["Tono"]));
+  var origen = plano(campo(item, ["Origen"]));
 
-  function m(txt, pp) { return pp.some(function(p){ return txt.indexOf(p) !== -1; }); }
+  function m(txt, pp) { return pp.some(function(p){ return txt.indexOf(plano(p)) !== -1; }); }
 
   /* ── 🎄 NAVIDEÑAS: exclusivo, no entra a ninguna otra categoría ── */
   if (m(genero, ["navideña","navideño"])) {
@@ -1750,12 +1753,12 @@ function clasificarMoodsBase(item) {
   }
 
   /* ── Cine de Época (por ambientación, no por tono) ── */
-  if (m(genero, ["histórico","historia","drama de época","drama histórico"])) {
+  if (m(genero, ["histor","época"])) {   // histórico / histórica / historia / drama de época / cine de época
     moods.push("epoca");
   }
 
-  /* ── Familiares ── */
-  if (m(genero, ["familiar","familia"])) {
+  /* ── Familiares (la animación también: Toy Story, Robot Salvaje…) ── */
+  if (m(genero, ["familiar","familia","animación"])) {
     moods.push("familiares");
   }
 
@@ -1765,7 +1768,7 @@ function clasificarMoodsBase(item) {
   }
 
   /* ── Biografías ── */
-  if (m(genero, ["biografía","biográfica"])) {
+  if (m(genero, ["biograf"])) {   // biografía / biográfica / biográfico
     moods.push("biografias");
   }
 
@@ -1793,9 +1796,9 @@ function clasificarMoodsBase(item) {
     moods.push("lujo");
   }
 
-  /* ── Algo diferente: animación, tono surrealista/teatral/absurdo,
-     o red de seguridad para lo que no calzó en ninguna otra ── */
-  if (m(genero, ["animación"]) || m(tono, ["surrealista","teatral","absurdo"])) {
+  /* ── Algo diferente: tono surrealista/teatral/absurdo
+     (y, en clasificarMoods, la red de seguridad para lo que no calzó en ninguna otra) ── */
+  if (m(tono, ["surrealista","teatral","absurdo"])) {
     moods.push("diferente");
   }
 
