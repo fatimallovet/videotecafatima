@@ -1017,6 +1017,126 @@ body { padding-left: var(--sidebar-w); }
 }
 
 /* ══════════════════════════════════════
+   PORTADA — la última agregada (Películas y Series)
+   El fondo es el propio póster desenfocado, así cada una tiene su color.
+   ══════════════════════════════════════ */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-sizing: border-box;
+  max-width: var(--ancho-contenido);
+  min-height: 270px;
+  margin: 0 auto 22px;
+  padding: 36px 48px;
+  border-radius: 22px;
+  background: #efe5d6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.hero[hidden] { display: none; }
+
+.hero-bg {
+  position: absolute;
+  inset: -60px;
+  z-index: -2;
+  background-image: var(--hero-img);
+  background-size: cover;
+  background-position: center;
+  filter: blur(42px) saturate(1.15);
+  opacity: 0.7;
+}
+/* Velo crema para que el texto siempre se lea, sea cual sea el póster */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(100deg, rgba(247,243,236,0.94) 0%, rgba(247,243,236,0.78) 52%, rgba(247,243,236,0.42) 100%);
+}
+
+.hero-texto { max-width: 560px; min-width: 0; }
+
+.hero-kicker {
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9b3f5c;
+}
+.hero-titulo {
+  margin: 0 0 10px;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 4.2vw, 3.6rem);
+  line-height: 1.02;
+  color: #1f1f1f;
+}
+.hero-meta {
+  margin-bottom: 12px;
+  font-size: 0.86rem;
+  color: #6f6759;
+}
+.hero-resena {
+  margin: 0 0 18px;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.38;
+  color: #3a342b;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hero-acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-btn {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.18s;
+}
+.hero-btn--ver { background: #2a2623; color: #fbf4ea; }
+.hero-btn--ver:hover { background: #46403a; }
+.hero-btn--guardar { background: rgba(255,255,255,0.35); border-color: #cfc6b4; color: #2a2623; }
+.hero-btn--guardar:hover { background: rgba(255,255,255,0.7); }
+.hero-btn--guardar.activo { background: #f6e8ed; border-color: #e3c5cf; color: #9b3f5c; }
+
+.hero-poster {
+  flex-shrink: 0;
+  width: 156px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  margin-right: 12px;
+  border-radius: 10px;
+  transform: rotate(3deg);
+  box-shadow: 0 18px 36px rgba(60,40,20,0.32);
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+.hero-poster:hover { transform: rotate(1deg) translateY(-4px); }
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 0;
+    padding: 20px 18px;
+    gap: 14px;
+    border-radius: 18px;
+  }
+  .hero-titulo { font-size: 1.9rem; }
+  .hero-resena { display: none; }   /* en el teléfono, la reseña vive en la ficha */
+  .hero-btn { padding: 8px 14px; font-size: 0.8rem; }
+  .hero-poster { width: 88px; margin-right: 0; }
+}
+
+/* ══════════════════════════════════════
    BUSCADOR + ORDEN
    Campo y selector comparten alto (46px), radio y borde.
    ══════════════════════════════════════ */
@@ -1094,6 +1214,14 @@ body { padding-left: var(--sidebar-w); }
 .clear-btn .ico { width: 16px; height: 16px; }
 .buscador:placeholder-shown ~ .clear-btn { display: none; }
 
+.ct-resultados {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-size: 0.8rem;
+  color: #8a8478;
+  white-space: nowrap;
+}
+
 .orden-select {
   flex-shrink: 0;
   padding: 0 34px 0 14px;
@@ -1113,6 +1241,7 @@ body { padding-left: var(--sidebar-w); }
     gap: 8px;
   }
   .buscador-wrapper { flex: 1 1 100%; } /* el campo ocupa su propia fila */
+  .ct-resultados { flex: 1 1 100%; order: 3; padding: 0 2px; }
   .orden-select {
     flex: 1 1 auto;
     font-size: 0.86rem;

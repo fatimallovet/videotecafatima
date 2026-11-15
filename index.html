@@ -14,7 +14,7 @@
   </script>
   <title>Videoteca Fátima</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 
 
 <!-- Favicon -->
@@ -83,6 +83,9 @@
 <!-- PELÍCULAS -->
 <section id="peliculas" class="tab visible">
 
+  <!-- Portada: la última agregada (la construye script.js) -->
+  <div class="hero" id="hero-peliculas" hidden></div>
+
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
       <svg class="ico buscador-ico" aria-hidden="true"><use href="#i-search"/></svg>
@@ -94,6 +97,7 @@
       <option value="calificacion">Calificación ↓</option>
       <option value="anio">Año ↓</option>
     </select>
+    <span class="ct-resultados" id="ct-peliculas"></span>
   </div>
 
   <div id="cardsPeliculas" class="cards-grid"></div>
@@ -101,6 +105,9 @@
 
 <!-- SERIES -->
 <section id="series" class="tab">
+
+  <!-- Portada: la última agregada (la construye script.js) -->
+  <div class="hero" id="hero-series" hidden></div>
 
   <div class="controles-wrapper">
     <div class="buscador-wrapper">
@@ -113,6 +120,7 @@
       <option value="calificacion">Calificación ↓</option>
       <option value="anio">Año ↓</option>
     </select>
+    <span class="ct-resultados" id="ct-series"></span>
   </div>
 
   <div id="cardsSeries" class="cards-grid"></div>
