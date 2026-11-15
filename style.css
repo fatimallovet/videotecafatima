@@ -819,10 +819,9 @@ body { padding-left: var(--sidebar-w); }
 .info-hero { flex: 1 1 260px; max-width: 340px; }
 .info-logo {
   display: block;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  margin-bottom: 18px;
+  width: 88px;
+  height: 88px;
+  margin: -8px 0 10px -6px;   /* el boleto no tiene cuadro: se alinea al texto sin parecer sangrado */
 }
 .info-hero h2 {
   margin: 0 0 6px;
