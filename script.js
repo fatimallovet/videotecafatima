@@ -793,11 +793,16 @@ function textoCompartir(d) {
   return _cabeceraWA(_datosFichaWA(d))[0] + "\n\nReseña completa y dónde verla 👇";
 }
 
-/* ¿Este navegador puede mandar una imagen junto con texto desde el menú de compartir del sistema?
-   (celulares y también Safari/Chrome recientes en Mac y Windows) */
+/* ¿Se puede mandar una imagen junto con texto desde el menú de compartir del sistema?
+   Solo en dispositivos TÁCTILES (iPhone, iPad, Android). En la Mac/PC el menú del sistema deja la imagen
+   duplicada en algunas apps y WhatsApp ignora el texto al pegar imagen + texto, así que ahí se comparte
+   solo el enlace (WhatsApp y compañía arman la tarjeta de vista previa con el póster). */
 function _puedeCompartirImagen() {
   try {
-    return !!navigator.canShare && navigator.canShare({ files: [new File(["x"], "a.png", { type: "image/png" })] });
+    var tactil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                 (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+    return tactil && !!navigator.canShare &&
+           navigator.canShare({ files: [new File(["x"], "a.png", { type: "image/png" })] });
   } catch (e) { return false; }
 }
 
@@ -821,36 +826,22 @@ function precargarImagenFicha(d) {
   }, 500);
 }
 
-/* Compartir SIEMPRE = imagen + texto juntos, en un solo toque (ficha y lista de deseos):
-   · Con menú de compartir del sistema que acepta archivos (celulares, Safari/Chrome recientes):
-     se abre con la imagen y el texto (el enlace va DENTRO del texto: con archivos varias apps descartan `url`).
-   · Sin él: copia al portapapeles la imagen Y el texto en un mismo ClipboardItem. Se le pasa la PROMESA
-     de la imagen en el mismo clic, para no perder el permiso del gesto del usuario.
-   · Si nada de eso funciona, llama a `alFallar` (compartir/copiar solo texto).
+/* Compartir = imagen + texto juntos en un solo toque (ficha y lista de deseos):
+   · En el celular/tablet: menú del sistema con la imagen y el texto (el enlace va DENTRO del texto:
+     con archivos varias apps descartan `url`).
+   · En escritorio, o si eso falla: se llama a `alFallar` (solo texto/enlace).
    `listo` = la imagen ya está generada (no hace falta avisar «Preparando…»). */
 function _compartirImagenYTexto(promesaImg, nombre, titulo, texto, listo, alFallar) {
-  if (_puedeCompartirImagen()) {
-    if (!listo) mostrarToast("Preparando la imagen… 🖼️");
-    promesaImg.then(function(blob) {
-      var datos = { files: [new File([blob], nombre, { type: "image/png" })], title: titulo, text: texto };
-      if (!navigator.canShare(datos)) throw new Error("no-compartible");
-      return navigator.share(datos);
-    }).catch(function(err) {
-      if (err && err.name === "AbortError") return;   // cancelar el menú no es un error
-      alFallar();
-    });
-    return;
-  }
-  if (navigator.clipboard && window.ClipboardItem) {
-    navigator.clipboard.write([ new ClipboardItem({
-      "image/png":  promesaImg,
-      "text/plain": promesaImg.then(function() { return new Blob([texto], { type: "text/plain" }); })
-    }) ])
-      .then(function() { mostrarToast("¡Imagen y texto copiados! Pégalos donde quieras 📋"); })
-      .catch(alFallar);
-    return;
-  }
-  alFallar();
+  if (!_puedeCompartirImagen()) { alFallar(); return; }
+  if (!listo) mostrarToast("Preparando la imagen… 🖼️");
+  promesaImg.then(function(blob) {
+    var datos = { files: [new File([blob], nombre, { type: "image/png" })], title: titulo, text: texto };
+    if (!navigator.canShare(datos)) throw new Error("no-compartible");
+    return navigator.share(datos);
+  }).catch(function(err) {
+    if (err && err.name === "AbortError") return;   // cancelar el menú no es un error
+    alFallar();
+  });
 }
 
 /* Solo texto: menú del sistema, o copiar si no existe. `url` opcional (título, texto y enlace por
@@ -876,7 +867,7 @@ function compartirEnlace(d) {
   var url    = urlCompartirFicha(d);
   var texto  = textoCompartir(d) + "\n" + url;
   var listo  = !!_imgFicha.promesa && _imgFicha.clave === d["Tipo"] + "|" + tituloOrig;
-  _compartirImagenYTexto(_imagenFichaPromesa(d), nombre, titulo, texto, listo, function() {
+  _compartirImagenYTexto(_puedeCompartirImagen() ? _imagenFichaPromesa(d) : null, nombre, titulo, texto, listo, function() {
     _compartirSoloTexto(titulo, textoCompartir(d), url, texto);
   });
 }
@@ -1431,7 +1422,7 @@ function textoLista() {
 function compartirListaCompleta() {
   if (_deseos.length === 0) return;
   var texto = textoLista();
-  _compartirImagenYTexto(generarImagenInfo(), "videoteca-fatima.png", "Mi lista por ver — Videoteca Fátima", texto, false,
+  _compartirImagenYTexto(_puedeCompartirImagen() ? generarImagenInfo() : null, "videoteca-fatima.png", "Mi lista por ver — Videoteca Fátima", texto, false,
     function() { _compartirSoloTexto("Mi lista por ver — Videoteca Fátima", texto, "", texto); });
 }
 
