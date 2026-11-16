@@ -164,14 +164,29 @@ function renderizar(tipo) {
 }
 
 /* ══════════════════════════════════════
-   PORTADA — «Destacadas»: las mejor calificadas de cada sección, rotando
+   PORTADA — «Te recomiendo»: títulos bien calificados de cada sección, al azar y rotando
    ══════════════════════════════════════ */
-var HERO_CUANTAS = 5;        // cuántas destacadas rotan
+var HERO_CUANTAS = 10;       // cuántas rotan
 var HERO_SEGUNDOS = 7;       // cuánto dura cada una
+var HERO_NOTA_MIN = 8;       // calificación mínima para entrar
 
-/* Las mejor calificadas; si empatan, la más reciente (No. más alto) */
-function _destacadas(data) {
-  return ordenarData(data, "calificacion").slice(0, HERO_CUANTAS);
+/* Elige HERO_CUANTAS al azar entre las de nota >= HERO_NOTA_MIN. Se baraja una sola vez por visita
+   (se guarda por tipo): construirHero se vuelve a llamar al llegar streaming.json y no debe reordenar. */
+var _heroElegidas = {};
+function _destacadas(data, tipo) {
+  var previa = _heroElegidas[tipo];
+  if (previa && previa.fuente === data) return previa.items;
+  var buenas = data.filter(function(it) {
+    var n = parseFloat(String(campo(it, ["Calificación","Calificacion"])).replace(",", "."));
+    return n >= HERO_NOTA_MIN;
+  });
+  for (var i = buenas.length - 1; i > 0; i--) {          // Fisher-Yates
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = buenas[i]; buenas[i] = buenas[j]; buenas[j] = t;
+  }
+  var items = buenas.slice(0, HERO_CUANTAS);
+  _heroElegidas[tipo] = { fuente: data, items: items };
+  return items;
 }
 
 function _nodo(tag, clase, texto) {
@@ -199,13 +214,10 @@ function _crearSlideHero(item, tipo) {
   var slide = _nodo("div", "hero-slide");
   slide.dataset.titulo = titulo;
   function fondoHero(u) { slide.style.setProperty("--hero-img", 'url("' + String(u).replace(/"/g, "%22") + '")'); }
-  if (poster) {
-    fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
-    slide.appendChild(_nodo("div", "hero-bg"));
-  }
+  if (poster) slide.appendChild(_nodo("div", "hero-bg"));
 
   var tx = _nodo("div", "hero-texto");
-  tx.appendChild(_nodo("div", "hero-kicker", "Destacadas"));
+  tx.appendChild(_nodo("div", "hero-kicker", "Te recomiendo"));
   tx.appendChild(_nodo("h2", "hero-titulo", titulo));
   if (meta) tx.appendChild(_nodo("div", "hero-meta", meta));
   if (extracto) tx.appendChild(_nodo("p", "hero-resena", "“" + extracto + "”"));
@@ -227,7 +239,6 @@ function _crearSlideHero(item, tipo) {
   if (poster) {
     var img = _nodo("img", "hero-poster");
     var urlHero = urlPosterTMDB(poster, "w500");
-    img.src = urlHero;
     img.alt = titulo;
     img.addEventListener("click", function() { abrirFicha(datos); });
     img.addEventListener("error", function() {
@@ -235,6 +246,13 @@ function _crearSlideHero(item, tipo) {
       else img.remove();
     });
     slide.appendChild(img);
+    /* Los pósters se piden solo cuando la diapositiva está por verse (la actual y la siguiente) */
+    slide._cargar = function() {
+      if (slide._cargada) return;
+      slide._cargada = true;
+      fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
+      img.src = urlHero;
+    };
   }
   return slide;
 }
@@ -245,7 +263,7 @@ function construirHero(tipo) {
   var el = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
   if (!el || !data.length) return;
 
-  var items = _destacadas(data);
+  var items = _destacadas(data, tipo);
   var actual = Math.min(Number(el.dataset.actual || 0), items.length - 1);
   clearInterval(el._timer);
 
@@ -256,18 +274,29 @@ function construirHero(tipo) {
   slides.forEach(function(sl) { caja.appendChild(sl); });
   el.appendChild(caja);
 
-  var puntos = [];
+  var contador = null;
   if (items.length > 1) {
-    var nav = _nodo("div", "hero-puntos");
-    items.forEach(function(item, i) {
-      var b = _nodo("button", "hero-punto");
-      b.type = "button";
-      b.setAttribute("aria-label", "Destacada " + (i + 1) + " de " + items.length);
-      b.addEventListener("click", function() { mostrar(i); programar(); });
-      nav.appendChild(b);
-      puntos.push(b);
-    });
+    var nav = _nodo("div", "hero-nav");
+    var ant = _nodo("button", "hero-flecha");
+    ant.type = "button";
+    ant.setAttribute("aria-label", "Recomendación anterior");
+    ant.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-chevron-left"/></svg>';
+    ant.addEventListener("click", function() { mostrar(actual - 1); programar(); });
+    var sig = _nodo("button", "hero-flecha");
+    sig.type = "button";
+    sig.setAttribute("aria-label", "Recomendación siguiente");
+    sig.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>';
+    sig.addEventListener("click", function() { mostrar(actual + 1); programar(); });
+    contador = _nodo("span", "hero-contador");
+    nav.appendChild(ant);
+    nav.appendChild(contador);
+    nav.appendChild(sig);
     el.appendChild(nav);
+    /* Teclado: ← y → cuando el foco está dentro del banner */
+    el.addEventListener("keydown", function(e) {
+      if (e.key === "ArrowLeft")  { mostrar(actual - 1); programar(); }
+      else if (e.key === "ArrowRight") { mostrar(actual + 1); programar(); }
+    });
   }
 
   function mostrar(i) {
@@ -278,7 +307,8 @@ function construirHero(tipo) {
       sl.setAttribute("aria-hidden", k === actual ? "false" : "true");
       sl.querySelectorAll("button, img").forEach(function(x) { x.tabIndex = k === actual ? 0 : -1; });
     });
-    puntos.forEach(function(b, k) { b.classList.toggle("activo", k === actual); });
+    if (contador) contador.textContent = (actual + 1) + " / " + slides.length;
+    [actual, (actual + 1) % slides.length].forEach(function(k) { if (slides[k]._cargar) slides[k]._cargar(); });
   }
 
   /* Rota sola, salvo que haya movimiento reducido, la persona esté encima o la sección no se vea */
