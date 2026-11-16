@@ -2,8 +2,8 @@ name: Actualizar disponibilidad de streaming
 
 on:
   schedule:
-    # Todos los lunes a las 09:00 UTC (~03:00 hora de CDMX)
-    - cron: "0 9 * * 1"
+    # Todos los días a las 09:00 UTC (~03:00 hora de CDMX)
+    - cron: "0 9 * * *"
   workflow_dispatch: {} # permite correrlo manualmente desde la pestaña "Actions"
 
 permissions:
