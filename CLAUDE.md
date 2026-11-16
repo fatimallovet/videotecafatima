@@ -8,7 +8,7 @@ Proyecto hermano: **Biblioteca Fátima** (catálogo de libros, mismo estilo; chi
 - SPA en **HTML/CSS/JS vanilla**, sin frameworks ni build. Archivos principales: `index.html`, `style.css`, `script.js`.
 - Hosting: **GitHub Pages** (lo que está en `main` es lo que está publicado).
 - Datos: **dos Google Sheets publicadas como CSV**, parseadas con **PapaParse**. Los datos se editan en la hoja, no en el repo.
-- `streaming.json`: lo genera un **GitHub Action semanal** que corre `update-streaming.js` (Node). Consulta la **TMDB API v3** con los IDs de IMDB y hace commit del resultado automáticamente. El frontend lo carga en paralelo con los CSV.
+- `streaming.json`: lo genera un **GitHub Action diario** (09:00 UTC; también manual) que corre `update-streaming.js` (Node). Consulta la **TMDB API v3** con los IDs de IMDB y hace commit del resultado automáticamente. El frontend lo carga en paralelo con los CSV.
 - `info.html`: se carga con fetch y se inyecta como fragmento (sección **Info**: presentación, «Cómo usarla», «Tu lista de deseos», «Instálala en tu celular» y tres tarjetas finales de Biblioteca, Apoyar y contacto). **Una sola columna centrada de 880px**: todo comparte el mismo eje (decidido: la versión de dos columnas «se veía mezclada y descentrada»); los títulos de sección van centrados en Instrument Serif, y las tarjetas de cada fila miden lo mismo (cuadrículas `.info-grid--3`/`--2`; las tres finales usan flex centrado para que la fila incompleta no quede suelta). Usa tarjetas e iconos de línea como el resto: sus iconos salen del sprite de `index.html` (`<use href="#i-...">`), así que un icono nuevo se agrega allí. **Sus instrucciones describen la navegación actual (barra lateral, «Mi lista», compartir): revísalas cada vez que cambie el menú.** Ya no se usa la fuente Cookie.
 - Analítica: GA4 (**solo en `index.html`**, porque `info.html` es un fragmento) + Cloudflare Web Analytics.
 
@@ -47,7 +47,7 @@ Proyecto hermano: **Biblioteca Fátima** (catálogo de libros, mismo estilo; chi
 ## Git
 - Antes trabajaba solo desde la interfaz web de GitHub. Mezclar subidas web con commits locales causó divergencias (la carpeta local estaba ligada por error a `bibliotecafa.git`).
 - En Claude Code: **haz `git pull` antes de empezar**, trabaja en una rama y abre un PR; yo lo reviso y hago merge en GitHub. No hagas push directo a `main` sin que te lo pida.
-- El Action semanal hace commits de `streaming.json` en `main`; ten esto en cuenta para evitar conflictos.
+- El Action diario hace commits de `streaming.json` en `main`; ten esto en cuenta para evitar conflictos.
 
 ## Respaldos
 - Respaldos manuales en «Respaldo Videoteca», en el Escritorio de mi Mac (código + copias de la hoja).
