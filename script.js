@@ -821,60 +821,64 @@ function precargarImagenFicha(d) {
   }, 500);
 }
 
-/* Solo el enlace: menú del sistema (título, texto y enlace por separado para que no salga duplicado)
-   o, si no existe, copia texto + enlace. */
-function _compartirSoloEnlace(d) {
-  var url   = urlCompartirFicha(d);
-  var texto = textoCompartir(d);
-  function copiar() { _copiarAlPortapapeles(texto + "\n" + url, "¡Enlace copiado! Pégalo donde quieras 🔗"); }
+/* Compartir SIEMPRE = imagen + texto juntos, en un solo toque (ficha y lista de deseos):
+   · Con menú de compartir del sistema que acepta archivos (celulares, Safari/Chrome recientes):
+     se abre con la imagen y el texto (el enlace va DENTRO del texto: con archivos varias apps descartan `url`).
+   · Sin él: copia al portapapeles la imagen Y el texto en un mismo ClipboardItem. Se le pasa la PROMESA
+     de la imagen en el mismo clic, para no perder el permiso del gesto del usuario.
+   · Si nada de eso funciona, llama a `alFallar` (compartir/copiar solo texto).
+   `listo` = la imagen ya está generada (no hace falta avisar «Preparando…»). */
+function _compartirImagenYTexto(promesaImg, nombre, titulo, texto, listo, alFallar) {
+  if (_puedeCompartirImagen()) {
+    if (!listo) mostrarToast("Preparando la imagen… 🖼️");
+    promesaImg.then(function(blob) {
+      var datos = { files: [new File([blob], nombre, { type: "image/png" })], title: titulo, text: texto };
+      if (!navigator.canShare(datos)) throw new Error("no-compartible");
+      return navigator.share(datos);
+    }).catch(function(err) {
+      if (err && err.name === "AbortError") return;   // cancelar el menú no es un error
+      alFallar();
+    });
+    return;
+  }
+  if (navigator.clipboard && window.ClipboardItem) {
+    navigator.clipboard.write([ new ClipboardItem({
+      "image/png":  promesaImg,
+      "text/plain": promesaImg.then(function() { return new Blob([texto], { type: "text/plain" }); })
+    }) ])
+      .then(function() { mostrarToast("¡Imagen y texto copiados! Pégalos donde quieras 📋"); })
+      .catch(alFallar);
+    return;
+  }
+  alFallar();
+}
+
+/* Solo texto: menú del sistema, o copiar si no existe. `url` opcional (título, texto y enlace por
+   separado para que no salga duplicado). */
+function _compartirSoloTexto(titulo, texto, url, textoCopiable) {
+  function copiar() { _copiarAlPortapapeles(textoCopiable, "¡Copiado! Pégalo donde quieras 📋"); }
   if (navigator.share) {
-    navigator.share({ title: _waLimpio(campo(d, ["Título","Titulo"])), text: texto, url: url }).catch(function(err) {
-      if (!err || err.name !== "AbortError") copiar();   // cancelar el menú no es un error
+    var datos = { title: titulo, text: texto };
+    if (url) datos.url = url;
+    navigator.share(datos).catch(function(err) {
+      if (!err || err.name !== "AbortError") copiar();
     });
   } else {
     copiar();
   }
 }
 
-/* Compartir una ficha = SIEMPRE imagen + enlace juntos, en un solo toque:
-   · Con menú de compartir del sistema que acepta archivos (celulares, Safari/Chrome recientes):
-     se abre con la imagen de la ficha y, como texto, el título + el enlace que abre la ficha completa.
-   · Sin él (p. ej. Firefox o Chrome de escritorio antiguo): copia al portapapeles la imagen Y el enlace
-     en un mismo elemento (ClipboardItem con image/png + text/plain). Se le pasa la PROMESA de la imagen
-     en el mismo clic, para no perder el permiso del gesto.
-   · Si nada de eso funciona: comparte/copia solo el enlace. */
+/* Compartir una ficha: imagen de la ficha + título + enlace que abre la ficha completa */
 function compartirEnlace(d) {
-  var titulo = _waLimpio(campo(d, ["Título","Titulo"]));
-  var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
-  var texto  = textoCompartir(d) + "\n" + urlCompartirFicha(d);
-
-  if (_puedeCompartirImagen()) {
-    var listo = _imgFicha.clave === d["Tipo"] + "|" + campo(d, ["Título","Titulo"]) && _imgFicha.promesa;
-    if (!listo) mostrarToast("Preparando la imagen… 🖼️");
-    _imagenFichaPromesa(d).then(function(blob) {
-      var file = new File([blob], nombre, { type: "image/png" });
-      /* El enlace va dentro del texto (no como `url`): con archivos, varias apps descartan el campo `url` */
-      var datos = { files: [file], title: titulo, text: texto };
-      if (!navigator.canShare(datos)) throw new Error("no-compartible");
-      return navigator.share(datos);
-    }).catch(function(err) {
-      if (err && err.name === "AbortError") return;   // cancelar el menú no es un error
-      _compartirSoloEnlace(d);
-    });
-    return;
-  }
-
-  if (navigator.clipboard && window.ClipboardItem) {
-    var promesa = _imagenFichaPromesa(d);
-    navigator.clipboard.write([ new ClipboardItem({
-      "image/png":  promesa,
-      "text/plain": promesa.then(function() { return new Blob([texto], { type: "text/plain" }); })
-    }) ])
-      .then(function() { mostrarToast("¡Imagen y enlace copiados! Pégalos donde quieras 🔗"); })
-      .catch(function() { _compartirSoloEnlace(d); });
-    return;
-  }
-  _compartirSoloEnlace(d);
+  var tituloOrig = campo(d, ["Título","Titulo"]);
+  var titulo = _waLimpio(tituloOrig);
+  var nombre = (tituloOrig || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
+  var url    = urlCompartirFicha(d);
+  var texto  = textoCompartir(d) + "\n" + url;
+  var listo  = !!_imgFicha.promesa && _imgFicha.clave === d["Tipo"] + "|" + tituloOrig;
+  _compartirImagenYTexto(_imagenFichaPromesa(d), nombre, titulo, texto, listo, function() {
+    _compartirSoloTexto(titulo, textoCompartir(d), url, texto);
+  });
 }
 
 function compartirTitulo() { compartirEnlace(_itemActual); }
@@ -884,123 +888,6 @@ function mostrarToast(msg) {
   t.textContent = msg;
   t.classList.add("visible");
   setTimeout(function() { t.classList.remove("visible"); }, 2800);
-}
-
-/* ══════════════════════════════════════
-   MENÚ "COMPARTIR" — texto o imagen (solo para la lista de deseos; las fichas comparten imagen + enlace juntos)
-   Overlay centrado (no depende de la posición de ningún botón,
-   así siempre queda visible por encima del modal / panel de deseos).
-   ══════════════════════════════════════ */
-var _menuCompartirFondo = null;
-
-function mostrarMenuCompartir(anchorEl, handlers) {
-  cerrarMenuCompartir();
-
-  var fondo = document.createElement("div");
-  fondo.className = "menu-compartir-fondo";
-
-  var menu = document.createElement("div");
-  menu.className = "menu-compartir";
-  menu.innerHTML =
-    '<div class="menu-compartir-titulo">¿Cómo quieres compartir?</div>' +
-    '<button class="menu-compartir-op" data-op="texto">📝 Como texto</button>' +
-    '<button class="menu-compartir-op" data-op="imagen">🖼️ Como imagen</button>' +
-    '<button class="menu-compartir-cancelar" data-op="cancelar">Cancelar</button>';
-
-  fondo.appendChild(menu);
-  document.body.appendChild(fondo);
-
-  fondo.addEventListener("click", function(ev) {
-    if (ev.target === fondo) cerrarMenuCompartir();
-  });
-
-  menu.querySelector('[data-op="texto"]').addEventListener("click", function(ev) {
-    ev.stopPropagation();
-    cerrarMenuCompartir();
-    handlers.texto();
-  });
-  menu.querySelector('[data-op="imagen"]').addEventListener("click", function(ev) {
-    ev.stopPropagation();
-    cerrarMenuCompartir();
-    handlers.imagen();
-  });
-  menu.querySelector('[data-op="cancelar"]').addEventListener("click", function(ev) {
-    ev.stopPropagation();
-    cerrarMenuCompartir();
-  });
-
-  _menuCompartirFondo = fondo;
-}
-
-function cerrarMenuCompartir() {
-  if (_menuCompartirFondo) {
-    _menuCompartirFondo.remove();
-    _menuCompartirFondo = null;
-  }
-}
-
-/* ══════════════════════════════════════
-   COMPARTIR — texto directo (share nativo o portapapeles)
-   ══════════════════════════════════════ */
-function _compartirTextoDirecto(texto) {
-  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if (esMobil && navigator.share) {
-    navigator.share({ text: texto }).catch(function(){});
-  } else {
-    _copiarAlPortapapeles(texto);
-  }
-}
-
-/* ══════════════════════════════════════
-   COMPARTIR — archivo de imagen (share nativo, portapapeles o descarga)
-   ══════════════════════════════════════ */
-/* En escritorio, navigator.clipboard.write() SOLO funciona si se invoca
-   de inmediato dentro del clic del usuario. Si esperamos a que la imagen
-   termine de generarse (cargar póster, fuentes, etc.) antes de llamarlo,
-   el navegador ya no lo permite y falla en silencio. Por eso aquí llamamos
-   a clipboard.write() ya mismo, pasándole la PROMESA de la imagen — el
-   navegador espera a que resuelva sin perder el permiso del clic. */
-function _compartirImagenDesdePromesa(promesaBlob, nombreArchivo, textoAlt) {
-  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  if (!esMobil && navigator.clipboard && window.ClipboardItem) {
-    navigator.clipboard.write([ new ClipboardItem({ "image/png": promesaBlob }) ])
-      .then(function() { mostrarToast("¡Imagen copiada! Pégala donde quieras 🖼️"); })
-      .catch(function() {
-        promesaBlob.then(function(blob) { _descargarImagen(blob, nombreArchivo); })
-          .catch(function() { mostrarToast("No se pudo generar la imagen 😕"); });
-      });
-    return;
-  }
-
-  promesaBlob.then(function(blob) {
-    _compartirArchivoImagen(blob, nombreArchivo, textoAlt);
-  }).catch(function() {
-    mostrarToast("No se pudo generar la imagen 😕");
-  });
-}
-
-function _compartirArchivoImagen(blob, nombreArchivo, textoAlt) {
-  var esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  var file    = new File([blob], nombreArchivo, { type: "image/png" });
-
-  if (esMobil && navigator.canShare && navigator.canShare({ files: [file] })) {
-    navigator.share({ files: [file], text: textoAlt }).catch(function(err) {
-      if (!err || err.name !== "AbortError") _descargarImagen(blob, nombreArchivo);
-    });
-    return;
-  }
-
-  _descargarImagen(blob, nombreArchivo);
-}
-
-function _descargarImagen(blob, nombreArchivo) {
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url; a.download = nombreArchivo;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function() { URL.revokeObjectURL(url); }, 2000);
-  mostrarToast("Imagen descargada 📥");
 }
 
 /* ══════════════════════════════════════
@@ -1083,19 +970,6 @@ function _redondeado(ctx, x, y, w, h, r) {
 function _oraciones(texto) {
   return texto.match(/[\s\S]+?[.!?…]+["”»)]*(?=\s|$)|[\s\S]+$/g) || [texto];
 }
-
-/* Divide un texto en oraciones (no corta en abreviaturas como "EE.UU." ni en "6.5") */
-function _oraciones(texto) {
-  return texto.match(/[\s\S]+?[.!?…]+["”»)]*(?=\s|$)|[\s\S]+$/g) || [texto];
-}
-
-/* ── Ficha individual → imagen para compartir ──
-   Formato fijo 4:5 (1080×1350). Los chats muestran una imagen 4:5 completa y a todo el
-   ancho, así que el texto conserva siempre el mismo tamaño aparente, sin importar lo larga
-   que sea la reseña (antes el alto crecía sin límite y los chats la encogían).
-   Arriba: póster + datos. Debajo: reseña centrada. Si la reseña no cabe ni con la letra
-   más pequeña, se corta en la última oración completa que quepa y se marca con "[…]". */
-var IMG_FICHA = { W: 1080, H: 1350, pad: 72, footerH: 100, posterW: 300, posterH: 450 };
 
 /* ── Ficha individual → imagen para compartir ──
    Formato fijo 4:5 (1080×1350): los chats la muestran completa y a todo el ancho, así el texto
@@ -1376,124 +1250,45 @@ function generarImagenFicha(d, forzarSinPoster) {
   });
 }
 
-/* Lista de deseos → imagen (miniatura + título + tipo + año + género + calificación) */
-function generarImagenLista() {
-  var W = 720;
-  var filaAltura   = 84;
-  var headerAltura = 116;
-  var footerAltura = 74;
-  var thumbW = 48, thumbH = 72;
-  var padX = 28;
-
-  var deseos = _deseos.map(_enriquecerDeseo);
-  var H = headerAltura + (deseos.length * filaAltura) + footerAltura + 16;
-
-  var fontsListos = (document.fonts && document.fonts.ready) || Promise.resolve();
-  var cargaPosters = Promise.all(deseos.map(function(item) {
-    return item.poster ? _cargarPoster(item.poster, "w185").catch(function() { return null; }) : Promise.resolve(null);
-  }));
-
-  return Promise.all([cargaPosters, fontsListos]).then(function(res) {
-    var posters = res[0];
+/* Encabezado de la sección Info → imagen que acompaña a la lista de deseos compartida.
+   Mismo encabezado que Info: logo del boleto, «Sobre este proyecto» y el título en serif, sobre crema. */
+function generarImagenInfo() {
+  var W = 1200, H = 630, cx = W / 2;
+  var fonts = (document.fonts && document.fonts.load)
+    ? Promise.all([document.fonts.load('400 80px "Instrument Serif"'), document.fonts.load('600 24px Poppins'), document.fonts.load('400 24px Poppins')]).catch(function() {})
+    : Promise.resolve();
+  return Promise.all([_cargarImagen("favicon.svg").catch(function() { return null; }), fonts]).then(function(res) {
+    var logo = res[0];
     var canvas = document.createElement("canvas");
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext("2d");
+    ctx.textBaseline = "top"; ctx.textAlign = "center";
 
-    var gFondo = ctx.createLinearGradient(0,0,0,H);
-    gFondo.addColorStop(0, "#3a3833");
-    gFondo.addColorStop(1, "#1e1c19");
-    ctx.fillStyle = gFondo;
-    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = "#f4f1ea"; ctx.fillRect(0, 0, W, H);
+    var g = ctx.createRadialGradient(W * 0.85, 0, 0, W * 0.85, 0, 640);   // velo vino muy suave, como la imagen del sitio
+    g.addColorStop(0, "rgba(155,63,92,0.13)"); g.addColorStop(1, "rgba(155,63,92,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-    ctx.textAlign = "left";
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "700 30px Poppins, sans-serif";
-    ctx.fillText("🎬 Mi lista de deseos", padX, 54);
-    ctx.fillStyle = "rgba(255,255,255,0.65)";
-    ctx.font = "400 18px Poppins, sans-serif";
-    ctx.fillText("Videoteca Fátima  ·  " + deseos.length + " título" + (deseos.length === 1 ? "" : "s"), padX, 82);
+    if (logo) ctx.drawImage(logo, cx - 70, 62, 140, 140);
 
-    var textX = padX + thumbW + 16;
-    var anchoDisponible = W - textX - padX;
+    ctx.fillStyle = "#9b3f5c"; ctx.font = "600 24px Poppins, sans-serif";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "4px";
+    ctx.fillText("SOBRE ESTE PROYECTO", cx + 2, 226);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
 
-    var y = headerAltura;
-    deseos.forEach(function(item, i) {
-      if (i % 2 === 1) {
-        ctx.fillStyle = "rgba(255,255,255,0.045)";
-        ctx.fillRect(0, y, W, filaAltura);
-      }
+    /* Dos líneas equilibradas (cortadas en la coma), como se lee en el encabezado de Info */
+    var lineas = ["Cine y series,", "vistos y curados por mí"], size = 96;
+    ctx.fillStyle = "#1f1f1f"; ctx.font = "400 " + size + "px \"Instrument Serif\", Georgia, serif";
+    lineas.forEach(function(l, i) { ctx.fillText(l, cx, 270 + i * Math.round(size * 1.04)); });
 
-      var esPeli = item.tipo === "Película" || item.tipo === "Pelicula";
-      var thumbY = y + (filaAltura - thumbH) / 2;
-      var img = posters[i];
-
-      if (img) {
-        /* Fondo del color de género, por si el póster no llena toda la miniatura */
-        ctx.fillStyle = BANDA_COLORES[claseBanda(item.genero || "")] || "#9aab9e";
-        _redondeado(ctx, padX, thumbY, thumbW, thumbH, 7);
-        ctx.fill();
-
-        /* "Contain": se ve la portada completa, sin recortar */
-        var escala = Math.min(thumbW/img.width, thumbH/img.height);
-        var pw = img.width*escala, ph = img.height*escala;
-        var px = padX + (thumbW-pw)/2, py = thumbY + (thumbH-ph)/2;
-        ctx.save();
-        _redondeado(ctx, padX, thumbY, thumbW, thumbH, 7);
-        ctx.clip();
-        ctx.drawImage(img, px, py, pw, ph);
-        ctx.restore();
-      } else {
-        ctx.fillStyle = BANDA_COLORES[claseBanda(item.genero || "")] || "#9aab9e";
-        _redondeado(ctx, padX, thumbY, thumbW, thumbH, 7);
-        ctx.fill();
-        ctx.textAlign = "center";
-        ctx.font = "22px sans-serif";
-        ctx.fillStyle = "rgba(255,255,255,0.75)";
-        ctx.fillText(esPeli ? "🎬" : "📺", padX + thumbW/2, thumbY + thumbH/2 + 8);
-        ctx.textAlign = "left";
-      }
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "600 21px Poppins, sans-serif";
-      var lineaTitulo = _truncarLinea(ctx, (esPeli ? "🎬 " : "📺 ") + item.titulo, anchoDisponible);
-      ctx.fillText(lineaTitulo, textX, y + filaAltura/2 - 6);
-
-      var sub = [
-        item.anio   ? item.anio : "",
-        item.genero ? item.genero.split(",")[0].trim() : "",
-        item.calif  ? "⭐ " + item.calif : ""
-      ].filter(Boolean).join("   ·   ");
-      ctx.fillStyle = "rgba(255,255,255,0.6)";
-      ctx.font = "400 17px Poppins, sans-serif";
-      ctx.fillText(_truncarLinea(ctx, sub, anchoDisponible), textX, y + filaAltura/2 + 20);
-
-      y += filaAltura;
-    });
-
-    ctx.fillStyle = "#556b5d";
-    ctx.fillRect(0, H - footerAltura, W, footerAltura);
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "600 22px Poppins, sans-serif";
-    ctx.fillText("🎬 Videoteca Fátima", W/2, H - footerAltura/2 - 6);
-    ctx.font = "400 16px Poppins, sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
-    ctx.fillText("fatimallovet.github.io/videotecafatima", W/2, H - footerAltura/2 + 18);
+    ctx.fillStyle = "#7a7060"; ctx.font = "400 24px Poppins, sans-serif";
+    ctx.fillText("Videoteca Fátima  ·  fatimallovet.github.io/videotecafatima", cx, H - 58);
 
     return new Promise(function(resolve, reject) {
-      try {
-        canvas.toBlob(function(blob) {
-          if (blob) resolve(blob); else reject(new Error("toBlob-vacio"));
-        }, "image/png");
-      } catch (err) { reject(err); }
+      try { canvas.toBlob(function(b) { if (b) resolve(b); else reject(new Error("toBlob-vacio")); }, "image/png"); }
+      catch (err) { reject(err); }
     });
   });
-}
-
-function _compartirImagenLista() {
-  if (_deseos.length === 0) return;
-  var textoAlt = "🎬 Mi lista de deseos — Videoteca Fátima\n" + URL_SITIO;
-  _compartirImagenDesdePromesa(generarImagenLista(), "mi-lista-videoteca.png", textoAlt);
 }
 
 /* ══════════════════════════════════════
@@ -1595,37 +1390,49 @@ function _enriquecerDeseo(item) {
   };
 }
 
-function compartirItem(titulo) {
-  /* Buscar el item completo en los datos para armar su enlace */
+/* Ficha completa (con Tipo) de un título de la lista, o null */
+function _fichaDeLista(titulo) {
   var encontrado = null;
   dataPeliculas.concat(dataSeries).forEach(function(item) {
     if ((item["Título"] || item["Titulo"] || "") === titulo) encontrado = item;
   });
-  if (!encontrado) { mostrarToast("No encontré los datos de este título 😕"); return; }
+  if (!encontrado) return null;
   var esPeli = dataPeliculas.indexOf(encontrado) !== -1;
-  compartirEnlace(Object.assign({}, encontrado, { Tipo: esPeli ? "Pelicula" : "Serie" }));
+  return Object.assign({}, encontrado, { Tipo: esPeli ? "Pelicula" : "Serie" });
 }
 
-function compartirListaCompleta(e) {
-  if (_deseos.length === 0) return;
-  var anchor = (e && e.currentTarget) || document.querySelector(".deseos-compartir-lista-btn");
+/* Compartir un título desde la lista: igual que desde la ficha (imagen + enlace) */
+function compartirItem(titulo) {
+  var d = _fichaDeLista(titulo);
+  if (!d) { mostrarToast("No encontré los datos de este título 😕"); return; }
+  compartirEnlace(d);
+}
 
-  mostrarMenuCompartir(anchor, {
-    texto: function() {
-      var lineas = _deseos.map(_enriquecerDeseo).map(function(d, i) {
-        var extra = [];
-        if (d.tipo)   extra.push(d.tipo);
-        if (d.anio)   extra.push(d.anio);
-        if (d.genero) extra.push(d.genero.split(",")[0].trim());
-        return (i+1) + ". " + d.titulo + (extra.length ? " (" + extra.join(" · ") + ")" : "");
-      });
-      var texto = "🎬 Mi lista de deseos — Videoteca Fátima\n\n" +
-                  lineas.join("\n") +
-                  "\n\n" + URL_SITIO;
-      _compartirTextoDirecto(texto);
-    },
-    imagen: function() { _compartirImagenLista(); }
-  });
+/* Texto de la lista: películas y series por separado, con año, género y nota. Formato de WhatsApp (*negrita*). */
+function textoLista() {
+  var items = _deseos.map(_enriquecerDeseo);
+  function linea(d) {
+    var extra = [];
+    if (d.anio)   extra.push(d.anio);
+    if (d.genero) extra.push(d.genero.split(",")[0].trim());
+    if (d.calif)  extra.push("⭐ " + d.calif);
+    return "• " + _waLimpio(d.titulo) + (extra.length ? " (" + extra.join(" · ") + ")" : "");
+  }
+  var pelis  = items.filter(function(d) { return d.tipo !== "Serie"; });
+  var series = items.filter(function(d) { return d.tipo === "Serie"; });
+  var partes = ["🎬 *Mi lista por ver* · " + items.length + (items.length === 1 ? " título" : " títulos")];
+  if (pelis.length)  partes.push("*Películas* (" + pelis.length + ")\n"  + pelis.map(linea).join("\n"));
+  if (series.length) partes.push("*Series* ("    + series.length + ")\n" + series.map(linea).join("\n"));
+  partes.push("Reseñas y dónde verlas 👇\n" + URL_SITIO);
+  return partes.join("\n\n");
+}
+
+/* Compartir la lista: el texto con los títulos + la imagen del encabezado de Info */
+function compartirListaCompleta() {
+  if (_deseos.length === 0) return;
+  var texto = textoLista();
+  _compartirImagenYTexto(generarImagenInfo(), "videoteca-fatima.png", "Mi lista por ver — Videoteca Fátima", texto, false,
+    function() { _compartirSoloTexto("Mi lista por ver — Videoteca Fátima", texto, "", texto); });
 }
 
 function _copiarAlPortapapeles(texto, aviso) {
@@ -1707,6 +1514,10 @@ function renderPanelDeseos() {
     row.appendChild(info);
     row.appendChild(acciones);
 
+    row.querySelector(".deseo-compartir-item").addEventListener("pointerdown", function() {
+      var f = _puedeCompartirImagen() && _fichaDeLista(item.titulo);
+      if (f) _imagenFichaPromesa(f).catch(function() {});   // empieza a preparar la imagen antes del clic
+    });
     row.querySelector(".deseo-quitar").addEventListener("click", function() {
       _deseos = _deseos.filter(function(d) { return d.titulo !== item.titulo; });
       guardarDeseos();
