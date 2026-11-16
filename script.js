@@ -793,12 +793,11 @@ function textoCompartir(d) {
   return _cabeceraWA(_datosFichaWA(d))[0] + "\n\nReseña completa y dónde verla 👇";
 }
 
-/* ¿Este dispositivo puede mandar una imagen junto con texto desde el menú del sistema?
-   (celulares: WhatsApp, Mensajes, Telegram…) En escritorio no: ahí se ofrece elegir. */
+/* ¿Este navegador puede mandar una imagen junto con texto desde el menú de compartir del sistema?
+   (celulares y también Safari/Chrome recientes en Mac y Windows) */
 function _puedeCompartirImagen() {
   try {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !!navigator.canShare &&
-           navigator.canShare({ files: [new File(["x"], "a.png", { type: "image/png" })] });
+    return !!navigator.canShare && navigator.canShare({ files: [new File(["x"], "a.png", { type: "image/png" })] });
   } catch (e) { return false; }
 }
 
@@ -837,20 +836,25 @@ function _compartirSoloEnlace(d) {
   }
 }
 
-/* Compartir una ficha:
-   · En el celular, UN toque: se abre el menú del sistema con la imagen de la ficha (lo esencial)
-     y, como texto, el título con el enlace que abre la ficha completa.
-   · En escritorio (no puede mandar imagen + texto a la vez): pregunta si se quiere el enlace o la imagen. */
+/* Compartir una ficha = SIEMPRE imagen + enlace juntos, en un solo toque:
+   · Con menú de compartir del sistema que acepta archivos (celulares, Safari/Chrome recientes):
+     se abre con la imagen de la ficha y, como texto, el título + el enlace que abre la ficha completa.
+   · Sin él (p. ej. Firefox o Chrome de escritorio antiguo): copia al portapapeles la imagen Y el enlace
+     en un mismo elemento (ClipboardItem con image/png + text/plain). Se le pasa la PROMESA de la imagen
+     en el mismo clic, para no perder el permiso del gesto.
+   · Si nada de eso funciona: comparte/copia solo el enlace. */
 function compartirEnlace(d) {
+  var titulo = _waLimpio(campo(d, ["Título","Titulo"]));
+  var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
+  var texto  = textoCompartir(d) + "\n" + urlCompartirFicha(d);
+
   if (_puedeCompartirImagen()) {
-    var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
-    var url    = urlCompartirFicha(d);
-    var listo  = _imgFicha.clave === d["Tipo"] + "|" + campo(d, ["Título","Titulo"]) && _imgFicha.promesa;
+    var listo = _imgFicha.clave === d["Tipo"] + "|" + campo(d, ["Título","Titulo"]) && _imgFicha.promesa;
     if (!listo) mostrarToast("Preparando la imagen… 🖼️");
     _imagenFichaPromesa(d).then(function(blob) {
       var file = new File([blob], nombre, { type: "image/png" });
       /* El enlace va dentro del texto (no como `url`): con archivos, varias apps descartan el campo `url` */
-      var datos = { files: [file], title: _waLimpio(campo(d, ["Título","Titulo"])), text: textoCompartir(d) + "\n" + url };
+      var datos = { files: [file], title: titulo, text: texto };
       if (!navigator.canShare(datos)) throw new Error("no-compartible");
       return navigator.share(datos);
     }).catch(function(err) {
@@ -859,14 +863,18 @@ function compartirEnlace(d) {
     });
     return;
   }
-  mostrarMenuCompartir(null, {
-    etiquetas: { texto: "🔗 Como enlace", imagen: "🖼️ Como imagen" },
-    texto:  function() { _compartirSoloEnlace(d); },
-    imagen: function() {
-      var nombre = (campo(d, ["Título","Titulo"]) || "ficha").replace(/[^\w\-]+/g, "_") + ".png";
-      _compartirImagenDesdePromesa(_imagenFichaPromesa(d), nombre, textoCompartir(d) + "\n" + urlCompartirFicha(d));
-    }
-  });
+
+  if (navigator.clipboard && window.ClipboardItem) {
+    var promesa = _imagenFichaPromesa(d);
+    navigator.clipboard.write([ new ClipboardItem({
+      "image/png":  promesa,
+      "text/plain": promesa.then(function() { return new Blob([texto], { type: "text/plain" }); })
+    }) ])
+      .then(function() { mostrarToast("¡Imagen y enlace copiados! Pégalos donde quieras 🔗"); })
+      .catch(function() { _compartirSoloEnlace(d); });
+    return;
+  }
+  _compartirSoloEnlace(d);
 }
 
 function compartirTitulo() { compartirEnlace(_itemActual); }
@@ -879,7 +887,7 @@ function mostrarToast(msg) {
 }
 
 /* ══════════════════════════════════════
-   MENÚ "COMPARTIR" — dos opciones (lista de deseos: texto o imagen; ficha en escritorio: enlace o imagen)
+   MENÚ "COMPARTIR" — texto o imagen (solo para la lista de deseos; las fichas comparten imagen + enlace juntos)
    Overlay centrado (no depende de la posición de ningún botón,
    así siempre queda visible por encima del modal / panel de deseos).
    ══════════════════════════════════════ */
@@ -893,11 +901,10 @@ function mostrarMenuCompartir(anchorEl, handlers) {
 
   var menu = document.createElement("div");
   menu.className = "menu-compartir";
-  var et = handlers.etiquetas || { texto: "📝 Como texto", imagen: "🖼️ Como imagen" };
   menu.innerHTML =
     '<div class="menu-compartir-titulo">¿Cómo quieres compartir?</div>' +
-    '<button class="menu-compartir-op" data-op="texto">' + et.texto + '</button>' +
-    '<button class="menu-compartir-op" data-op="imagen">' + et.imagen + '</button>' +
+    '<button class="menu-compartir-op" data-op="texto">📝 Como texto</button>' +
+    '<button class="menu-compartir-op" data-op="imagen">🖼️ Como imagen</button>' +
     '<button class="menu-compartir-cancelar" data-op="cancelar">Cancelar</button>';
 
   fondo.appendChild(menu);
