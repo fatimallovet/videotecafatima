@@ -84,10 +84,6 @@ fetch("streaming.json")
   .catch(function() { streamingData = {}; })
   .then(function() {
     _streamingCargado = true;
-    ["Pelicula", "Serie"].forEach(function(t) {
-      var hero = document.getElementById(t === "Pelicula" ? "hero-peliculas" : "hero-series");
-      if (hero && hero.dataset.listo) { var oculto = hero.hidden; construirHero(t); hero.hidden = oculto; }
-    });
     checkFichaPendiente();
   });
 
@@ -154,198 +150,6 @@ function renderizar(tipo) {
       ? filtrados.length + (filtrados.length === 1 ? " resultado" : " resultados")
       : data.length + (esPeli ? " películas" : " series");
   }
-
-  /* La portada solo se ve mientras no se está buscando */
-  var hero = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
-  if (hero) {
-    if (!hero.dataset.listo) construirHero(tipo);
-    hero.hidden = !hero.dataset.listo || !!texto.trim();
-  }
-}
-
-/* ══════════════════════════════════════
-   PORTADA — «Te recomiendo»: títulos bien calificados de cada sección, al azar y rotando
-   ══════════════════════════════════════ */
-var HERO_CUANTAS = 10;       // cuántas rotan
-var HERO_SEGUNDOS = 7;       // cuánto dura cada una
-var HERO_NOTA_MIN = 8;       // calificación mínima para entrar
-
-/* Elige HERO_CUANTAS al azar entre las de nota >= HERO_NOTA_MIN. Se baraja una sola vez por visita
-   (se guarda por tipo): construirHero se vuelve a llamar al llegar streaming.json y no debe reordenar. */
-var _heroElegidas = {};
-function _destacadas(data, tipo) {
-  var previa = _heroElegidas[tipo];
-  if (previa && previa.fuente === data) return previa.items;
-  var buenas = data.filter(function(it) {
-    var n = parseFloat(String(campo(it, ["Calificación","Calificacion"])).replace(",", "."));
-    return n >= HERO_NOTA_MIN;
-  });
-  for (var i = buenas.length - 1; i > 0; i--) {          // Fisher-Yates
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = buenas[i]; buenas[i] = buenas[j]; buenas[j] = t;
-  }
-  var items = buenas.slice(0, HERO_CUANTAS);
-  _heroElegidas[tipo] = { fuente: data, items: items };
-  return items;
-}
-
-function _nodo(tag, clase, texto) {
-  var n = document.createElement(tag);
-  if (clase) n.className = clase;
-  if (texto !== undefined) n.textContent = texto;
-  return n;
-}
-
-function _crearSlideHero(item, tipo) {
-  var esPeli  = tipo === "Pelicula";
-  var titulo  = campo(item, ["Título","Titulo"]);
-  var calif   = campo(item, ["Calificación","Calificacion"]);
-  var anio    = (campo(item, ["Año","Anio"]).match(/\d{4}/) || [""])[0];
-  var genero  = campo(item, ["Género","Genero"]);
-  var poster  = campo(item, ["Poster","poster","Póster","póster"]).trim();
-  var resena  = campo(item, ["Reseña","Resena"]).replace(/\s+/g, " ").trim();
-  var streaming = obtenerStreaming(item);
-  var plataformas = (streaming && streaming.plataformas) ? streaming.plataformas.slice(0, 2) : [];
-  var generos = genero.split(/\s*,\s*/).filter(Boolean).slice(0, 3).join(", ");
-  var meta = [calif ? "★ " + calif : "", anio, generos, plataformas.join(" · ")].filter(Boolean).join("  ·  ");
-  var extracto = resena ? _extractoResena(resena, 170).replace(/ \[…\]$/, "…") : "";
-  var datos = Object.assign({}, item, { Tipo: tipo });
-
-  var slide = _nodo("div", "hero-slide");
-  slide.dataset.titulo = titulo;
-  function fondoHero(u) { slide.style.setProperty("--hero-img", 'url("' + String(u).replace(/"/g, "%22") + '")'); }
-  if (poster) slide.appendChild(_nodo("div", "hero-bg"));
-
-  var tx = _nodo("div", "hero-texto");
-  tx.appendChild(_nodo("div", "hero-kicker", "Te recomiendo"));
-  tx.appendChild(_nodo("h2", "hero-titulo", titulo));
-  if (meta) tx.appendChild(_nodo("div", "hero-meta", meta));
-  if (extracto) tx.appendChild(_nodo("p", "hero-resena", "“" + extracto + "”"));
-  var acc = _nodo("div", "hero-acciones");
-  var ver = _nodo("button", "hero-btn hero-btn--ver", "Ver ficha");
-  ver.type = "button";
-  ver.addEventListener("click", function() { abrirFicha(datos); });
-  var guardar = _nodo("button", "hero-btn hero-btn--guardar");
-  guardar.type = "button";
-  guardar.addEventListener("click", function() {
-    toggleDeseoItem({ titulo: titulo, tipo: esPeli ? "Película" : "Serie", genero: genero, calif: calif, anio: anio, poster: poster });
-    sincronizarCardDeseo(titulo);
-  });
-  acc.appendChild(ver);
-  acc.appendChild(guardar);
-  tx.appendChild(acc);
-  slide.appendChild(tx);
-
-  if (poster) {
-    var img = _nodo("img", "hero-poster");
-    var urlHero = urlPosterTMDB(poster, "w500");
-    img.alt = titulo;
-    img.addEventListener("click", function() { abrirFicha(datos); });
-    img.addEventListener("error", function() {
-      if (urlHero !== poster && !img.dataset.original) { img.dataset.original = "1"; img.src = poster; fondoHero(poster); }
-      else img.remove();
-    });
-    slide.appendChild(img);
-    /* Los pósters se piden solo cuando la diapositiva está por verse (la actual y la siguiente) */
-    slide._cargar = function() {
-      if (slide._cargada) return;
-      slide._cargada = true;
-      fondoHero(urlPosterTMDB(poster, "w342"));   // va muy desenfocado: no necesita más
-      img.src = urlHero;
-    };
-  }
-  return slide;
-}
-
-function construirHero(tipo) {
-  var esPeli = tipo === "Pelicula";
-  var data = esPeli ? dataPeliculas : dataSeries;
-  var el = document.getElementById(esPeli ? "hero-peliculas" : "hero-series");
-  if (!el || !data.length) return;
-
-  var items = _destacadas(data, tipo);
-  var actual = Math.min(Number(el.dataset.actual || 0), items.length - 1);
-  clearInterval(el._timer);
-
-  el.innerHTML = "";
-  el.dataset.listo = "1";
-  var slides = items.map(function(item) { return _crearSlideHero(item, tipo); });
-  var caja = _nodo("div", "hero-slides");
-  slides.forEach(function(sl) { caja.appendChild(sl); });
-  el.appendChild(caja);
-
-  var contador = null;
-  if (items.length > 1) {
-    var nav = _nodo("div", "hero-nav");
-    var ant = _nodo("button", "hero-flecha");
-    ant.type = "button";
-    ant.setAttribute("aria-label", "Recomendación anterior");
-    ant.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-chevron-left"/></svg>';
-    ant.addEventListener("click", function() { mostrar(actual - 1); programar(); });
-    var sig = _nodo("button", "hero-flecha");
-    sig.type = "button";
-    sig.setAttribute("aria-label", "Recomendación siguiente");
-    sig.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-chevron-right"/></svg>';
-    sig.addEventListener("click", function() { mostrar(actual + 1); programar(); });
-    contador = _nodo("span", "hero-contador");
-    nav.appendChild(ant);
-    nav.appendChild(contador);
-    nav.appendChild(sig);
-    el.appendChild(nav);
-    /* Teclado: ← y → cuando el foco está dentro del banner */
-    el.addEventListener("keydown", function(e) {
-      if (e.key === "ArrowLeft")  { mostrar(actual - 1); programar(); }
-      else if (e.key === "ArrowRight") { mostrar(actual + 1); programar(); }
-    });
-  }
-
-  function mostrar(i) {
-    actual = (i + slides.length) % slides.length;
-    el.dataset.actual = actual;
-    slides.forEach(function(sl, k) {
-      sl.classList.toggle("activo", k === actual);
-      sl.setAttribute("aria-hidden", k === actual ? "false" : "true");
-      sl.querySelectorAll("button, img").forEach(function(x) { x.tabIndex = k === actual ? 0 : -1; });
-    });
-    if (contador) contador.textContent = (actual + 1) + " / " + slides.length;
-    [actual, (actual + 1) % slides.length].forEach(function(k) { if (slides[k]._cargar) slides[k]._cargar(); });
-  }
-
-  /* Rota sola, salvo que haya movimiento reducido, la persona esté encima o la sección no se vea */
-  function programar() {
-    clearInterval(el._timer);
-    if (slides.length < 2 || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
-    el._timer = setInterval(function() {
-      if (document.hidden || el.hidden || el.offsetParent === null) return;
-      if (el.matches(":hover") || el.contains(document.activeElement)) return;
-      mostrar(actual + 1);
-    }, HERO_SEGUNDOS * 1000);
-  }
-
-  /* En el teléfono, deslizar cambia de destacada */
-  var x0 = null;
-  caja.addEventListener("touchstart", function(e) { x0 = e.touches[0].clientX; }, { passive: true });
-  caja.addEventListener("touchend", function(e) {
-    if (x0 === null) return;
-    var dx = e.changedTouches[0].clientX - x0;
-    x0 = null;
-    if (Math.abs(dx) > 50) { mostrar(actual + (dx < 0 ? 1 : -1)); programar(); }
-  }, { passive: true });
-
-  mostrar(actual);
-  programar();
-  actualizarBotonesHero();
-}
-
-/* «Guardar» / «En mi lista» según el estado de la lista de deseos */
-function actualizarBotonesHero() {
-  document.querySelectorAll(".hero-slide").forEach(function(sl) {
-    var b = sl.querySelector(".hero-btn--guardar");
-    if (!b || !sl.dataset.titulo) return;
-    var enD = estaEnDeseos(sl.dataset.titulo);
-    b.textContent = enD ? "♥ En mi lista" : "♡ Guardar";
-    b.classList.toggle("activo", enD);
-  });
 }
 
 /* Aviso cuando una búsqueda no encuentra nada (textContent: el texto del usuario no se interpreta como HTML) */
@@ -769,19 +573,6 @@ function campo(d, nombres) {
 
 /* Quita los caracteres que WhatsApp interpretaría como formato dentro de un texto ajeno */
 function _waLimpio(t) { return String(t || "").replace(/[*_~`]/g, "").trim(); }
-
-/* Extracto de la reseña: hasta `max` caracteres, cortando en la última oración completa */
-function _extractoResena(resena, max) {
-  var t = resena.replace(/\s+/g, " ").trim();
-  if (t.length <= max) return t;
-  var oraciones = _oraciones(t), acum = "";
-  for (var i = 0; i < oraciones.length; i++) {
-    if ((acum + oraciones[i]).trim().length > max) break;
-    acum += oraciones[i];
-  }
-  if (acum.trim()) return acum.trim() + " […]";
-  return t.slice(0, max).replace(/\s+\S*$/, "") + "…"; // la 1.ª oración ya excede el límite
-}
 
 /* Datos de la ficha ya listos para armar el texto */
 function _datosFichaWA(d) {
@@ -1382,7 +1173,6 @@ function actualizarContadorDeseos() {
   document.querySelectorAll(".js-deseos-n").forEach(function(el) {
     el.textContent = n > 0 ? n : "";
   });
-  actualizarBotonesHero();
 }
 
 /* Panel */
