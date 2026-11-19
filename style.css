@@ -383,7 +383,7 @@ h2 {
    ══════════════════════════════════════ */
 :root {
   --topbar-h: 0px;            /* alto de la cabecera fija; en escritorio no hay */
-  --sidebar-w: 248px;
+  --sidebar-w: 288px;
   --ancho-contenido: 1200px;  /* ancho común: buscador, grillas y colecciones */
 }
 
@@ -448,7 +448,7 @@ body { padding-left: var(--sidebar-w); }
   background: none;
   border-radius: 12px;
   font-family: "Poppins", sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #6f6f6f;
   text-align: left;
@@ -456,7 +456,7 @@ body { padding-left: var(--sidebar-w); }
   cursor: pointer;
   transition: 0.18s ease;
 }
-.nav-item .ico { width: 19px; height: 19px; }
+.nav-item .ico { width: 21px; height: 21px; }
 .nav-item:hover { background: #f6f3ec; color: #556b5d; }
 .nav-item.activo { background: #eef2ef; color: #556b5d; }
 
@@ -464,7 +464,7 @@ body { padding-left: var(--sidebar-w); }
 .nav-n {
   margin-left: auto;
   font-style: normal;
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: #a39c8c;
 }
@@ -472,7 +472,7 @@ body { padding-left: var(--sidebar-w); }
 
 /* Enlace externo (Biblioteca): separado y más discreto, con la flecha ↗ */
 .sb-sep { height: 1px; background: #efeae0; margin: 6px 8px; }
-.nav-ext { font-size: 0.84rem; color: #8a8a8a; }
+.nav-ext { font-size: 0.92rem; color: #8a8a8a; }
 .nav-ext .nav-ext-ico { width: 14px; height: 14px; margin-left: auto; color: #b3ac9c; }
 
 /* Colecciones: acceso directo a cada una, con su color */
@@ -486,9 +486,9 @@ body { padding-left: var(--sidebar-w); }
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 9px;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   color: #7a8c85;
   text-decoration: none;
   transition: 0.18s;
@@ -496,8 +496,8 @@ body { padding-left: var(--sidebar-w); }
 .cl-item:hover { background: #f6f3ec; color: #364a46; }
 .cl-item.activo { background: #eef2ef; color: #364a46; font-weight: 600; }
 .cl-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
