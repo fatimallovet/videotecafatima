@@ -1387,8 +1387,8 @@ body { padding-left: var(--sidebar-w); }
   margin: 0 auto;
   padding: 16px 20px 34px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 14px;
 }
 
 .mood-card {
@@ -1396,7 +1396,7 @@ body { padding-left: var(--sidebar-w); }
   overflow: hidden;
   border-radius: 14px;
   padding: 16px 16px 14px;
-  min-height: 84px;
+  min-height: 116px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1434,42 +1434,67 @@ body { padding-left: var(--sidebar-w); }
 }
 
 .mood-nombre {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 400;
   color: #ffffff;
-  line-height: 1.22;
+  line-height: 1.05;
   text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
+/* Con pósters a la derecha, el título deja libre ese espacio */
+.mood-card.con-fan .mood-nombre { max-width: calc(100% - 78px); }
 
 .mood-count {
   align-self: flex-start;
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: rgba(255,255,255,0.92);
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  padding: 2px 9px;
-  border-radius: 999px;
-  backdrop-filter: blur(2px);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.85);
 }
 
+/* Tres pósters de la colección (los mejor calificados), en abanico a la derecha */
+.mood-fan {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 84px;
+  height: 88px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.mood-fan img {
+  position: absolute;
+  bottom: 0;
+  width: 38px;
+  height: 57px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.28);
+  transition: transform 0.3s cubic-bezier(.2,.8,.3,1);
+}
+.mood-fan img:nth-child(1) { left: 0;    transform: rotate(-9deg); }
+.mood-fan img:nth-child(2) { left: 22px; width: 40px; height: 60px; z-index: 1; }
+.mood-fan img:nth-child(3) { left: 46px; transform: rotate(8deg); }
+.mood-card:hover .mood-fan img:nth-child(1) { transform: rotate(-13deg) translateX(-3px); }
+.mood-card:hover .mood-fan img:nth-child(3) { transform: rotate(12deg) translateX(3px); }
+
 /* ── Identidad de color por colección ── */
-.mood-card--accion_aventura { --mood-shadow: rgba(160,60,20,0.4);   background: linear-gradient(135deg, #f07d3e 0%, #b8410f 100%); }
-.mood-card--dramas          { --mood-shadow: rgba(120,30,45,0.4);   background: linear-gradient(135deg, #b23a54 0%, #6e1f34 100%); }
-.mood-card--crimen_suspenso { --mood-shadow: rgba(30,40,70,0.45);   background: linear-gradient(135deg, #3d4d75 0%, #1c2440 100%); }
-.mood-card--comedia         { --mood-shadow: rgba(180,120,10,0.35); background: linear-gradient(135deg, #f8c545 0%, #dd9a1f 100%); }
-.mood-card--biografias      { --mood-shadow: rgba(20,70,60,0.4);    background: linear-gradient(135deg, #2f8a78 0%, #164a3f 100%); }
-.mood-card--scifi_fantasia  { --mood-shadow: rgba(80,40,140,0.4);   background: linear-gradient(135deg, #7c4dbd 0%, #452a75 100%); }
-.mood-card--romance         { --mood-shadow: rgba(178,58,92,0.4);   background: linear-gradient(135deg, #e0577e 0%, #a83a5c 100%); }
-.mood-card--epoca           { --mood-shadow: rgba(90,25,35,0.45);   background: linear-gradient(135deg, #7d3140 0%, #431a22 100%); }
-.mood-card--kdrama          { --mood-shadow: rgba(160,45,25,0.4);   background: linear-gradient(135deg, #ff6f5e 0%, #c1402e 100%); }
-.mood-card--familiares      { --mood-shadow: rgba(30,90,55,0.35);   background: linear-gradient(135deg, #6fae7a 0%, #3d7048 100%); }
-.mood-card--musicales       { --mood-shadow: rgba(140,30,100,0.4);  background: linear-gradient(135deg, #d6479e 0%, #93266b 100%); }
-.mood-card--deportivo       { --mood-shadow: rgba(20,70,110,0.4);   background: linear-gradient(135deg, #2f8fd1 0%, #175a8c 100%); }
-.mood-card--lujo            { --mood-shadow: rgba(140,100,60,0.4);  background: linear-gradient(135deg, #e3bd9a 0%, #a6795a 100%); }
-.mood-card--navidad         { --mood-shadow: rgba(120,25,25,0.4);   background: linear-gradient(135deg, #c23b3b 0%, #7a1f1f 100%); }
-.mood-card--diferente       { --mood-shadow: rgba(100,30,110,0.42); background: linear-gradient(135deg, #9b4dca 0%, #5e2385 100%); }
+.mood-card--accion_aventura { --mood-shadow: rgba(160,60,20,0.4);   background: linear-gradient(135deg, #bb6739 0%, #924b2d 100%); }
+.mood-card--dramas          { --mood-shadow: rgba(120,30,45,0.4);   background: linear-gradient(135deg, #954e5d 0%, #5b2c39 100%); }
+.mood-card--crimen_suspenso { --mood-shadow: rgba(30,40,70,0.45);   background: linear-gradient(135deg, #454e66 0%, #212637 100%); }
+.mood-card--comedia         { --mood-shadow: rgba(180,120,10,0.35); background: linear-gradient(135deg, #ad8a2e 0%, #84682c 100%); }
+.mood-card--biografias      { --mood-shadow: rgba(20,70,60,0.4);    background: linear-gradient(135deg, #3e7469 0%, #1f3e37 100%); }
+.mood-card--scifi_fantasia  { --mood-shadow: rgba(80,40,140,0.4);   background: linear-gradient(135deg, #75589d 0%, #463663 100%); }
+.mood-card--romance         { --mood-shadow: rgba(178,58,92,0.4);   background: linear-gradient(135deg, #af4664 0%, #7f4457 100%); }
+.mood-card--epoca           { --mood-shadow: rgba(90,25,35,0.45);   background: linear-gradient(135deg, #6a3d46 0%, #392025 100%); }
+.mood-card--kdrama          { --mood-shadow: rgba(160,45,25,0.4);   background: linear-gradient(135deg, #c63f2f 0%, #87463d 100%); }
+.mood-card--familiares      { --mood-shadow: rgba(30,90,55,0.35);   background: linear-gradient(135deg, #65906d 0%, #44624a 100%); }
+.mood-card--musicales       { --mood-shadow: rgba(140,30,100,0.4);  background: linear-gradient(135deg, #ab4a85 0%, #793861 100%); }
+.mood-card--deportivo       { --mood-shadow: rgba(20,70,110,0.4);   background: linear-gradient(135deg, #4a83ab 0%, #2b5371 100%); }
+.mood-card--lujo            { --mood-shadow: rgba(140,100,60,0.4);  background: linear-gradient(135deg, #a5794f 0%, #745f50 100%); }
+.mood-card--navidad         { --mood-shadow: rgba(120,25,25,0.4);   background: linear-gradient(135deg, #a25151 0%, #652e2e 100%); }
+.mood-card--diferente       { --mood-shadow: rgba(100,30,110,0.42); background: linear-gradient(135deg, #8551a3 0%, #57336e 100%); }
 
 /* Resultados del mood */
 .mood-resultado {
@@ -1537,11 +1562,16 @@ body { padding-left: var(--sidebar-w); }
 
   .mood-card {
     padding: 14px 14px 12px;
-    min-height: 76px;
+    min-height: 104px;
   }
 
-  .mood-nombre { font-size: 0.85rem; }
-  .mood-count { font-size: 0.6rem; padding: 2px 9px; }
+  .mood-nombre { font-size: 1.15rem; }
+  .mood-count { font-size: 0.68rem; }
+  .mood-card.con-fan .mood-nombre { max-width: calc(100% - 62px); }
+  .mood-fan { right: 8px; width: 66px; height: 72px; }
+  .mood-fan img { width: 30px; height: 45px; }
+  .mood-fan img:nth-child(2) { left: 17px; width: 32px; height: 48px; }
+  .mood-fan img:nth-child(3) { left: 36px; }
 
   .mood-barra-volver {
     padding: 8px 0 6px;

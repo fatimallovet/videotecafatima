@@ -1565,6 +1565,39 @@ function actualizarContadoresMoods() {
     var el = document.getElementById("count-" + k);
     if (el) el.textContent = conteos[k] + " títulos";
   });
+  ponerPosteresColecciones(todos);
+}
+
+/* Tres pósters en cada tarjeta de Colecciones: los mejor calificados de esa colección
+   (si empatan, el más reciente) que tengan póster. Chicos (w185) y de carga diferida. */
+function ponerPosteresColecciones(todos) {
+  Object.keys(MOODS_DEF).forEach(function(k) {
+    var el = document.getElementById("count-" + k);
+    var card = el && el.closest(".mood-card");
+    if (!card || card.querySelector(".mood-fan")) return;
+    var delaColeccion = todos.filter(function(item) {
+      var tipo = dataPeliculas.indexOf(item) !== -1 ? "Pelicula" : "Serie";
+      return clasificarMoods(item, tipo).indexOf(k) !== -1;
+    });
+    var urls = ordenarData(delaColeccion, "calificacion").map(function(item) {
+      return campo(item, ["Poster","poster","Póster","póster"]).trim();
+    }).filter(Boolean).slice(0, 3);
+    if (urls.length < 3) return;
+    var fan = document.createElement("span");
+    fan.className = "mood-fan";
+    fan.setAttribute("aria-hidden", "true");
+    urls.forEach(function(u) {
+      var img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = urlPosterTMDB(u, "w185");
+      img.addEventListener("error", function() { img.remove(); });
+      fan.appendChild(img);
+    });
+    card.appendChild(fan);
+    card.classList.add("con-fan");
+  });
 }
 
 /* Cambia a un mood y actualiza la URL (#moods/kdrama, etc.) */
