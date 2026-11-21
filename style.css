@@ -895,6 +895,28 @@ body { padding-left: var(--sidebar-w); }
    BUSCADOR + ORDEN
    Campo y selector comparten alto (46px), radio y borde.
    ══════════════════════════════════════ */
+/* Encabezado de Películas y Series: título serif, frase y adorno (el mismo de Info) */
+.portada-cab {
+  max-width: var(--ancho-contenido);
+  margin: 6px auto 26px;
+  text-align: center;
+}
+.portada-titulo {
+  margin: 0;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  color: #1f1f1f;
+}
+.portada-sub {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  color: #7a746a;
+}
+.portada-sub:empty { display: none; }
+.portada-cab .info-orn { margin: 18px 0 0; }
+
 .controles-wrapper {
   max-width: var(--ancho-contenido);
   margin: 0 auto 18px auto;
@@ -969,6 +991,7 @@ body { padding-left: var(--sidebar-w); }
 .clear-btn .ico { width: 16px; height: 16px; }
 .buscador:placeholder-shown ~ .clear-btn { display: none; }
 
+.ct-resultados:empty { display: none; }
 .ct-resultados {
   flex-shrink: 0;
   padding: 0 4px;
@@ -991,6 +1014,10 @@ body { padding-left: var(--sidebar-w); }
 }
 
 @media (max-width: 600px) {
+  .portada-titulo { display: none; }          /* la cabecera ya dice «Películas» / «Series» */
+  .portada-cab { margin: 0 auto 20px; padding: 0 8px; }
+  .portada-sub { margin: 0; font-size: 0.88rem; }
+  .portada-cab .info-orn { margin-top: 14px; }
   .controles-wrapper {
     flex-wrap: wrap;
     gap: 8px;

@@ -146,9 +146,17 @@ function renderizar(tipo) {
   /* Contador junto a los controles */
   var ct = document.getElementById(esPeli ? "ct-peliculas" : "ct-series");
   if (ct) {
+    /* Sin búsqueda el número ya está en el encabezado; aquí solo se cuentan los resultados */
     ct.textContent = texto.trim()
       ? filtrados.length + (filtrados.length === 1 ? " resultado" : " resultados")
-      : data.length + (esPeli ? " películas" : " series");
+      : "";
+  }
+
+  /* Encabezado de la portada: cuántos títulos hay añadidos (sale de la hoja) */
+  var cab = document.getElementById(esPeli ? "cab-peliculas" : "cab-series");
+  if (cab && data.length) {
+    cab.textContent = data.length + (esPeli ? " películas recomendadas por ahora, y voy sumando más."
+                                           : " series recomendadas por ahora, y voy sumando más.");
   }
 }
 
