@@ -1089,7 +1089,7 @@ function generarImagenInfo() {
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
 
     /* Dos líneas equilibradas (cortadas en la coma), como se lee en el encabezado de Info */
-    var lineas = ["Cine y series,", "vistos y curados por mí"], size = 96;
+    var lineas = ["Pelis y series", "que he visto"], size = 96;
     ctx.fillStyle = "#1f1f1f"; ctx.font = "400 " + size + "px \"Instrument Serif\", Georgia, serif";
     lineas.forEach(function(l, i) { ctx.fillText(l, cx, 270 + i * Math.round(size * 1.04)); });
 
